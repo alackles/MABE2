@@ -7,8 +7,8 @@
  *  @brief MABE Evaluation module for NK Landscapes which hardcodes metrics from rank epistasis. Hopefully soon depreciable. 
  */
 
-#ifndef MABE_EVAL_NK_H
-#define MABE_EVAL_NK_H
+#ifndef MABE_EVAL_NK_RANK_H
+#define MABE_EVAL_NK_RANK_H
 
 #include "../../core/MABE.hpp"
 #include "../../core/Module.hpp"
@@ -18,7 +18,7 @@
 
 namespace mabe {
 
-  class EvalNK : public Module {
+  class EvalNKRank : public Module {
   private:
     size_t N;
     size_t K;    
@@ -29,9 +29,9 @@ namespace mabe {
     std::string fitness_trait;
 
   public:
-    EvalNK(mabe::MABE & control,
-           const std::string & name="EvalNK",
-           const std::string & desc="Module to evaluate bitstrings on an NK Fitness Lanscape",
+    EvalNKRank(mabe::MABE & control,
+           const std::string & name="EvalNKRank",
+           const std::string & desc="Module to evaluate bitstrings on an NK Fitness Lanscape WITH rank epistasis baked in.",
            size_t _N=100, size_t _K=3, const std::string & _btrait="bits", const std::string & _ftrait="fitness")
       : Module(control, name, desc)
       , N(_N), K(_K)
@@ -41,7 +41,7 @@ namespace mabe {
     {
       SetEvaluateMod(true);
     }
-    ~EvalNK() { }
+    ~EvalNKRank() { }
 
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
@@ -84,11 +84,17 @@ namespace mabe {
         }
       }
 
+
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
     }
+
+    void BeforeExit() override {
+      std::cout << "Test N: " << N << std::endl;
+    }
+      
   };
 
-  MABE_REGISTER_MODULE(EvalNK, "Evaluate bitstrings on an NK fitness lanscape.");
+  MABE_REGISTER_MODULE(EvalNKRank, "Evaluate bitstrings on an NK fitness lanscape with Rank Epistasis.");
 }
 
 #endif
