@@ -43,9 +43,6 @@ namespace mabe {
     }
     ~EvalNKRank() { }
 
-    emp::Ptr<Organism> max_org = nullptr;
-    double max_fitness = 0.0;
-    
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
       LinkVar(N, "N", "Number of bits required in output");
@@ -63,10 +60,14 @@ namespace mabe {
       landscape.Config(N, K, control.GetRandom());  // Setup the fitness landscape.
     }
 
+    emp::BitVector max_bits = 0;
+
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
+      double max_fitness = 0.0;
+      emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
@@ -82,15 +83,16 @@ namespace mabe {
         if (fitness > max_fitness || !max_org) {
           max_fitness = fitness;
           max_org = &org;
+          max_bits = bits;
         }
       }
 
 
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
     }
-
+    
     void BeforeExit() override {
-      std::cout << "Test:" << max_fitness << std::endl;
+      std::cout << "Test:" << landscape.GetFitness(max_bits) << std::endl;
     }
       
   };
