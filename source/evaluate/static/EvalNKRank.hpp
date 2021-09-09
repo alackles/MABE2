@@ -43,6 +43,9 @@ namespace mabe {
     }
     ~EvalNKRank() { }
 
+    emp::Ptr<Organism> max_org = nullptr;
+    double max_fitness = 0.0;
+    
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
       LinkVar(N, "N", "Number of bits required in output");
@@ -64,8 +67,6 @@ namespace mabe {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
-      double max_fitness = 0.0;
-      emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
@@ -89,7 +90,7 @@ namespace mabe {
     }
 
     void BeforeExit() override {
-      std::cout << "Test N: " << N << std::endl;
+      std::cout << "Test:" << max_fitness << std::endl;
     }
       
   };
