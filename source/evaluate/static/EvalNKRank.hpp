@@ -93,8 +93,14 @@ namespace mabe {
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
-        const auto & bits= org.GetTrait<emp::BitVector>(bits_trait);
-        std::cout << "Org: " << bits << std::endl; 
+        const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
+        auto knockout = bits;
+        for (int i = 0 ; i < N ; ++i) {
+          knockout.Toggle(i);
+          int ko_pos = i;
+          double ko_fitness = landscape.GetFitness(knockout);
+          knockout.Toggle(i);
+        }
       }
     }
       
