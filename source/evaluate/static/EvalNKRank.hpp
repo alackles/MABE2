@@ -107,11 +107,7 @@ namespace mabe {
           int ko_pos = i;
           double ko_fitness = landscape.GetFitness(knockout);
           knockout.Toggle(i);
-          kfileout << org_id << ",";
-          kfileout << ko_pos << ",";
-          kfileout << wt_fitness << ",";
-          kfileout << ko_fitness << ",";
-          kfileout << "\n";
+          kfileout << org_id << "," << ko_pos << "," << wt_fitness << "," << ko_fitness << "," << "\n";
         }
         org_id++;
       }
