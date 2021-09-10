@@ -60,8 +60,6 @@ namespace mabe {
       landscape.Config(N, K, control.GetRandom());  // Setup the fitness landscape.
     }
 
-    emp::BitVector max_bits = 0;
-
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
@@ -83,16 +81,21 @@ namespace mabe {
         if (fitness > max_fitness || !max_org) {
           max_fitness = fitness;
           max_org = &org;
-          max_bits = bits;
         }
       }
 
 
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
     }
-    
+
+    // Rank epistasis analysis on the final population
     void BeforeExit() override {
-      std::cout << "Test:" << landscape.GetFitness(max_bits) << std::endl;
+      mabe::Collection alive_collect( target_collect.GetAlive() );
+      for (Organism & org : alive_collect) {
+        org.GenerateOutput();
+        const auto & bits= org.GetTrait<emp::BitVector>(bits_trait);
+        std::cout << "Org: " << bits << std::endl; 
+      }
     }
       
   };
