@@ -33,24 +33,13 @@ namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
-
-  //#define INF MAXDOUBLE
-  #define INF DBL_MAX
-
-  /* Define tFitness */
-  #ifndef _TFITNESS 
-  #define _TFITNESS 1
-  // This should be a real number i.e. float, double, long double
   typedef long double tFitness; 	// Fitness type
-  //typedef long double varType; 	// Variable type
-  #endif
 
   /* type definition for an array of function pointers */
   typedef tFitness (*compFunction)(const double *, const int &);
 
   /* Composition Functions framework */
-  class CFunction
-  {
+  class CFunction {
   	//non-copyable
   	CFunction(const CFunction&);
   	CFunction& operator=(const CFunction &);
@@ -64,10 +53,9 @@ namespace mabe {
   	double get_ubound(const int &ivar) const { return ubound_[ivar]; } 
 
   protected:
-  //public:
   	int dimension_;
   	int nofunc_;
-  	double C_;// = 2000.0;
+  	double C_;
   	double *lambda_;
   	double *sigma_;
   	double *bias_;
@@ -98,75 +86,75 @@ namespace mabe {
   	std::vector< std::vector<double> > get_copy_of_goptima() const;
   };
   
-  /* Basic Benchmark functions */
-  tFitness five_uneven_peak_trap(const double *x, const int &dim);
-  tFitness equal_maxima(const double *x, const int &dim);
-  tFitness uneven_decreasing_maxima(const double *x, const int &dim);
-  tFitness himmelblau(const double *x, const int &dim);
-  tFitness six_hump_camel_back(const double *x, const int &dim);
-  tFitness shubert(const double *x, const int &dim);
-  tFitness vincent(const double *x, const int &dim);
-  tFitness modified_rastrigin_all(const double *x, const int &dim);
+    /* Basic Benchmark functions */
+   tFitness five_uneven_peak_trap(const double *x, const int &dim);
+   tFitness equal_maxima(const double *x, const int &dim);
+   tFitness uneven_decreasing_maxima(const double *x, const int &dim);
+   tFitness himmelblau(const double *x, const int &dim);
+   tFitness six_hump_camel_back(const double *x, const int &dim);
+   tFitness shubert(const double *x, const int &dim);
+   tFitness vincent(const double *x, const int &dim);
+   tFitness modified_rastrigin_all(const double *x, const int &dim);
 
-  /* Basic functions for composition */
-  tFitness FSphere(const double *x, const int &dim);
-  tFitness FAckley(const double *x, const int &dim);
-  tFitness FEF8F2(const double *xx, const int &dim);
-  tFitness FGriewank(const double *x, const int &dim);
-  tFitness FSchwefel(const double *x, const int &dim);
-  tFitness FRastrigin(const double *x, const int &dim);
-  tFitness FRosenbrock(const double *x, const int &dim);
-  tFitness FWeierstrass(const double *x, const int &dim);
+    /* Basic functions for composition */
+    tFitness FSphere(const double *x, const int &dim);
+    tFitness FAckley(const double *x, const int &dim);
+    tFitness FEF8F2(const double *xx, const int &dim);
+    tFitness FGriewank(const double *x, const int &dim);
+    tFitness FSchwefel(const double *x, const int &dim);
+    tFitness FRastrigin(const double *x, const int &dim);
+    tFitness FRosenbrock(const double *x, const int &dim);
+    tFitness FWeierstrass(const double *x, const int &dim);
 
-  /* Interfaces for Composition functions */
-  class CF1 : public CFunction
-  {
-  	//non-copyable
-  	CF1(const CF1 &);
-  	CF1& operator=(const CF1&);
-  public:
-  	CF1(const int dim);
+    /* Interfaces for Composition functions */
+    class CF1 : public CFunction
+    {
+    	//non-copyable
+    	CF1(const CF1 &);
+    	CF1& operator=(const CF1&);
+    public:
+    	CF1(const int dim);
+    	tFitness evaluate(const double *x);
+    };
+
+    class CF2 : public CFunction
+    {
+    	//non-copyable
+    	CF2(const CF2 &);
+    	CF2& operator=(const CF2&);
+    public:
+    	CF2(const int dim);
   	tFitness evaluate(const double *x);
-  };
+    };
 
-  class CF2 : public CFunction
-  {
-  	//non-copyable
-  	CF2(const CF2 &);
-  	CF2& operator=(const CF2&);
-  public:
-  	CF2(const int dim);
-  	tFitness evaluate(const double *x);
-  };
+    class CF3 : public CFunction
+    {
+    	//non-copyable
+    	CF3(const CF3 &);
+    	CF3& operator=(const CF3&);
+    public:
+    	CF3(const int dim);
+    	tFitness evaluate(const double *x);
+    };
 
-  class CF3 : public CFunction
-  {
-  	//non-copyable
-  	CF3(const CF3 &);
-  	CF3& operator=(const CF3&);
-  public:
-  	CF3(const int dim);
-  	tFitness evaluate(const double *x);
-  };
+    class CF4 : public CFunction
+    {
+    	//non-copyable
+    	CF4(const CF4 &);
+    	CF4& operator=(const CF4&);
+    public:
+    	CF4(const int dim);
+    	tFitness evaluate(const double *x);
+    };
 
-  class CF4 : public CFunction
-  {
-  	//non-copyable
-  	CF4(const CF4 &);
-  	CF4& operator=(const CF4&);
-  public:
-  	CF4(const int dim);
-  	tFitness evaluate(const double *x);
-  };
+    /* Help template to fix file names */
+    template <typename T>
+    std::string number_to_string(T no)
+    {
+    	std::ostringstream ss; ss << no; return ss.str();
+    }
 
-  /* Help template to fix file names */
-  template <typename T>
-  std::string number_to_string(T no)
-  {
-  	std::ostringstream ss; ss << no; return ss.str();
-  }
-
-  #endif
+///////
 
   /******************************************************************************
    * Some declarations
