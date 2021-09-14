@@ -224,15 +224,119 @@ namespace mabe {
 
     class CompositeFcn {
       public:
-      /* Basic functions for composition */
-      tFitness FSphere(const double *x, const int &dim);
-      tFitness FAckley(const double *x, const int &dim);
-      tFitness FEF8F2(const double *xx, const int &dim);
-      tFitness FGriewank(const double *x, const int &dim);
-      tFitness FSchwefel(const double *x, const int &dim);
-      tFitness FRastrigin(const double *x, const int &dim);
-      tFitness FRosenbrock(const double *x, const int &dim);
-      tFitness FWeierstrass(const double *x, const int &dim);
+      /******************************************************************************
+      * Basic functions for composition 
+      *****************************************************************************/
+      /* Ackley's function */
+      tFitness FAckley(const double *x, const int &dim) {
+        tFitness sum1(0.0), sum2(0.0), result;
+        for (int i=0; i<dim; ++i) {
+          sum1 += x[i]*x[i];
+          sum2 += cos(2.0*M_PI*x[i]);
+        }
+        sum1 = -0.2*sqrt(sum1/dim);
+        sum2 /= dim;
+        result = 20.0 + E - 20.0*exp(sum1) - exp(sum2);
+        return result;
+      }
+
+      /* Rastrigin's function */
+      tFitness FRastrigin(const double *x, const int &dim) {
+        tFitness result(0.0);
+        for (int i=0; i<dim; ++i) {
+          result += (x[i]*x[i] - 10.0*cos(2.0*M_PI*x[i]) + 10.0);
+        }
+        return result;
+      }
+
+      /* Weierstrass's function */
+      tFitness FWeierstrass(const double *x, const int &dim) {
+        tFitness result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
+        int k_max(20);
+
+        for (int j=0; j<=k_max; ++j) {
+          sum2 += pow(a,j)*cos(2.0*M_PI*pow(b,j)*(0.5));
+        }
+        for (int i=0; i<dim; ++i) {
+          sum = 0.0;
+          for (int j=0; j<=k_max; ++j) {
+            sum += pow(a,j)*cos(2.0*M_PI*pow(b,j)*(x[i]+0.5));
+          }
+          result += sum;
+        }
+        return result - sum2*dim;
+      }
+
+      /* Griewank's function */
+      tFitness FGriewank(const double *x, const int &dim) {
+        tFitness sum(0.0), prod(1.0), result(0.0);
+
+        for (int i=0; i<dim; ++i) {
+          sum  += x[i]*x[i]/4000.0;
+          prod *= cos( x[i]/sqrt(double(1.0+i)) );
+        }
+        result = 1.0 + sum - prod;
+        return result;
+      }
+
+      /* Sphere function */
+      tFitness FSphere(const double *x, const int &dim) {
+        tFitness result(0.0);
+        for (int i=0; i<dim; ++i) {
+          result += x[i]*x[i];
+        }
+        return result;
+      }
+
+      /* Schwefel's function */
+      tFitness FSchwefel(const double *x, const int &dim) {
+        tFitness sum1(0.0), sum2(0.0);
+
+        for (int i=0; i<dim; ++i) {
+          sum2 = 0.0;
+          for (int j=0; j<=i; ++j) {
+            sum2 += x[j];
+          }
+          sum1 += sum2*sum2;
+        }
+        return sum1;
+      }
+
+      /* Rosenbrock's function */
+      tFitness FRosenbrock(const double *x, const int &dim) {
+        tFitness result(0.0);
+
+        for (int i=0; i<dim-1; ++i) {
+          result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
+        }
+        return result;
+      }
+
+      /* FEF8F2 function */
+      tFitness FEF8F2(const double *xx, const int &dim) {
+        tFitness result(0.0);
+        double x(0), y(0), f(0), f2(0);
+
+        for (int i=0; i<dim-1; ++i) {
+          x = xx[i]   +1;
+          y = xx[i+1] +1;
+
+          f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
+          f  = 1.0 + f2*f2/4000.0 - cos(f2);
+
+          result += f;
+        }
+        /* do not forget the (dim-1,0) case! */
+        x = xx[dim-1] +1;
+        y = xx[0]     +1;
+
+        f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
+        f  = 1.0 + f2*f2/4000.0 - cos(f2);
+
+        result += f;
+
+        return result;
+      }
     } 
 
     /* Interfaces for Composition functions */
@@ -742,127 +846,6 @@ tFitness CF4::evaluate(const double *x)
 	return evaluate_inner_(x);
 }
 
-/******************************************************************************
- * Basic functions for composition 
- *****************************************************************************/
-/* Ackley's function */
-tFitness FAckley(const double *x, const int &dim)
-{
-	tFitness sum1(0.0), sum2(0.0), result;
-	for (int i=0; i<dim; ++i) {
-		sum1 += x[i]*x[i];
-		sum2 += cos(2.0*M_PI*x[i]);
-	}
-	sum1 = -0.2*sqrt(sum1/dim);
-	sum2 /= dim;
-	result = 20.0 + E - 20.0*exp(sum1) - exp(sum2);
-	return result;
-}
-
-/* Rastrigin's function */
-tFitness FRastrigin(const double *x, const int &dim)
-{
-	tFitness result(0.0);
-	for (int i=0; i<dim; ++i) {
-		result += (x[i]*x[i] - 10.0*cos(2.0*M_PI*x[i]) + 10.0);
-	}
-	return result;
-}
-
-/* Weierstrass's function */
-tFitness FWeierstrass(const double *x, const int &dim)
-{
-	tFitness result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
-	int k_max(20);
-
-	for (int j=0; j<=k_max; ++j) {
-		sum2 += pow(a,j)*cos(2.0*M_PI*pow(b,j)*(0.5));
-	}
-	for (int i=0; i<dim; ++i) {
-		sum = 0.0;
-		for (int j=0; j<=k_max; ++j) {
-			sum += pow(a,j)*cos(2.0*M_PI*pow(b,j)*(x[i]+0.5));
-		}
-		result += sum;
-	}
-	return result - sum2*dim;
-}
-
-/* Griewank's function */
-tFitness FGriewank(const double *x, const int &dim)
-{
-	tFitness sum(0.0), prod(1.0), result(0.0);
-
-	for (int i=0; i<dim; ++i) {
-		sum  += x[i]*x[i]/4000.0;
-		prod *= cos( x[i]/sqrt(double(1.0+i)) );
-	}
-	result = 1.0 + sum - prod;
-	return result;
-}
-
-/* Sphere function */
-tFitness FSphere(const double *x, const int &dim)
-{
-	tFitness result(0.0);
-	for (int i=0; i<dim; ++i) {
-		result += x[i]*x[i];
-	}
-	return result;
-}
-
-/* Schwefel's function */
-tFitness FSchwefel(const double *x, const int &dim)
-{
-	tFitness sum1(0.0), sum2(0.0);
-
-	for (int i=0; i<dim; ++i) {
-		sum2 = 0.0;
-		for (int j=0; j<=i; ++j) {
-			sum2 += x[j];
-		}
-		sum1 += sum2*sum2;
-	}
-	return sum1;
-}
-
-/* Rosenbrock's function */
-tFitness FRosenbrock(const double *x, const int &dim)
-{
-	tFitness result(0.0);
-
-	for (int i=0; i<dim-1; ++i) {
-		result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
-	}
-	return result;
-}
-
-/* FEF8F2 function */
-tFitness FEF8F2(const double *xx, const int &dim)
-{
-	tFitness result(0.0);
-	double x(0), y(0), f(0), f2(0);
-
-	for (int i=0; i<dim-1; ++i) {
-		x = xx[i]   +1;
-		y = xx[i+1] +1;
-
-		f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
-		f  = 1.0 + f2*f2/4000.0 - cos(f2);
-
-		result += f;
-	}
-	/* do not forget the (dim-1,0) case! */
-	x = xx[dim-1] +1;
-	y = xx[0]     +1;
-
-	f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
-	f  = 1.0 + f2*f2/4000.0 - cos(f2);
-
-	result += f;
-
-	return result;
-}
 }
 
 #endif
