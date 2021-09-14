@@ -87,14 +87,14 @@ namespace mabe {
   };
   
     /* Basic Benchmark functions */
-   tFitness five_uneven_peak_trap(const double *x, const int &dim);
-   tFitness equal_maxima(const double *x, const int &dim);
-   tFitness uneven_decreasing_maxima(const double *x, const int &dim);
-   tFitness himmelblau(const double *x, const int &dim);
-   tFitness six_hump_camel_back(const double *x, const int &dim);
-   tFitness shubert(const double *x, const int &dim);
-   tFitness vincent(const double *x, const int &dim);
-   tFitness modified_rastrigin_all(const double *x, const int &dim);
+    tFitness five_uneven_peak_trap(const double *x, const int &dim);
+    tFitness equal_maxima(const double *x, const int &dim);
+    tFitness uneven_decreasing_maxima(const double *x, const int &dim);
+    tFitness himmelblau(const double *x, const int &dim);
+    tFitness six_hump_camel_back(const double *x, const int &dim);
+    tFitness shubert(const double *x, const int &dim);
+    tFitness vincent(const double *x, const int &dim);
+    tFitness modified_rastrigin_all(const double *x, const int &dim);
 
     /* Basic functions for composition */
     tFitness FSphere(const double *x, const int &dim);
@@ -107,8 +107,7 @@ namespace mabe {
     tFitness FWeierstrass(const double *x, const int &dim);
 
     /* Interfaces for Composition functions */
-    class CF1 : public CFunction
-    {
+    class CF1 : public CFunction {
     	//non-copyable
     	CF1(const CF1 &);
     	CF1& operator=(const CF1&);
@@ -117,8 +116,7 @@ namespace mabe {
     	tFitness evaluate(const double *x);
     };
 
-    class CF2 : public CFunction
-    {
+    class CF2 : public CFunction {
     	//non-copyable
     	CF2(const CF2 &);
     	CF2& operator=(const CF2&);
@@ -127,8 +125,7 @@ namespace mabe {
   	tFitness evaluate(const double *x);
     };
 
-    class CF3 : public CFunction
-    {
+    class CF3 : public CFunction {
     	//non-copyable
     	CF3(const CF3 &);
     	CF3& operator=(const CF3&);
@@ -137,8 +134,7 @@ namespace mabe {
     	tFitness evaluate(const double *x);
     };
 
-    class CF4 : public CFunction
-    {
+    class CF4 : public CFunction {
     	//non-copyable
     	CF4(const CF4 &);
     	CF4& operator=(const CF4&);
@@ -153,6 +149,10 @@ namespace mabe {
     {
     	std::ostringstream ss; ss << no; return ss.str();
     }
+};
+
+#endif
+
 
 ///////
 
