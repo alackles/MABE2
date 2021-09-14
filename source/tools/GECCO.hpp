@@ -118,13 +118,108 @@ namespace mabe {
       	return result;
       }
 
-      tFitness equal_maxima(const double *x, const int &dim);
-      tFitness uneven_decreasing_maxima(const double *x, const int &dim);
-      tFitness himmelblau(const double *x, const int &dim);
-      tFitness six_hump_camel_back(const double *x, const int &dim);
-      tFitness shubert(const double *x, const int &dim);
-      tFitness vincent(const double *x, const int &dim);
-      tFitness modified_rastrigin_all(const double *x, const int &dim);
+      /******************************************************************************
+      * F2: Equal Maxima
+      * Variable ranges: x in [0, 1]
+      * No. of global peaks: 5
+      * No. of local peaks:  0. 
+      *****************************************************************************/
+      tFitness equal_maxima(const double *x, const int &dim) {
+        tFitness s = sin(5.0 * M_PI * x[0]);
+        return pow(s, 6);
+      }
+
+      /******************************************************************************
+      * F3: Uneven Decreasing Maxima
+      * Variable ranges: x in [0, 1]
+      * No. of global peaks: 1
+      * No. of local peaks:  4. 
+      *****************************************************************************/
+      tFitness uneven_decreasing_maxima(const double *x, const int &dim) {
+        tFitness tmp1 = -2*log(2)*((x[0]-0.08)/0.854)*((x[0]-0.08)/0.854);
+        tFitness tmp2 = sin( 5*M_PI*(pow(x[0],3.0/4.0)-0.05) );
+        return exp(tmp1) * pow(tmp2, 6);
+      }
+
+      /******************************************************************************
+      * F4: Himmelblau
+      * Variable ranges: x, y in [−6, 6
+      * No. of global peaks: 4
+      * No. of local peaks:  0.
+      *****************************************************************************/
+      tFitness himmelblau(const double *x, const int &dim) {
+        return 200 - (x[0]*x[0] + x[1] - 11)*(x[0]*x[0] + x[1] - 11) - 
+          (x[0] + x[1]*x[1] - 7)*(x[0] + x[1]*x[1] - 7);
+      }
+
+      /******************************************************************************
+      * F5: Six-Hump Camel Back
+      * Variable ranges: x in [−1.9, 1.9]; y in [−1.1, 1.1]
+      * No. of global peaks: 2
+      * No. of local peaks:  2.
+      *****************************************************************************/
+      tFitness six_hump_camel_back(const double *x, const int &dim) {
+        return -( (4 - 2.1*x[0]*x[0] + pow(x[0],4.0)/3.0)*x[0]*x[0] + 
+          x[0]*x[1] + (4*x[1]*x[1] -4)*x[1]*x[1] );
+      }
+
+      /******************************************************************************
+      * F6: Shubert
+      * Variable ranges: x_i in  [−10, 10]^n, i=1,2,...,n
+      * No. of global peaks: n*3^n
+      * No. of local peaks: many
+      *****************************************************************************/
+      tFitness shubert(const double *x, const int &dim) {
+        tFitness result(1), sum(0); 
+        for (int i=0; i<dim; i++) {
+          sum=0;
+          for (int j=1; j<6; j++) {
+            sum = sum + j * cos((j+1) * x[i] + j);
+          }
+          result = result * sum;
+        }
+        return -result;
+      }
+
+      /******************************************************************************
+      * F7: Vincent
+      * Variable range: x_i in [0.25, 10]^n, i=1,2,...,n
+      * No. of global optima: 6^n
+      * No. of local optima:  0.
+      *****************************************************************************/
+      tFitness vincent(const double *x, const int &dim) {
+        tFitness result(0);
+        for (int i=0; i<dim; i++){
+          if (x[i]<=0){
+            cerr << "Illegal value: " << x[i] << endl;
+            exit(-1);
+          }
+          result = result + sin(10 * log(x[i]));
+        }
+        return result/dim;
+      }
+
+      /******************************************************************************
+      * F8: Modified Rastrigin - All Global Optima
+      * Variable ranges: x_i in [0, 1]^n, i=1,2,...,n
+      * No. of global peaks: \prod_{i=1}^n k_i
+      * No. of local peaks:  0.
+      *****************************************************************************/
+      /* Modified Rastrigin -- All Global Optima */
+      static double MPPF92[2] = {3, 4};
+      static double MPPF98[8] = {1, 2, 1, 2, 1, 3, 1, 4};
+      static double MPPF916[16] = {1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 4};
+
+      tFitness modified_rastrigin_all(const double *x, const int &dim)
+      {
+        tFitness result(0);
+        for (int i=0; i<dim; i++){
+          if (dim == 2)  { result = result + 10+ 9*cos(2*M_PI*MPPF92[i]*x[i]); }
+          if (dim == 8)  { result = result + 10+ 9*cos(2*M_PI*MPPF98[i]*x[i]); }
+          if (dim == 16) { result = result + 10+ 9*cos(2*M_PI*MPPF916[i]*x[i]); }
+        }
+        return -result;
+      }
     }
 
     class CompositeFcn {
@@ -645,119 +740,6 @@ CF4::CF4(const int dim) : CFunction(dim, 8)
 tFitness CF4::evaluate(const double *x)
 {
 	return evaluate_inner_(x);
-}
-
-/******************************************************************************
- * Basic Benchmark functions 
- *****************************************************************************/
-
-/******************************************************************************
- * F2: Equal Maxima
- * Variable ranges: x in [0, 1]
- * No. of global peaks: 5
- * No. of local peaks:  0. 
- *****************************************************************************/
-tFitness equal_maxima(const double *x, const int &dim)
-{
-	tFitness s = sin(5.0 * M_PI * x[0]);
-	return pow(s, 6);
-}
-
-/******************************************************************************
- * F3: Uneven Decreasing Maxima
- * Variable ranges: x in [0, 1]
- * No. of global peaks: 1
- * No. of local peaks:  4. 
- *****************************************************************************/
-tFitness uneven_decreasing_maxima(const double *x, const int &dim)
-{
-	tFitness tmp1 = -2*log(2)*((x[0]-0.08)/0.854)*((x[0]-0.08)/0.854);
-	tFitness tmp2 = sin( 5*M_PI*(pow(x[0],3.0/4.0)-0.05) );
-	return exp(tmp1) * pow(tmp2, 6);
-}
-
-/******************************************************************************
- * F4: Himmelblau
- * Variable ranges: x, y in [−6, 6
- * No. of global peaks: 4
- * No. of local peaks:  0.
- *****************************************************************************/
-tFitness himmelblau(const double *x, const int &dim)
-{
-	return 200 - (x[0]*x[0] + x[1] - 11)*(x[0]*x[0] + x[1] - 11) - 
-		(x[0] + x[1]*x[1] - 7)*(x[0] + x[1]*x[1] - 7);
-}
-
-/******************************************************************************
- * F5: Six-Hump Camel Back
- * Variable ranges: x in [−1.9, 1.9]; y in [−1.1, 1.1]
- * No. of global peaks: 2
- * No. of local peaks:  2.
- *****************************************************************************/
-tFitness six_hump_camel_back(const double *x, const int &dim)
-{
-	return -( (4 - 2.1*x[0]*x[0] + pow(x[0],4.0)/3.0)*x[0]*x[0] + 
-		x[0]*x[1] + (4*x[1]*x[1] -4)*x[1]*x[1] );
-}
-
-/******************************************************************************
- * F6: Shubert
- * Variable ranges: x_i in  [−10, 10]^n, i=1,2,...,n
- * No. of global peaks: n*3^n
- * No. of local peaks: many
- *****************************************************************************/
-tFitness shubert(const double *x, const int &dim)
-{
-	tFitness result(1), sum(0); 
-	for (int i=0; i<dim; i++) {
-		sum=0;
-		for (int j=1; j<6; j++) {
-			sum = sum + j * cos((j+1) * x[i] + j);
-		}
-		result = result * sum;
-	}
-	return -result;
-}
-
-/******************************************************************************
- * F7: Vincent
- * Variable range: x_i in [0.25, 10]^n, i=1,2,...,n
- * No. of global optima: 6^n
- * No. of local optima:  0.
- *****************************************************************************/
-tFitness vincent(const double *x, const int &dim)
-{
-	tFitness result(0);
-	for (int i=0; i<dim; i++){
-		if (x[i]<=0){
-			cerr << "Illegal value: " << x[i] << endl;
-			exit(-1);
-		}
-		result = result + sin(10 * log(x[i]));
-	}
-	return result/dim;
-}
-
-/******************************************************************************
- * F8: Modified Rastrigin - All Global Optima
- * Variable ranges: x_i in [0, 1]^n, i=1,2,...,n
- * No. of global peaks: \prod_{i=1}^n k_i
- * No. of local peaks:  0.
- *****************************************************************************/
-/* Modified Rastrigin -- All Global Optima */
-static double MPPF92[2] = {3, 4};
-static double MPPF98[8] = {1, 2, 1, 2, 1, 3, 1, 4};
-static double MPPF916[16] = {1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 4};
-
-tFitness modified_rastrigin_all(const double *x, const int &dim)
-{
-	tFitness result(0);
-	for (int i=0; i<dim; i++){
-		if (dim == 2)  { result = result + 10+ 9*cos(2*M_PI*MPPF92[i]*x[i]); }
-		if (dim == 8)  { result = result + 10+ 9*cos(2*M_PI*MPPF98[i]*x[i]); }
-		if (dim == 16) { result = result + 10+ 9*cos(2*M_PI*MPPF916[i]*x[i]); }
-	}
-	return -result;
 }
 
 /******************************************************************************
