@@ -93,6 +93,7 @@ namespace mabe {
 
     // Rank epistasis analysis on the final population
     void BeforeExit() override {
+<<<<<<< Updated upstream
       mabe::Collection alive_collect( target_collect.GetAlive() );
       std::ofstream kfileout(knockout_file);
       kfileout << "org_ID,pos,score_WT,score_KO,\n";
@@ -112,6 +113,10 @@ namespace mabe {
         org_id++;
       }
       kfileout.close();
+=======
+      std::cout << "Genometest:" << max_bits.ToString() << std::endl;
+      std::cout << "Test:" << landscape.GetFitness(max_bits) << std::endl;
+>>>>>>> Stashed changes
     }
       
   };
