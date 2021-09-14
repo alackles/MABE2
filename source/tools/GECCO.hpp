@@ -86,25 +86,31 @@ namespace mabe {
   	std::vector< std::vector<double> > get_copy_of_goptima() const;
   };
   
-    /* Basic Benchmark functions */
-    tFitness five_uneven_peak_trap(const double *x, const int &dim);
-    tFitness equal_maxima(const double *x, const int &dim);
-    tFitness uneven_decreasing_maxima(const double *x, const int &dim);
-    tFitness himmelblau(const double *x, const int &dim);
-    tFitness six_hump_camel_back(const double *x, const int &dim);
-    tFitness shubert(const double *x, const int &dim);
-    tFitness vincent(const double *x, const int &dim);
-    tFitness modified_rastrigin_all(const double *x, const int &dim);
+    class BenchmarkFcn {
+      public:
+      /* Basic Benchmark functions */
+      tFitness five_uneven_peak_trap(const double *x, const int &dim);
+      tFitness equal_maxima(const double *x, const int &dim);
+      tFitness uneven_decreasing_maxima(const double *x, const int &dim);
+      tFitness himmelblau(const double *x, const int &dim);
+      tFitness six_hump_camel_back(const double *x, const int &dim);
+      tFitness shubert(const double *x, const int &dim);
+      tFitness vincent(const double *x, const int &dim);
+      tFitness modified_rastrigin_all(const double *x, const int &dim);
+    }
 
-    /* Basic functions for composition */
-    tFitness FSphere(const double *x, const int &dim);
-    tFitness FAckley(const double *x, const int &dim);
-    tFitness FEF8F2(const double *xx, const int &dim);
-    tFitness FGriewank(const double *x, const int &dim);
-    tFitness FSchwefel(const double *x, const int &dim);
-    tFitness FRastrigin(const double *x, const int &dim);
-    tFitness FRosenbrock(const double *x, const int &dim);
-    tFitness FWeierstrass(const double *x, const int &dim);
+    class CompositeFcn {
+      public:
+      /* Basic functions for composition */
+      tFitness FSphere(const double *x, const int &dim);
+      tFitness FAckley(const double *x, const int &dim);
+      tFitness FEF8F2(const double *xx, const int &dim);
+      tFitness FGriewank(const double *x, const int &dim);
+      tFitness FSchwefel(const double *x, const int &dim);
+      tFitness FRastrigin(const double *x, const int &dim);
+      tFitness FRosenbrock(const double *x, const int &dim);
+      tFitness FWeierstrass(const double *x, const int &dim);
+    } 
 
     /* Interfaces for Composition functions */
     class CF1 : public CFunction {
@@ -142,29 +148,9 @@ namespace mabe {
     	CF4(const int dim);
     	tFitness evaluate(const double *x);
     };
-
-    /* Help template to fix file names */
-    template <typename T>
-    std::string number_to_string(T no)
-    {
-    	std::ostringstream ss; ss << no; return ss.str();
-    }
 };
 
 #endif
-
-
-///////
-
-  /******************************************************************************
-   * Some declarations
- *****************************************************************************/
-/* 
- * return  1      % Minimization 
- * return -1      % Maximization
- * */
-static int minmax() { return -1; }
-static double E = exp(1);
 
 /******************************************************************************
  * Composition Functions
