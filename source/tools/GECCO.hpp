@@ -89,7 +89,35 @@ namespace mabe {
     class BenchmarkFcn {
       public:
       /* Basic Benchmark functions */
-      tFitness five_uneven_peak_trap(const double *x, const int &dim);
+      
+      /******************************************************************************
+       * F1: Five-Uneven-Peak Trap 
+       * Variable ranges: x in [0, 30
+       * No. of global peaks: 2
+       * No. of local peaks:  3. 
+       *****************************************************************************/
+      tFitness five_uneven_peak_trap(const double *x, const int &dim) {
+	      tFitness result=-1.0;
+	      if (x[0]>=0 && x[0]< 2.5) {
+	      	result = 80*(2.5-x[0]);
+	      } else if (x[0] >= 2.5 && x[0] < 5.0) {
+	      	result = 64*(x[0]-2.5);
+	      } else if (x[0] >= 5.0 && x[0] < 7.5) {
+	      	result = 64*(7.5-x[0]);
+	      } else if (x[0] >= 7.5 && x[0] < 12.5) {
+	      	result = 28*(x[0]-7.5);
+	      } else if (x[0] >= 12.5 && x[0] < 17.5) {
+	      	result = 28*(17.5-x[0]);
+	      } else if (x[0] >= 17.5 && x[0] < 22.5) {
+	      	result = 32*(x[0]-17.5);
+	      } else if (x[0] >= 22.5 && x[0] < 27.5) {
+	      	result = 32*(27.5-x[0]);
+	      } else if (x[0] >= 27.5 && x[0] <= 30) {
+	      	result = 80*(x[0]-27.5);
+        }
+      	return result;
+      }
+
       tFitness equal_maxima(const double *x, const int &dim);
       tFitness uneven_decreasing_maxima(const double *x, const int &dim);
       tFitness himmelblau(const double *x, const int &dim);
@@ -622,35 +650,6 @@ tFitness CF4::evaluate(const double *x)
 /******************************************************************************
  * Basic Benchmark functions 
  *****************************************************************************/
-/******************************************************************************
- * F1: Five-Uneven-Peak Trap 
- * Variable ranges: x in [0, 30
- * No. of global peaks: 2
- * No. of local peaks:  3. 
- *****************************************************************************/
-tFitness five_uneven_peak_trap(const double *x, const int &dim)
-{
-	tFitness result=-1.0;
-	if (x[0]>=0 && x[0]< 2.5) {
-		result = 80*(2.5-x[0]);
-	} else if (x[0] >= 2.5 && x[0] < 5.0) {
-		result = 64*(x[0]-2.5);
-	} else if (x[0] >= 5.0 && x[0] < 7.5) {
-		result = 64*(7.5-x[0]);
-	} else if (x[0] >= 7.5 && x[0] < 12.5) {
-		result = 28*(x[0]-7.5);
-	} else if (x[0] >= 12.5 && x[0] < 17.5) {
-		result = 28*(17.5-x[0]);
-	} else if (x[0] >= 17.5 && x[0] < 22.5) {
-		result = 32*(x[0]-17.5);
-	} else if (x[0] >= 22.5 && x[0] < 27.5) {
-		result = 32*(27.5-x[0]);
-	} else if (x[0] >= 27.5 && x[0] <= 30) {
-		result = 80*(x[0]-27.5);
-	}
-
-	return result;
-}
 
 /******************************************************************************
  * F2: Equal Maxima
