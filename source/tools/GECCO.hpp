@@ -28,6 +28,7 @@
 #include "emp/bits/BitVector.hpp"
 #include "emp/math/math.hpp"
 #include "emp/math/Random.hpp"
+#include "emp/math/constants.hpp"
 
 namespace mabe {
 
@@ -125,7 +126,7 @@ namespace mabe {
     * No. of local peaks:  0. 
     *****************************************************************************/
     tFitness equal_maxima(const double *x, const int &dim) {
-      tFitness s = sin(5.0 * M_PI * x[0]);
+      tFitness s = sin(5.0 * emp::PI * x[0]);
       return pow(s, 6);
     }
 
@@ -137,7 +138,7 @@ namespace mabe {
     *****************************************************************************/
     tFitness uneven_decreasing_maxima(const double *x, const int &dim) {
       tFitness tmp1 = -2*log(2)*((x[0]-0.08)/0.854)*((x[0]-0.08)/0.854);
-      tFitness tmp2 = sin( 5*M_PI*(pow(x[0],3.0/4.0)-0.05) );
+      tFitness tmp2 = sin( 5*emp::PI*(pow(x[0],3.0/4.0)-0.05) );
       return exp(tmp1) * pow(tmp2, 6);
     }
 
@@ -214,9 +215,9 @@ namespace mabe {
     {
       tFitness result(0);
       for (int i=0; i<dim; i++){
-        if (dim == 2)  { result = result + 10+ 9*cos(2*M_PI*MPPF92[i]*x[i]); }
-        if (dim == 8)  { result = result + 10+ 9*cos(2*M_PI*MPPF98[i]*x[i]); }
-        if (dim == 16) { result = result + 10+ 9*cos(2*M_PI*MPPF916[i]*x[i]); }
+        if (dim == 2)  { result = result + 10+ 9*cos(2*emp::PI*MPPF92[i]*x[i]); }
+        if (dim == 8)  { result = result + 10+ 9*cos(2*emp::PI*MPPF98[i]*x[i]); }
+        if (dim == 16) { result = result + 10+ 9*cos(2*emp::PI*MPPF916[i]*x[i]); }
       }
       return -result;
     }
@@ -232,7 +233,7 @@ namespace mabe {
       tFitness sum1(0.0), sum2(0.0), result;
       for (int i=0; i<dim; ++i) {
         sum1 += x[i]*x[i];
-        sum2 += cos(2.0*M_PI*x[i]);
+        sum2 += cos(2.0*emp::PI*x[i]);
       }
       sum1 = -0.2*sqrt(sum1/dim);
       sum2 /= dim;
@@ -244,7 +245,7 @@ namespace mabe {
     tFitness FRastrigin(const double *x, const int &dim) {
       tFitness result(0.0);
       for (int i=0; i<dim; ++i) {
-        result += (x[i]*x[i] - 10.0*cos(2.0*M_PI*x[i]) + 10.0);
+        result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
       }
       return result;
     }
@@ -255,12 +256,12 @@ namespace mabe {
       int k_max(20);
 
       for (int j=0; j<=k_max; ++j) {
-        sum2 += pow(a,j)*cos(2.0*M_PI*pow(b,j)*(0.5));
+        sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
       }
       for (int i=0; i<dim; ++i) {
         sum = 0.0;
         for (int j=0; j<=k_max; ++j) {
-          sum += pow(a,j)*cos(2.0*M_PI*pow(b,j)*(x[i]+0.5));
+          sum += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(x[i]+0.5));
         }
         result += sum;
       }
