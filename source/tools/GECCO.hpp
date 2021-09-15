@@ -472,7 +472,6 @@ void CFunction::calculate_weights(const double *x)
 			maxi = weight_[i];
 			maxindex = i;
 		}
-		//maxi = max(maxi, weight_[i]);
 	}
 	sum = 0.0;
 	for (int i=0; i<nofunc_; ++i) {
@@ -489,10 +488,6 @@ void CFunction::calculate_weights(const double *x)
 			weight_[i] /= sum;
 		}
 	}
-//	for (int i=0; i<nofunc_; ++i) {
-//		cout << weight_[i] << "\t";
-//	}
-//	cout << endl;
 }
 
 void CFunction::load_optima(const std::string &filename)
@@ -508,9 +503,7 @@ void CFunction::load_optima(const std::string &filename)
 		for (int j=0; j< dimension_; ++j) {
 			file >> tmp; 
 			O_[i][j] = tmp;
-//			cout << O_[i][j] << "\t";
 		}
-//		cout << endl;
 	}
 	file.close();
 }
@@ -525,16 +518,12 @@ void CFunction::load_rotmat(const std::string &filename)
 	}
 	double tmp(-1);
 	for (int i=0; i<nofunc_; ++i) {
-//		cout << "Matrix: " << i << endl;
 		for (int j=0; j<dimension_; ++j) {
 			for (int k=0; k<dimension_; ++k) {
 				file >> tmp; 
 				M_[i][j][k] = tmp;
-//				cout << M_[i][j][k] << "\t";
 			}
-//			cout <<endl;
 		}
-//		cout << endl;
 	}
 	file.close();
 }
@@ -546,11 +535,7 @@ void CFunction::init_rotmat_identity()
 		for (int j=0; j<dimension_; ++j) {
 			for (int k=0; k<dimension_; ++k) {
 				M_[i][j][k] = (j==k ? 1 : 0 );
-//				cout << M_[i][j][k] << "\t";
 			}
-//			cout <<endl;
-		}
-//		cout << endl;
 	}
 }
 
@@ -559,9 +544,7 @@ void CFunction::init_optima_rand()
 	for (int i=0; i< nofunc_; ++i) {
 		for (int j=0; j< dimension_; ++j) {
 			O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rand_uniform();
-//			cout << O_[i][j] << "\t";
 		}
-//		cout << endl;
 	}
 }
 
@@ -575,15 +558,8 @@ void CFunction::transform_to_z(const double *x, const int &index)
 	for (int i=0; i<dimension_; ++i) {
 		z_[i] = 0;
 		for (int j=0; j<dimension_; ++j) {
-			/* in MATLAB: M.M1*tmpx' */
-			//z_[i] += M_[index][i][j] * tmpx_[j];
-
-			/* in MATLAB: tmpx*M.M1 */
 			z_[i] += M_[index][j][i] * tmpx_[j];
 		}
-//		cout << "i: " << i << " "<< tmpx_[i] << " " << x[i] << " " 
-//			<< O_[index][i] <<  " " << lambda_[index] << " "
-//			<< z_[i] << endl;
 	}
 }
 
@@ -591,17 +567,12 @@ void CFunction::transform_to_z_noshift(const double *x, const int &index)
 {
 	/* Calculate z_i = (x - o_i)/\lambda_i */
 	for (int i=0; i<dimension_; ++i) {
-		//tmpx_[i] = (x[i] - O_[index][i])/lambda_[index];
 		tmpx_[i] = (x[i])/lambda_[index];
 	}
 	/* Multiply z_i * M_i */
 	for (int i=0; i<dimension_; ++i) {
 		z_[i] = 0;
 		for (int j=0; j<dimension_; ++j) {
-			/* in MATLAB: M.M1*tmpx' */
-			//z_[i] += M_[index][i][j] * tmpx_[j];
-
-			/* in MATLAB: tmpx*M.M1 */
 			z_[i] += M_[index][j][i] * tmpx_[j];
 		}
 	}
@@ -617,7 +588,6 @@ void CFunction::calculate_fmaxi()
 	for (int i=0; i<nofunc_; ++i) {
 		transform_to_z_noshift(x5, i);
 		fmaxi_[i] = (*function_[i])(z_, dimension_);
-//		cout << "FMAXI: " << i << " : " << fmaxi_[i] << endl;
 	}
 	delete [] x5;
 }
@@ -629,7 +599,6 @@ tFitness CFunction::evaluate_inner_(const double *x)
 	for (int i=0; i<nofunc_; ++i) {
 		transform_to_z(x, i);
 		fi_[i] = (*function_[i])(z_, dimension_);
-//		cout << "Func: " << i << " : " << fi_[i] << endl;
 	}
 	for (int i=0; i<nofunc_; ++i) {
 		result += weight_[i]*( C_ * fi_[i] / fmaxi_[i] + bias_[i] );
@@ -677,8 +646,6 @@ CF1::CF1(const int dim) : CFunction(dim, 6)
 		std::string fname;
 		fname = "data/CF1_M_D" + number_to_string(dim) + "_opt.dat";
 		load_optima(fname);
-//		fname = "data/CF3_M_D" + number_to_string(dim) + ".dat";
-//		load_rotmat(fname);
 	} else { 
 		init_optima_rand();
 	}
@@ -688,7 +655,6 @@ CF1::CF1(const int dim) : CFunction(dim, 6)
 	function_[0] = function_[1] = &FGriewank;
 	function_[2] = function_[3] = &FWeierstrass;
 	function_[4] = function_[5] = &FSphere;
-	//TODO: calculate this correctly in the initialization phase
 	calculate_fmaxi();
 }
 
@@ -775,7 +741,6 @@ CF3::CF3(const int dim) : CFunction(dim, 6)
 		load_rotmat(fname);
 	} else { 
 		init_optima_rand();
-		//TODO: Generate dimension independent rotation matrices
 		/* M_ Identity matrices */
 		init_rotmat_identity();
 	}
@@ -829,7 +794,6 @@ CF4::CF4(const int dim) : CFunction(dim, 8)
 		load_rotmat(fname);
 	} else {
 		init_optima_rand();
-		//TODO: make dimension independent rotation matrices
 		/* M_ Identity matrices */
 		init_rotmat_identity();
 	}
