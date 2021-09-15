@@ -653,7 +653,6 @@ std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
 	return OO;
 }
 
-
 CF1::CF1(const int dim) : CFunction(dim, 6)
 {
 	for (int i=0; i<nofunc_; ++i) {
@@ -845,8 +844,6 @@ CF4::CF4(const int dim) : CFunction(dim, 8)
 tFitness CF4::evaluate(const double *x)
 {
 	return evaluate_inner_(x);
-}
-
 }
 
 #endif
