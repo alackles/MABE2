@@ -192,7 +192,7 @@ namespace mabe {
       tFitness result(0);
       for (int i=0; i<dim; i++){
         if (x[i]<=0){
-          cerr << "Illegal value: " << x[i] << endl;
+          std::cerr << "Illegal value: " << x[i] << endl;
           exit(-1);
         }
         result = result + sin(10 * log(x[i]));
@@ -495,7 +495,7 @@ void CFunction::load_optima(const std::string &filename)
 	fstream file;
 	file.open(filename.c_str(), std::fstream::in);
 	if (!file.is_open()) {
-		cerr<< "Error: Can not open file: " << filename << endl;
+		std::cerr<< "Error: Can not open file: " << filename << endl;
 		exit(0);
 	}
 	double tmp;
@@ -513,7 +513,7 @@ void CFunction::load_rotmat(const std::string &filename)
 	fstream file;
 	file.open(filename.c_str(), std::fstream::in);
 	if (!file.is_open()) {
-		cerr<< "Error: Can not open file: " << filename << endl;
+		std::cerr<< "Error: Can not open file: " << filename << endl;
 		exit(0);
 	}
 	double tmp(-1);
@@ -810,4 +810,3 @@ tFitness CF4::evaluate(const double *x)
 	return evaluate_inner_(x);
 }
 
-#endif
