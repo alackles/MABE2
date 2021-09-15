@@ -192,7 +192,7 @@ namespace mabe {
       tFitness result(0);
       for (int i=0; i<dim; i++){
         if (x[i]<=0){
-          std::cerr << "Illegal value: " << x[i] << endl;
+          std::cerr << "Illegal value: " << x[i] << std::endl;
           exit(-1);
         }
         result = result + sin(10 * log(x[i]));
@@ -237,7 +237,7 @@ namespace mabe {
       }
       sum1 = -0.2*sqrt(sum1/dim);
       sum2 /= dim;
-      result = 20.0 + E - 20.0*exp(sum1) - exp(sum2);
+      result = 20.0 + emp::E - 20.0*exp(sum1) - exp(sum2);
       return result;
     }
 
@@ -492,10 +492,10 @@ void CFunction::calculate_weights(const double *x)
 
 void CFunction::load_optima(const std::string &filename)
 {
-	fstream file;
+	std::fstream file;
 	file.open(filename.c_str(), std::fstream::in);
 	if (!file.is_open()) {
-		std::cerr<< "Error: Can not open file: " << filename << endl;
+		std::cerr<< "Error: Can not open file: " << filename << std::endl;
 		exit(0);
 	}
 	double tmp;
@@ -510,10 +510,10 @@ void CFunction::load_optima(const std::string &filename)
 
 void CFunction::load_rotmat(const std::string &filename)
 {
-	fstream file;
+	std::fstream file;
 	file.open(filename.c_str(), std::fstream::in);
 	if (!file.is_open()) {
-		std::cerr<< "Error: Can not open file: " << filename << endl;
+		std::cerr<< "Error: Can not open file: " << filename << std::endl;
 		exit(0);
 	}
 	double tmp(-1);
