@@ -580,7 +580,7 @@ void CFunction::transform_to_z_noshift(const double *x, const int &index)
 void CFunction::calculate_fmaxi()
 {
 	/* functions */
-	for (int i=0; i<nofunc_; ++i) emp::assert(function_[i] != NULL);
+	for (int i=0; i<nofunc_; ++i) std::assert(function_[i] != NULL);
 	double *x5 = new double[dimension_];
 	for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
 
@@ -603,12 +603,12 @@ tFitness CFunction::evaluate_inner_(const double *x)
 		result += weight_[i]*( C_ * fi_[i] / fmaxi_[i] + bias_[i] );
 	}
 
-	return result * std::minmax() + f_bias_;
+	return -result + f_bias_;
 }
 
 std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
 {
-	emp::assert(O_ != NULL && "O_ == NULL");
+	std::assert(O_ != NULL && "O_ == NULL");
 	std::vector< std::vector<double> > OO;
 
 	for (int i=0; i< nofunc_; ++i) {
