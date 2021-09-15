@@ -207,9 +207,9 @@ namespace mabe {
     * No. of local peaks:  0.
     *****************************************************************************/
     /* Modified Rastrigin -- All Global Optima */
-    static double MPPF92[2] = {3, 4};
-    static double MPPF98[8] = {1, 2, 1, 2, 1, 3, 1, 4};
-    static double MPPF916[16] = {1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 4};
+    constexpr static double MPPF92[2] = {3, 4};
+    constexpr static double MPPF98[8] = {1, 2, 1, 2, 1, 3, 1, 4};
+ 	constexpr static double MPPF916[16] = {1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 4};
 
     tFitness modified_rastrigin_all(const double *x, const int &dim)
     {
