@@ -12,6 +12,7 @@
 
 #include "../../core/MABE.hpp"
 #include "../../core/Module.hpp"
+#include "../../tools/GECCO.hpp"
 
 #include "emp/datastructs/reference_vector.hpp"
 
