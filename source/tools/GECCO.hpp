@@ -460,7 +460,7 @@ void CFunction::deallocate_memory()
 
 void CFunction::calculate_weights(const double *x)
 {
-	double sum(0), maxi(-INF), maxindex(0);
+	double sum(0), maxi(emp::MIN_INT), maxindex(0);
 	for (int i=0; i<nofunc_; ++i) {
 		sum = 0.0;
 		for (int j=0; j<dimension_; ++j) {
@@ -542,7 +542,7 @@ void CFunction::init_optima_rand()
 {
 	for (int i=0; i< nofunc_; ++i) {
 		for (int j=0; j< dimension_; ++j) {
-			O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rand_uniform();
+			O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * emp::Random::GetDouble();
 		}
 	}
 }
@@ -580,7 +580,7 @@ void CFunction::transform_to_z_noshift(const double *x, const int &index)
 void CFunction::calculate_fmaxi()
 {
 	/* functions */
-	for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
+	for (int i=0; i<nofunc_; ++i) emp::assert(function_[i] != NULL);
 	double *x5 = new double[dimension_];
 	for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
 
@@ -603,12 +603,12 @@ tFitness CFunction::evaluate_inner_(const double *x)
 		result += weight_[i]*( C_ * fi_[i] / fmaxi_[i] + bias_[i] );
 	}
 
-	return result * minmax() + f_bias_;
+	return result * std::minmax() + f_bias_;
 }
 
 std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
 {
-	assert(O_ != NULL && "O_ == NULL");
+	emp::assert(O_ != NULL && "O_ == NULL");
 	std::vector< std::vector<double> > OO;
 
 	for (int i=0; i< nofunc_; ++i) {
@@ -643,7 +643,7 @@ CF1::CF1(const int dim) : CFunction(dim, 6)
 	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
 			|| dimension_ == 10 || dimension_ == 20 ) {
 		std::string fname;
-		fname = "data/CF1_M_D" + number_to_string(dim) + "_opt.dat";
+		fname = "data/CF1_M_D" + std::to_string(dim) + "_opt.dat";
 		load_optima(fname);
 	} else { 
 		init_optima_rand();
@@ -686,7 +686,7 @@ CF2::CF2(const int dim) : CFunction(dim, 8)
 	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
 			|| dimension_ == 10 || dimension_ == 20 ) {
 		std::string fname;
-		fname = "data/CF2_M_D" + number_to_string(dim) + "_opt.dat";
+		fname = "data/CF2_M_D" + std::to_string(dim) + "_opt.dat";
 		load_optima(fname);
 	} else { 
 		init_optima_rand();
@@ -734,9 +734,9 @@ CF3::CF3(const int dim) : CFunction(dim, 6)
 	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
 			|| dimension_ == 10 || dimension_ == 20 ) {
 		std::string fname;
-		fname = "data/CF3_M_D" + number_to_string(dim) + "_opt.dat";
+		fname = "data/CF3_M_D" + std::to_string(dim) + "_opt.dat";
 		load_optima(fname);
-		fname = "data/CF3_M_D" + number_to_string(dim) + ".dat";
+		fname = "data/CF3_M_D" + std::to_string(dim) + ".dat";
 		load_rotmat(fname);
 	} else { 
 		init_optima_rand();
@@ -787,9 +787,9 @@ CF4::CF4(const int dim) : CFunction(dim, 8)
 	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
 			|| dimension_ == 10 || dimension_ == 20) {
 		std::string fname;
-		fname = "data/CF4_M_D" + number_to_string(dim) + "_opt.dat";
+		fname = "data/CF4_M_D" + std::to_string(dim) + "_opt.dat";
 		load_optima(fname);
-		fname = "data/CF4_M_D" + number_to_string(dim) + ".dat";
+		fname = "data/CF4_M_D" + std::to_string(dim) + ".dat";
 		load_rotmat(fname);
 	} else {
 		init_optima_rand();
