@@ -540,10 +540,11 @@ void CFunction::init_rotmat_identity() {
 }
 
 void CFunction::init_optima_rand()
-{
+{	
+	emp::Random rng;
 	for (int i=0; i< nofunc_; ++i) {
 		for (int j=0; j< dimension_; ++j) {
-			O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * emp::Random::GetDouble();
+			O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng.GetDouble();
 		}
 	}
 }
@@ -581,7 +582,7 @@ void CFunction::transform_to_z_noshift(const double *x, const int &index)
 void CFunction::calculate_fmaxi()
 {
 	/* functions */
-	for (int i=0; i<nofunc_; ++i) std::assert(function_[i] != NULL);
+	for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
 	double *x5 = new double[dimension_];
 	for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
 
@@ -609,7 +610,7 @@ tFitness CFunction::evaluate_inner_(const double *x)
 
 std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
 {
-	std::assert(O_ != NULL && "O_ == NULL");
+	assert(O_ != NULL && "O_ == NULL");
 	std::vector< std::vector<double> > OO;
 
 	for (int i=0; i< nofunc_; ++i) {
@@ -652,7 +653,7 @@ CF1::CF1(const int dim) : CFunction(dim, 6)
 	/* M_ Identity matrices */
 	init_rotmat_identity();
 	/* Initialize functions of the composition */
-	function_[0] = function_[1] = &FGriewank;
+	function_[0] = function_[1] = &CompositeFcn::FGriewank;
 	function_[2] = function_[3] = &FWeierstrass;
 	function_[4] = function_[5] = &FSphere;
 	calculate_fmaxi();
