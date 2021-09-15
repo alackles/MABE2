@@ -338,7 +338,7 @@ namespace mabe {
 
       return result;
     }
-  } 
+  }; 
 
   /* Interfaces for Composition functions */
   class CF1 : public CFunction {
@@ -376,7 +376,7 @@ namespace mabe {
     CF4(const int dim);
     tFitness evaluate(const double *x);
   };
-};
+
 
 #endif
 
@@ -528,15 +528,14 @@ void CFunction::load_rotmat(const std::string &filename)
 	file.close();
 }
 
-void CFunction::init_rotmat_identity()
-{
+void CFunction::init_rotmat_identity() {
 	for (int i=0; i<nofunc_; ++i) {
-//		cout << "Matrix: " << i << endl;
 		for (int j=0; j<dimension_; ++j) {
 			for (int k=0; k<dimension_; ++k) {
 				M_[i][j][k] = (j==k ? 1 : 0 );
 			}
-	}
+		}
+	}	
 }
 
 void CFunction::init_optima_rand()
@@ -810,3 +809,4 @@ tFitness CF4::evaluate(const double *x)
 	return evaluate_inner_(x);
 }
 
+};
