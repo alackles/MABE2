@@ -63,12 +63,13 @@ namespace mabe {
       landscape.Config(N, K, control.GetRandom());  // Setup the fitness landscape.
     }
 
+    double max_fitness = 0.0;
+    emp::Ptr<Organism> max_org = nullptr;
+    
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
-      double max_fitness = 0.0;
-      emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
@@ -86,37 +87,34 @@ namespace mabe {
           max_org = &org;
         }
       }
-
-
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
     }
 
     // Rank epistasis analysis on the final population
     void BeforeExit() override {
-<<<<<<< Updated upstream
-      mabe::Collection alive_collect( target_collect.GetAlive() );
       std::ofstream kfileout(knockout_file);
-      kfileout << "org_ID,pos,score_WT,score_KO,\n";
+      kfileout << "org_ID,mt_pos,ko_pos,score_MT,score_KO,\n";
       int org_id = 0;
-      for (Organism & org : alive_collect) {
-        org.GenerateOutput();
-        const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
-        double wt_fitness = landscape.GetFitness(bits);
+      Organism & org = *max_org;
+      org.GenerateOutput();
+      const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
+      for (int i = 0; i < N ; ++i) {
+        int mt_pos = i;
         auto knockout = bits;
-        for (int i = 0 ; i < N ; ++i) {
-          knockout.Toggle(i);
-          int ko_pos = i;
-          double ko_fitness = landscape.GetFitness(knockout);
-          knockout.Toggle(i);
-          kfileout << org_id << "," << ko_pos << "," << wt_fitness << "," << ko_fitness << "," << "\n";
+        knockout.Toggle(i); 
+        double mt_fitness = landscape.GetFitness(knockout);
+        for (int j = 0 ; j < N ; ++j) {
+          if (j != i) {
+            int ko_pos = j;
+            knockout.Toggle(j);
+            double ko_fitness = landscape.GetFitness(knockout);
+            knockout.Toggle(j);
+            kfileout << org_id << "," << mt_pos << "," << ko_pos << "," << mt_fitness << "," << ko_fitness << "," << "\n";
+          }
         }
-        org_id++;
+        knockout.Toggle(i);
       }
       kfileout.close();
-=======
-      std::cout << "Genometest:" << max_bits.ToString() << std::endl;
-      std::cout << "Test:" << landscape.GetFitness(max_bits) << std::endl;
->>>>>>> Stashed changes
     }
       
   };
