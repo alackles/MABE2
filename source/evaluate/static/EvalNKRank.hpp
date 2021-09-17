@@ -63,14 +63,15 @@ namespace mabe {
       landscape.Config(N, K, control.GetRandom());  // Setup the fitness landscape.
     }
 
-    double max_fitness = 0.0;
-    emp::Ptr<Organism> max_org = nullptr;
+    emp::BitVector max_bits;
     
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
       mabe::Collection alive_collect( target_collect.GetAlive() );
+      double max_fitness = 0.0;
+      emp::Ptr<Organism> max_org = nullptr;
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
         const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
@@ -85,6 +86,7 @@ namespace mabe {
         if (fitness > max_fitness || !max_org) {
           max_fitness = fitness;
           max_org = &org;
+          max_bits = bits;
         }
       }
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
@@ -95,9 +97,8 @@ namespace mabe {
       std::ofstream kfileout(knockout_file);
       kfileout << "org_ID,mt_pos,ko_pos,score_MT,score_KO,\n";
       int org_id = 0;
-      Organism & org = *max_org;
-      org.GenerateOutput();
-      const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
+      std::cout << "exit test " << std::endl;
+      const auto & bits = max_bits;
       for (int i = 0; i < N ; ++i) {
         int mt_pos = i;
         auto knockout = bits;
@@ -110,6 +111,7 @@ namespace mabe {
             double ko_fitness = landscape.GetFitness(knockout);
             knockout.Toggle(j);
             kfileout << org_id << "," << mt_pos << "," << ko_pos << "," << mt_fitness << "," << ko_fitness << "," << "\n";
+            std::cout << "fitness: " << ko_fitness << std::endl;
           }
         }
         knockout.Toggle(i);
