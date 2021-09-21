@@ -23,7 +23,7 @@ namespace mabe {
     mabe::Collection target_collect;
 
     std::string fcn_name;
-    std::string bits_trait;
+    std::string vals_trait;
     std::string fitness_trait;
 
   public:
@@ -35,8 +35,8 @@ namespace mabe {
       : Module(control, name, desc)
       , target_collect(control.GetPopulation(0))
       , fcn_name(_fname)
-      , vals_trait(_btrait)
-      , fitness_trait(_vtrait)
+      , vals_trait(_vtrait)
+      , fitness_trait(_ftrait)
     {
       SetEvaluateMod(true);
     }
@@ -60,17 +60,18 @@ namespace mabe {
 
       // Loop through the population and evaluate each organism.
       double max_fitness = 0.0;
+      int dims = 3;
       emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
-        const auto & val = org.GetTrait<emp::>(vals_trait);
-        double fitness;
+        const auto & val = org.GetTrait<emp::vector<double>>(vals_trait);
+        tFitness fitness;
 
         if (fcn_name == "Shubert") {
-
+          fitness = shubert(val, dims);
         } else if (fcn_name == "Vincent") {
-
+          //fitness = vincent(val, dims);
         } else if (fcn_name == "CF3") {
           
         } else if (fcn_name == "CF4") {

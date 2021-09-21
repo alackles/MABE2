@@ -169,7 +169,7 @@ namespace mabe {
   * No. of global peaks: n*3^n
   * No. of local peaks: many
   *****************************************************************************/
-  tFitness shubert(const double *x, const int &dim) {
+  double shubert(const emp::vector<double> x, const int &dim) {
     tFitness result(1), sum(0); 
     for (int i=0; i<dim; i++) {
     sum=0;
