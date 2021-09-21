@@ -31,12 +31,12 @@ namespace mabe {
            const std::string & name="EvalGECCO",
            const std::string & desc="Module to evaluate bitstrings on one of the GECCO Niching Competition 3D landscapes.",
            const std::string & _fname="Shubert",
-           const std::string & _btrait="bits", const std::string & _ftrait="fitness")
+           const std::string & _vtrait="vals", const std::string & _ftrait="fitness")
       : Module(control, name, desc)
       , target_collect(control.GetPopulation(0))
       , fcn_name(_fname)
-      , bits_trait(_btrait)
-      , fitness_trait(_ftrait)
+      , vals_trait(_btrait)
+      , fitness_trait(_vtrait)
     {
       SetEvaluateMod(true);
     }
@@ -45,13 +45,13 @@ namespace mabe {
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
       LinkVar(fcn_name, "fcn_name", "Which function should we use? [Shubert, Vincent, CF3, CF4]");
-      LinkVar(bits_trait, "bits_trait", "Which trait stores the bit sequence to evaluate?");
+      LinkVar(vals_trait, "vals_trait", "Which trait stores the 3-tuple to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store fitness in?");
     }
 
     void SetupModule() override {
       // Setup the traits.
-      AddRequiredTrait<emp::BitVector>(bits_trait);
+      AddRequiredTrait<emp::vector<double>>(vals_trait);
       AddOwnedTrait<double>(fitness_trait, "Landscape fitness value", 0.0);
     }
 
@@ -64,7 +64,7 @@ namespace mabe {
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
-        const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
+        const auto & val = org.GetTrait<emp::>(vals_trait);
         double fitness;
 
         if (fcn_name == "Shubert") {
