@@ -372,435 +372,435 @@ namespace mabe {
     tFitness evaluate(const double *x);
   };
 
-/******************************************************************************
- * Composition Functions
- *****************************************************************************/
-/* Constructors */
-CFunction::CFunction() : 
-	dimension_(-1), nofunc_(-1), C_(-1), lambda_(NULL), sigma_(NULL),
-	bias_(NULL), O_(NULL), M_(NULL), weight_(NULL), lbound_(NULL),
-	ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0), fmaxi_(NULL), 
-	tmpx_(NULL), function_(NULL)
-{
-}
+  /******************************************************************************
+  * Composition Functions
+  *****************************************************************************/
+  /* Constructors */
+  CFunction::CFunction() : 
+    dimension_(-1), nofunc_(-1), C_(-1), lambda_(NULL), sigma_(NULL),
+    bias_(NULL), O_(NULL), M_(NULL), weight_(NULL), lbound_(NULL),
+    ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0), fmaxi_(NULL), 
+    tmpx_(NULL), function_(NULL)
+  {
+  }
 
-CFunction::CFunction(const int &dim, const int &nofunc) : 
-	dimension_(dim), nofunc_(nofunc), C_(2000.0), lambda_(NULL), 
-	sigma_(NULL), bias_(NULL), O_(NULL), M_(NULL), weight_(NULL),
-	lbound_(NULL), ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0),
-	fmaxi_(NULL), tmpx_(NULL), function_(NULL)
-{
-	allocate_memory();
-}
+  CFunction::CFunction(const int &dim, const int &nofunc) : 
+    dimension_(dim), nofunc_(nofunc), C_(2000.0), lambda_(NULL), 
+    sigma_(NULL), bias_(NULL), O_(NULL), M_(NULL), weight_(NULL),
+    lbound_(NULL), ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0),
+    fmaxi_(NULL), tmpx_(NULL), function_(NULL)
+  {
+    allocate_memory();
+  }
 
-/* Destructor */
-CFunction::~CFunction()
-{
-	deallocate_memory();
-}
+  /* Destructor */
+  CFunction::~CFunction()
+  {
+    deallocate_memory();
+  }
 
-void CFunction::allocate_memory()
-{
-	if (dimension_ < 1 || nofunc_ < 1) return;
-	lambda_ = new double[nofunc_];
-	sigma_	= new double[nofunc_];
-	bias_	= new double[nofunc_];
-	O_ 	= new double*[nofunc_];
-	M_ 	= new double**[nofunc_];
-	for (int i=0; i<nofunc_; ++i) {
-		O_[i] = new double[dimension_];
-		M_[i] = new double*[dimension_];
-		for (int j=0; j<dimension_; ++j) {
-			M_[i][j] = new double[dimension_];
-		}
-	}
-	weight_	= new double[nofunc_];
-	lbound_	= new double[dimension_];
-	ubound_	= new double[dimension_];
-	fi_	= new double[nofunc_];
-	z_	= new double[dimension_];
-	fmaxi_	= new double[nofunc_];
-	tmpx_	= new double[dimension_];
-	function_ = new compFunction[nofunc_];
-}
+  void CFunction::allocate_memory()
+  {
+    if (dimension_ < 1 || nofunc_ < 1) return;
+    lambda_ = new double[nofunc_];
+    sigma_	= new double[nofunc_];
+    bias_	= new double[nofunc_];
+    O_ 	= new double*[nofunc_];
+    M_ 	= new double**[nofunc_];
+    for (int i=0; i<nofunc_; ++i) {
+      O_[i] = new double[dimension_];
+      M_[i] = new double*[dimension_];
+      for (int j=0; j<dimension_; ++j) {
+        M_[i][j] = new double[dimension_];
+      }
+    }
+    weight_	= new double[nofunc_];
+    lbound_	= new double[dimension_];
+    ubound_	= new double[dimension_];
+    fi_	= new double[nofunc_];
+    z_	= new double[dimension_];
+    fmaxi_	= new double[nofunc_];
+    tmpx_	= new double[dimension_];
+    function_ = new compFunction[nofunc_];
+  }
 
-void CFunction::deallocate_memory()
-{
-	if (dimension_ < 1 || nofunc_ < 1) return;
-	/* Clean up the mess */
-	delete [] function_;
-	delete [] tmpx_;
-	delete [] fmaxi_;
-	delete [] z_;
-	delete [] fi_;
-	delete [] ubound_;
-	delete [] lbound_;
-	delete [] weight_;
-	for (int i=0; i<nofunc_; ++i) { 
-		for (int j=0; j<dimension_; ++j) {
-			delete [] M_[i][j];
-		}
-		delete [] M_[i]; 
-	}
-	delete [] M_;
-	for (int i=0; i<nofunc_; ++i) { delete [] O_[i]; }
-	delete [] O_;
-	delete [] bias_;
-	delete [] sigma_;
-	delete [] lambda_;
-}
+  void CFunction::deallocate_memory()
+  {
+    if (dimension_ < 1 || nofunc_ < 1) return;
+    /* Clean up the mess */
+    delete [] function_;
+    delete [] tmpx_;
+    delete [] fmaxi_;
+    delete [] z_;
+    delete [] fi_;
+    delete [] ubound_;
+    delete [] lbound_;
+    delete [] weight_;
+    for (int i=0; i<nofunc_; ++i) { 
+      for (int j=0; j<dimension_; ++j) {
+        delete [] M_[i][j];
+      }
+      delete [] M_[i]; 
+    }
+    delete [] M_;
+    for (int i=0; i<nofunc_; ++i) { delete [] O_[i]; }
+    delete [] O_;
+    delete [] bias_;
+    delete [] sigma_;
+    delete [] lambda_;
+  }
 
-void CFunction::calculate_weights(const double *x)
-{
-	double sum(0), maxi(emp::MIN_INT), maxindex(0);
-	for (int i=0; i<nofunc_; ++i) {
-		sum = 0.0;
-		for (int j=0; j<dimension_; ++j) {
-			sum += ( x[j] - O_[i][j] ) * ( x[j] - O_[i][j] );
-		}
-		weight_[i] = exp( -sum/(2.0 * dimension_ * sigma_[i] * sigma_[i]) );
-		if (i==0) { maxi = weight_[i]; }
-		if (weight_[i] > maxi) {
-			maxi = weight_[i];
-			maxindex = i;
-		}
-	}
-	sum = 0.0;
-	for (int i=0; i<nofunc_; ++i) {
-		//if (weight_[i] != maxi) {
-		if (i != maxindex) {
-			weight_[i] *= (1.0 - pow(maxi, 10.0));
-		}
-		sum += weight_[i];
-	}
-	for (int i=0; i<nofunc_; ++i) {
-		if (sum == 0.0) {
-			weight_[i] = 1.0/(double)nofunc_;
-		} else {
-			weight_[i] /= sum;
-		}
-	}
-}
+  void CFunction::calculate_weights(const double *x)
+  {
+    double sum(0), maxi(emp::MIN_INT), maxindex(0);
+    for (int i=0; i<nofunc_; ++i) {
+      sum = 0.0;
+      for (int j=0; j<dimension_; ++j) {
+        sum += ( x[j] - O_[i][j] ) * ( x[j] - O_[i][j] );
+      }
+      weight_[i] = exp( -sum/(2.0 * dimension_ * sigma_[i] * sigma_[i]) );
+      if (i==0) { maxi = weight_[i]; }
+      if (weight_[i] > maxi) {
+        maxi = weight_[i];
+        maxindex = i;
+      }
+    }
+    sum = 0.0;
+    for (int i=0; i<nofunc_; ++i) {
+      //if (weight_[i] != maxi) {
+      if (i != maxindex) {
+        weight_[i] *= (1.0 - pow(maxi, 10.0));
+      }
+      sum += weight_[i];
+    }
+    for (int i=0; i<nofunc_; ++i) {
+      if (sum == 0.0) {
+        weight_[i] = 1.0/(double)nofunc_;
+      } else {
+        weight_[i] /= sum;
+      }
+    }
+  }
 
-void CFunction::load_optima(const std::string &filename)
-{
-	std::fstream file;
-	file.open(filename.c_str(), std::fstream::in);
-	if (!file.is_open()) {
-		std::cerr<< "Error: Can not open file: " << filename << std::endl;
-		exit(0);
-	}
-	double tmp;
-	for (int i=0; i< nofunc_; ++i) {
-		for (int j=0; j< dimension_; ++j) {
-			file >> tmp; 
-			O_[i][j] = tmp;
-		}
-	}
-	file.close();
-}
+  void CFunction::load_optima(const std::string &filename)
+  {
+    std::fstream file;
+    file.open(filename.c_str(), std::fstream::in);
+    if (!file.is_open()) {
+      std::cerr<< "Error: Can not open file: " << filename << std::endl;
+      exit(0);
+    }
+    double tmp;
+    for (int i=0; i< nofunc_; ++i) {
+      for (int j=0; j< dimension_; ++j) {
+        file >> tmp; 
+        O_[i][j] = tmp;
+      }
+    }
+    file.close();
+  }
 
-void CFunction::load_rotmat(const std::string &filename)
-{
-	std::fstream file;
-	file.open(filename.c_str(), std::fstream::in);
-	if (!file.is_open()) {
-		std::cerr<< "Error: Can not open file: " << filename << std::endl;
-		exit(0);
-	}
-	double tmp(-1);
-	for (int i=0; i<nofunc_; ++i) {
-		for (int j=0; j<dimension_; ++j) {
-			for (int k=0; k<dimension_; ++k) {
-				file >> tmp; 
-				M_[i][j][k] = tmp;
-			}
-		}
-	}
-	file.close();
-}
+  void CFunction::load_rotmat(const std::string &filename)
+  {
+    std::fstream file;
+    file.open(filename.c_str(), std::fstream::in);
+    if (!file.is_open()) {
+      std::cerr<< "Error: Can not open file: " << filename << std::endl;
+      exit(0);
+    }
+    double tmp(-1);
+    for (int i=0; i<nofunc_; ++i) {
+      for (int j=0; j<dimension_; ++j) {
+        for (int k=0; k<dimension_; ++k) {
+          file >> tmp; 
+          M_[i][j][k] = tmp;
+        }
+      }
+    }
+    file.close();
+  }
 
-void CFunction::init_rotmat_identity() {
-	for (int i=0; i<nofunc_; ++i) {
-		for (int j=0; j<dimension_; ++j) {
-			for (int k=0; k<dimension_; ++k) {
-				M_[i][j][k] = (j==k ? 1 : 0 );
-			}
-		}
-	}	
-}
+  void CFunction::init_rotmat_identity() {
+    for (int i=0; i<nofunc_; ++i) {
+      for (int j=0; j<dimension_; ++j) {
+        for (int k=0; k<dimension_; ++k) {
+          M_[i][j][k] = (j==k ? 1 : 0 );
+        }
+      }
+    }	
+  }
 
-void CFunction::init_optima_rand()
-{	
-	emp::Random rng;
-	for (int i=0; i< nofunc_; ++i) {
-		for (int j=0; j< dimension_; ++j) {
-			O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng.GetDouble();
-		}
-	}
-}
+  void CFunction::init_optima_rand()
+  {	
+    emp::Random rng;
+    for (int i=0; i< nofunc_; ++i) {
+      for (int j=0; j< dimension_; ++j) {
+        O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng.GetDouble();
+      }
+    }
+  }
 
-void CFunction::transform_to_z(const double *x, const int &index)
-{
-	/* Calculate z_i = (x - o_i)/\lambda_i */
-	for (int i=0; i<dimension_; ++i) {
-		tmpx_[i] = (x[i] - O_[index][i])/lambda_[index];
-	}
-	/* Multiply z_i * M_i */
-	for (int i=0; i<dimension_; ++i) {
-		z_[i] = 0;
-		for (int j=0; j<dimension_; ++j) {
-			z_[i] += M_[index][j][i] * tmpx_[j];
-		}
-	}
-}
+  void CFunction::transform_to_z(const double *x, const int &index)
+  {
+    /* Calculate z_i = (x - o_i)/\lambda_i */
+    for (int i=0; i<dimension_; ++i) {
+      tmpx_[i] = (x[i] - O_[index][i])/lambda_[index];
+    }
+    /* Multiply z_i * M_i */
+    for (int i=0; i<dimension_; ++i) {
+      z_[i] = 0;
+      for (int j=0; j<dimension_; ++j) {
+        z_[i] += M_[index][j][i] * tmpx_[j];
+      }
+    }
+  }
 
-void CFunction::transform_to_z_noshift(const double *x, const int &index)
-{
-	/* Calculate z_i = (x - o_i)/\lambda_i */
-	for (int i=0; i<dimension_; ++i) {
-		tmpx_[i] = (x[i])/lambda_[index];
-	}
-	/* Multiply z_i * M_i */
-	for (int i=0; i<dimension_; ++i) {
-		z_[i] = 0;
-		for (int j=0; j<dimension_; ++j) {
-			z_[i] += M_[index][j][i] * tmpx_[j];
-		}
-	}
-}
+  void CFunction::transform_to_z_noshift(const double *x, const int &index)
+  {
+    /* Calculate z_i = (x - o_i)/\lambda_i */
+    for (int i=0; i<dimension_; ++i) {
+      tmpx_[i] = (x[i])/lambda_[index];
+    }
+    /* Multiply z_i * M_i */
+    for (int i=0; i<dimension_; ++i) {
+      z_[i] = 0;
+      for (int j=0; j<dimension_; ++j) {
+        z_[i] += M_[index][j][i] * tmpx_[j];
+      }
+    }
+  }
 
-void CFunction::calculate_fmaxi()
-{
-	/* functions */
-	for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
-	double *x5 = new double[dimension_];
-	for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
+  void CFunction::calculate_fmaxi()
+  {
+    /* functions */
+    for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
+    double *x5 = new double[dimension_];
+    for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
 
-	for (int i=0; i<nofunc_; ++i) {
-		transform_to_z_noshift(x5, i);
-		fmaxi_[i] = (*function_[i])(z_, dimension_);
-	}
-	delete [] x5;
-}
+    for (int i=0; i<nofunc_; ++i) {
+      transform_to_z_noshift(x5, i);
+      fmaxi_[i] = (*function_[i])(z_, dimension_);
+    }
+    delete [] x5;
+  }
 
-tFitness CFunction::evaluate_inner_(const double *x)
-{
-	double result(0);
-	calculate_weights(x);
-	for (int i=0; i<nofunc_; ++i) {
-		transform_to_z(x, i);
-		fi_[i] = (*function_[i])(z_, dimension_);
-	}
-	for (int i=0; i<nofunc_; ++i) {
-		result += weight_[i]*( C_ * fi_[i] / fmaxi_[i] + bias_[i] );
-	}
+  tFitness CFunction::evaluate_inner_(const double *x)
+  {
+    double result(0);
+    calculate_weights(x);
+    for (int i=0; i<nofunc_; ++i) {
+      transform_to_z(x, i);
+      fi_[i] = (*function_[i])(z_, dimension_);
+    }
+    for (int i=0; i<nofunc_; ++i) {
+      result += weight_[i]*( C_ * fi_[i] / fmaxi_[i] + bias_[i] );
+    }
 
-	return -result + f_bias_;
-}
+    return -result + f_bias_;
+  }
 
-std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
-{
-	assert(O_ != NULL && "O_ == NULL");
-	std::vector< std::vector<double> > OO;
+  std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
+  {
+    assert(O_ != NULL && "O_ == NULL");
+    std::vector< std::vector<double> > OO;
 
-	for (int i=0; i< nofunc_; ++i) {
-		std::vector<double> kk;
-		for (int j=0; j< dimension_; ++j) {
-			kk.push_back(O_[i][j]);
-		}
-		OO.push_back(kk);
-	}
-	return OO;
-}
+    for (int i=0; i< nofunc_; ++i) {
+      std::vector<double> kk;
+      for (int j=0; j< dimension_; ++j) {
+        kk.push_back(O_[i][j]);
+      }
+      OO.push_back(kk);
+    }
+    return OO;
+  }
 
-CF1::CF1(const int dim) : CFunction(dim, 6)
-{
-	for (int i=0; i<nofunc_; ++i) {
-		sigma_[i] = 1;
-		bias_[i]  = 0;
-		weight_[i]= 0;
-	}
-	lambda_[0] = 1.0; 
-	lambda_[1] = 1.0; 
-	lambda_[2] = 8.0; 
-	lambda_[3] = 8.0; 
-	lambda_[4] = 1.0/5.0; 
-	lambda_[5] = 1.0/5.0;
-	/* Lower/Upper Bounds */
-	for (int i=0; i<dimension_; ++i) {
-		lbound_[i] = -5.0;
-		ubound_[i] = 5.0;
-	}
-	/* load optima */
-	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-			|| dimension_ == 10 || dimension_ == 20 ) {
-		std::string fname;
-		fname = "data/CF1_M_D" + std::to_string(dim) + "_opt.dat";
-		load_optima(fname);
-	} else { 
-		init_optima_rand();
-	}
-	/* M_ Identity matrices */
-	init_rotmat_identity();
-	/* Initialize functions of the composition */
-	function_[0] = function_[1] = &CompositeFcn::FGriewank;
-	function_[2] = function_[3] = &FWeierstrass;
-	function_[4] = function_[5] = &FSphere;
-	calculate_fmaxi();
-}
+  CF1::CF1(const int dim) : CFunction(dim, 6)
+  {
+    for (int i=0; i<nofunc_; ++i) {
+      sigma_[i] = 1;
+      bias_[i]  = 0;
+      weight_[i]= 0;
+    }
+    lambda_[0] = 1.0; 
+    lambda_[1] = 1.0; 
+    lambda_[2] = 8.0; 
+    lambda_[3] = 8.0; 
+    lambda_[4] = 1.0/5.0; 
+    lambda_[5] = 1.0/5.0;
+    /* Lower/Upper Bounds */
+    for (int i=0; i<dimension_; ++i) {
+      lbound_[i] = -5.0;
+      ubound_[i] = 5.0;
+    }
+    /* load optima */
+    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
+        || dimension_ == 10 || dimension_ == 20 ) {
+      std::string fname;
+      fname = "data/CF1_M_D" + std::to_string(dim) + "_opt.dat";
+      load_optima(fname);
+    } else { 
+      init_optima_rand();
+    }
+    /* M_ Identity matrices */
+    init_rotmat_identity();
+    /* Initialize functions of the composition */
+    function_[0] = function_[1] = &CompositeFcn::FGriewank;
+    function_[2] = function_[3] = &FWeierstrass;
+    function_[4] = function_[5] = &FSphere;
+    calculate_fmaxi();
+  }
 
-tFitness CF1::evaluate(const double *x)
-{
-	return evaluate_inner_(x);
-}
+  tFitness CF1::evaluate(const double *x)
+  {
+    return evaluate_inner_(x);
+  }
 
-CF2::CF2(const int dim) : CFunction(dim, 8)
-{
-	for (int i=0; i<nofunc_; ++i) {
-		sigma_[i] = 1.0;
-		bias_[i]  = 0.0;
-		weight_[i]= 0.0;
-	}
-	lambda_[0] = 1.0; 
-	lambda_[1] = 1.0; 
-	lambda_[2] = 10.0; 
-	lambda_[3] = 10.0; 
-	lambda_[4] = 1.0/10.0; 
-	lambda_[5] = 1.0/10.0;
-	lambda_[6] = 1.0/7.0;
-	lambda_[7] = 1.0/7.0;
-	/* Lower/Upper Bounds */
-	for (int i=0; i<dimension_; ++i) {
-		lbound_[i] = -5.0;
-		ubound_[i] = 5.0;
-	}
-	/* load optima */
-	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-			|| dimension_ == 10 || dimension_ == 20 ) {
-		std::string fname;
-		fname = "data/CF2_M_D" + std::to_string(dim) + "_opt.dat";
-		load_optima(fname);
-	} else { 
-		init_optima_rand();
-	}
-	/* M_ Identity matrices */
-	init_rotmat_identity();
+  CF2::CF2(const int dim) : CFunction(dim, 8)
+  {
+    for (int i=0; i<nofunc_; ++i) {
+      sigma_[i] = 1.0;
+      bias_[i]  = 0.0;
+      weight_[i]= 0.0;
+    }
+    lambda_[0] = 1.0; 
+    lambda_[1] = 1.0; 
+    lambda_[2] = 10.0; 
+    lambda_[3] = 10.0; 
+    lambda_[4] = 1.0/10.0; 
+    lambda_[5] = 1.0/10.0;
+    lambda_[6] = 1.0/7.0;
+    lambda_[7] = 1.0/7.0;
+    /* Lower/Upper Bounds */
+    for (int i=0; i<dimension_; ++i) {
+      lbound_[i] = -5.0;
+      ubound_[i] = 5.0;
+    }
+    /* load optima */
+    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
+        || dimension_ == 10 || dimension_ == 20 ) {
+      std::string fname;
+      fname = "data/CF2_M_D" + std::to_string(dim) + "_opt.dat";
+      load_optima(fname);
+    } else { 
+      init_optima_rand();
+    }
+    /* M_ Identity matrices */
+    init_rotmat_identity();
 
-	/* Initialize functions of the composition */
-	function_[0] = function_[1] = &FRastrigin;
-	function_[2] = function_[3] = &FWeierstrass;
-	function_[4] = function_[5] = &FGriewank;
-	function_[6] = function_[7] = &FSphere;
-	calculate_fmaxi();
-}
+    /* Initialize functions of the composition */
+    function_[0] = function_[1] = &FRastrigin;
+    function_[2] = function_[3] = &FWeierstrass;
+    function_[4] = function_[5] = &FGriewank;
+    function_[6] = function_[7] = &FSphere;
+    calculate_fmaxi();
+  }
 
-tFitness CF2::evaluate(const double *x)
-{
-	return evaluate_inner_(x);
-}
+  tFitness CF2::evaluate(const double *x)
+  {
+    return evaluate_inner_(x);
+  }
 
-CF3::CF3(const int dim) : CFunction(dim, 6)
-{
-	for (int i=0; i<nofunc_; ++i) {
-		bias_[i]  = 0.0;
-		weight_[i]= 0.0;
-	}
-	sigma_[0] = 1.0;
-	sigma_[1] = 1.0;
-	sigma_[2] = 2.0;
-	sigma_[3] = 2.0;
-	sigma_[4] = 2.0;
-	sigma_[5] = 2.0;
-	lambda_[0] = 1.0/4.0; 
-	lambda_[1] = 1.0/10.0; 
-	lambda_[2] = 2.0; 
-	lambda_[3] = 1.0; 
-	lambda_[4] = 2.0; 
-	lambda_[5] = 5.0;
-	/* Lower/Upper Bounds */
-	for (int i=0; i<dimension_; ++i) {
-		lbound_[i] = -5.0;
-		ubound_[i] = 5.0;
-	}
-	/* load optima */
-	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-			|| dimension_ == 10 || dimension_ == 20 ) {
-		std::string fname;
-		fname = "data/CF3_M_D" + std::to_string(dim) + "_opt.dat";
-		load_optima(fname);
-		fname = "data/CF3_M_D" + std::to_string(dim) + ".dat";
-		load_rotmat(fname);
-	} else { 
-		init_optima_rand();
-		/* M_ Identity matrices */
-		init_rotmat_identity();
-	}
-	/* Initialize functions of the composition */
-	function_[0] = function_[1] = &FEF8F2;
-	function_[2] = function_[3] = &FWeierstrass;
-	function_[4] = function_[5] = &FGriewank;
-	calculate_fmaxi();
-}
+  CF3::CF3(const int dim) : CFunction(dim, 6)
+  {
+    for (int i=0; i<nofunc_; ++i) {
+      bias_[i]  = 0.0;
+      weight_[i]= 0.0;
+    }
+    sigma_[0] = 1.0;
+    sigma_[1] = 1.0;
+    sigma_[2] = 2.0;
+    sigma_[3] = 2.0;
+    sigma_[4] = 2.0;
+    sigma_[5] = 2.0;
+    lambda_[0] = 1.0/4.0; 
+    lambda_[1] = 1.0/10.0; 
+    lambda_[2] = 2.0; 
+    lambda_[3] = 1.0; 
+    lambda_[4] = 2.0; 
+    lambda_[5] = 5.0;
+    /* Lower/Upper Bounds */
+    for (int i=0; i<dimension_; ++i) {
+      lbound_[i] = -5.0;
+      ubound_[i] = 5.0;
+    }
+    /* load optima */
+    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
+        || dimension_ == 10 || dimension_ == 20 ) {
+      std::string fname;
+      fname = "data/CF3_M_D" + std::to_string(dim) + "_opt.dat";
+      load_optima(fname);
+      fname = "data/CF3_M_D" + std::to_string(dim) + ".dat";
+      load_rotmat(fname);
+    } else { 
+      init_optima_rand();
+      /* M_ Identity matrices */
+      init_rotmat_identity();
+    }
+    /* Initialize functions of the composition */
+    function_[0] = function_[1] = &FEF8F2;
+    function_[2] = function_[3] = &FWeierstrass;
+    function_[4] = function_[5] = &FGriewank;
+    calculate_fmaxi();
+  }
 
-tFitness CF3::evaluate(const double *x)
-{
-	return evaluate_inner_(x);
-}
+  tFitness CF3::evaluate(const double *x)
+  {
+    return evaluate_inner_(x);
+  }
 
-CF4::CF4(const int dim) : CFunction(dim, 8)
-{
-	for (int i=0; i<nofunc_; ++i) {
-		sigma_[i] = 1.0;
-		bias_[i]  = 0.0;
-		weight_[i]= 0.0;
-	}
-	sigma_[0] = 1.0;
-	sigma_[1] = 1.0;
-	sigma_[2] = 1.0;
-	sigma_[3] = 1.0;
-	sigma_[4] = 1.0;
-	sigma_[5] = 2.0;
-	sigma_[6] = 2.0;
-	sigma_[7] = 2.0;
-	lambda_[0] = 4.0; 
-	lambda_[1] = 1.0; 
-	lambda_[2] = 4.0; 
-	lambda_[3] = 1.0; 
-	lambda_[4] = 1.0/10.0; 
-	lambda_[5] = 1.0/5.0;
-	lambda_[6] = 1.0/10.0;
-	lambda_[7] = 1.0/40.0;
-	/* Lower/Upper Bounds */
-	for (int i=0; i<dimension_; ++i) {
-		lbound_[i] = -5.0;
-		ubound_[i] = 5.0;
-	}
-	/* load optima */
-	if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-			|| dimension_ == 10 || dimension_ == 20) {
-		std::string fname;
-		fname = "data/CF4_M_D" + std::to_string(dim) + "_opt.dat";
-		load_optima(fname);
-		fname = "data/CF4_M_D" + std::to_string(dim) + ".dat";
-		load_rotmat(fname);
-	} else {
-		init_optima_rand();
-		/* M_ Identity matrices */
-		init_rotmat_identity();
-	}
-	/* Initialize functions of the composition */
-	function_[0] = function_[1] = &FRastrigin;
-	function_[2] = function_[3] = &FEF8F2;
-	function_[4] = function_[5] = &FWeierstrass;
-	function_[6] = function_[7] = &FGriewank;
-	calculate_fmaxi();
-}
+  CF4::CF4(const int dim) : CFunction(dim, 8)
+  {
+    for (int i=0; i<nofunc_; ++i) {
+      sigma_[i] = 1.0;
+      bias_[i]  = 0.0;
+      weight_[i]= 0.0;
+    }
+    sigma_[0] = 1.0;
+    sigma_[1] = 1.0;
+    sigma_[2] = 1.0;
+    sigma_[3] = 1.0;
+    sigma_[4] = 1.0;
+    sigma_[5] = 2.0;
+    sigma_[6] = 2.0;
+    sigma_[7] = 2.0;
+    lambda_[0] = 4.0; 
+    lambda_[1] = 1.0; 
+    lambda_[2] = 4.0; 
+    lambda_[3] = 1.0; 
+    lambda_[4] = 1.0/10.0; 
+    lambda_[5] = 1.0/5.0;
+    lambda_[6] = 1.0/10.0;
+    lambda_[7] = 1.0/40.0;
+    /* Lower/Upper Bounds */
+    for (int i=0; i<dimension_; ++i) {
+      lbound_[i] = -5.0;
+      ubound_[i] = 5.0;
+    }
+    /* load optima */
+    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
+        || dimension_ == 10 || dimension_ == 20) {
+      std::string fname;
+      fname = "data/CF4_M_D" + std::to_string(dim) + "_opt.dat";
+      load_optima(fname);
+      fname = "data/CF4_M_D" + std::to_string(dim) + ".dat";
+      load_rotmat(fname);
+    } else {
+      init_optima_rand();
+      /* M_ Identity matrices */
+      init_rotmat_identity();
+    }
+    /* Initialize functions of the composition */
+    function_[0] = function_[1] = &FRastrigin;
+    function_[2] = function_[3] = &FEF8F2;
+    function_[4] = function_[5] = &FWeierstrass;
+    function_[6] = function_[7] = &FGriewank;
+    calculate_fmaxi();
+  }
 
-tFitness CF4::evaluate(const double *x)
-{
-	return evaluate_inner_(x);
-}
+  tFitness CF4::evaluate(const double *x)
+  {
+    return evaluate_inner_(x);
+  }
 
 };
 
