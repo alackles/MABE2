@@ -27,7 +27,7 @@ namespace mabe {
     std::string fitness_trait;
 
   public:
-    EvalNK(mabe::MABE & control,
+    EvalGECCO(mabe::MABE & control,
            const std::string & name="EvalGECCO",
            const std::string & desc="Module to evaluate bitstrings on one of the GECCO Niching Competition 3D landscapes.",
            const std::string & _fname="Shubert",
