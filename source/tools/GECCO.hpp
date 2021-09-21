@@ -644,7 +644,7 @@ namespace mabe {
     /* M_ Identity matrices */
     init_rotmat_identity();
     /* Initialize functions of the composition */
-    function_[0] = function_[1] = &CompositeFcn::FGriewank;
+    function_[0] = function_[1] = &FGriewank;
     function_[2] = function_[3] = &FWeierstrass;
     function_[4] = function_[5] = &FSphere;
     calculate_fmaxi();
