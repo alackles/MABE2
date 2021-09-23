@@ -53,8 +53,6 @@ namespace mabe {
   	double *lambda_;
   	double *sigma_;
   	double *bias_;
-  	double **O_;
-  	double ***M_;
   	double *weight_;
   	double *lbound_;
   	double *ubound_;
@@ -63,6 +61,10 @@ namespace mabe {
   	double f_bias_;
   	double *fmaxi_;
   	double *tmpx_;
+  	emp::vector<emp::vector<double>> O_;
+    emp::vector<emp::vector<emp::vector<double>>> M_;
+    emp::Random rng_;
+
 
   	/* Inner help functions */
   	void init_rotmat_identity();
@@ -369,21 +371,27 @@ namespace mabe {
     dimension_(-1), nofunc_(-1), C_(-1), lambda_(NULL), sigma_(NULL),
     bias_(NULL), O_(NULL), M_(NULL), weight_(NULL), lbound_(NULL),
     ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0), fmaxi_(NULL), 
-    tmpx_(NULL), function_(NULL)
+    tmpx_(NULL), function_(NULL), rng_(-1) 
   {
   }
 
-  CFunction::CFunction(const int &dim, const int &nofunc) : 
+  CFunction::CFunction(const int & dim, const int & nofunc, emp::Random & random) : 
     dimension_(dim), nofunc_(nofunc), C_(2000.0), lambda_(NULL), 
     sigma_(NULL), bias_(NULL), O_(NULL), M_(NULL), weight_(NULL),
     lbound_(NULL), ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0),
-    fmaxi_(NULL), tmpx_(NULL), function_(NULL)
+    fmaxi_(NULL), tmpx_(NULL), function_(NULL), rng_(random)
   {
   }
 
   /* Destructor */
   CFunction::~CFunction()
   {
+  }
+
+  // Set the random number generator for this landscape
+  // Useful when you want to use the composite functions
+  void SetSeed(emp::Random & random) {
+    
   }
 
   void CFunction::calculate_weights(const emp::vector<double> x)
@@ -468,7 +476,6 @@ namespace mabe {
 
   void CFunction::init_optima_rand()
   {	
-    emp::Random rng;
     for (int i=0; i< nofunc_; ++i) {
       for (int j=0; j< dimension_; ++j) {
         O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng.GetDouble();
