@@ -32,6 +32,12 @@ namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
+    typedef double tFtiness;
+
+    // array of function pointers 
+    // so that we can composite functions at will 
+    typedef tFitness (*compFunction)(const emp::vector<double>, const int &)
+
   /* Composition Functions framework */
   class CFunction {
   	//non-copyable
@@ -64,7 +70,7 @@ namespace mabe {
   	emp::vector<emp::vector<double>> O_;
     emp::vector<emp::vector<emp::vector<double>>> M_;
     emp::Random rng_;
-    emp::vector<
+    compFunction *function_
 
 
   	/* Inner help functions */
@@ -217,7 +223,7 @@ namespace mabe {
   * Basic functions for composition 
   *****************************************************************************/
   /* Ackley's function */
-  double FAckley(const emp::vector<double> x, const int &dim) {
+  tFitness FAckley(const emp::vector<double> x, const int &dim) {
     double sum1(0.0), sum2(0.0), result;
     for (int i=0; i<dim; ++i) {
     sum1 += x[i]*x[i];
@@ -230,7 +236,7 @@ namespace mabe {
   }  	double f_bias_;
 
   /* Rastrigin's function */
-  double FRastrigin(const emp::vector<double> x, const int &dim) {
+  tFitness FRastrigin(const emp::vector<double> x, const int &dim) {
     double result(0.0);
     for (int i=0; i<dim; ++i) {
     result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
@@ -239,7 +245,7 @@ namespace mabe {
   }
 
   /* Weierstrass's function */
-  double FWeierstrass(const emp::vector<double> x, const int &dim) {
+  tFitness FWeierstrass(const emp::vector<double> x, const int &dim) {
     double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
     int k_max(20);
 
@@ -257,7 +263,7 @@ namespace mabe {
   }
 
   /* Griewank's function */
-  double FGriewank(const emp::vector<double> x, const int &dim) {
+  tFitness FGriewank(const emp::vector<double> x, const int &dim) {
     double sum(0.0), prod(1.0), result(0.0);
 
     for (int i=0; i<dim; ++i) {
@@ -269,7 +275,7 @@ namespace mabe {
   }
 
   /* Sphere function */
-  double FSphere(const emp::vector<double> x, const int &dim) {
+  tFitness FSphere(const emp::vector<double> x, const int &dim) {
     double result(0.0);
     for (int i=0; i<dim; ++i) {
     result += x[i]*x[i];
@@ -278,7 +284,7 @@ namespace mabe {
   }
 
   /* Schwefel's function */
-  double FSchwefel(const emp::vector<double> x, const int &dim) {
+  tFitness FSchwefel(const emp::vector<double> x, const int &dim) {
     double sum1(0.0), sum2(0.0);
 
     for (int i=0; i<dim; ++i) {
@@ -292,7 +298,7 @@ namespace mabe {
   }
 
   /* Rosenbrock's function */
-  double FRosenbrock(const emp::vector<double> x, const int &dim) {
+  tFitness FRosenbrock(const emp::vector<double> x, const int &dim) {
     double result(0.0);
 
     for (int i=0; i<dim-1; ++i) {
@@ -302,7 +308,7 @@ namespace mabe {
   }
 
   /* FEF8F2 function */
-  double FEF8F2(const emp::vector<double> x, const int &dim) {
+  tFitness FEF8F2(const emp::vector<double> x, const int &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
 
