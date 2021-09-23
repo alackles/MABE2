@@ -75,7 +75,7 @@ namespace mabe {
 
   	/* Inner help functions */
   	void init_rotmat_identity();
-  	void init_optima_rand();
+  	void init_optima_rand(emp::Random & random);
   	void load_optima(const std::string &filename);
   	void load_rotmat(const std::string &filename);
   	void calculate_weights(const emp::vector<double> x);
@@ -395,12 +395,6 @@ namespace mabe {
   {
   }
 
-  // Set the random number generator for this landscape
-  // Useful when you want to use the composite functions
-  void SetSeed(emp::Random & random) {
-    
-  }
-
   void CFunction::calculate_weights(const emp::vector<double> x)
   {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
@@ -489,11 +483,11 @@ namespace mabe {
   // 2-dimensional random optima matrix
   // Each row represents a function
   // Each column represents a random optima for each dimension of the function
-  void CFunction::init_optima_rand()
+  void CFunction::init_optima_rand(emp::Random & random)
   {	
     for (int i=0; i< nofunc_; ++i) {
       for (int j=0; j< dimension_; ++j) {
-        O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng_.GetDouble();
+        O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * random.GetDouble();
       }
     }
   }
@@ -572,7 +566,7 @@ namespace mabe {
     return OO;
   }
 
-  CF1::CF1(const int dim) : CFunction(dim, 6)
+  CF1::CF1(const int dim, emp::Random random) : CFunction(dim, 6, random)
   {
     for (int i=0; i<nofunc_; ++i) {
       sigma_[i] = 1;
@@ -613,7 +607,7 @@ namespace mabe {
     return evaluate_inner_(x);
   }
 
-  CF2::CF2(const int dim) : CFunction(dim, 8)
+  CF2::CF2(const int dim, emp::Random random) : CFunction(dim, 8, random)
   {
     for (int i=0; i<nofunc_; ++i) {
       sigma_[i] = 1.0;
@@ -640,7 +634,7 @@ namespace mabe {
       fname = "data/CF2_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
     } else { 
-      init_optima_rand();
+      init_optima_rand(random);
     }
     /* M_ Identity matrices */
     init_rotmat_identity();
@@ -658,7 +652,7 @@ namespace mabe {
     return evaluate_inner_(x);
   }
 
-  CF3::CF3(const int dim) : CFunction(dim, 6)
+  CF3::CF3(const int dim, emp::Random random) : CFunction(dim, 6, random)
   {
     for (int i=0; i<nofunc_; ++i) {
       bias_[i]  = 0.0;
@@ -690,7 +684,7 @@ namespace mabe {
       fname = "data/CF3_M_D" + std::to_string(dim) + ".dat";
       load_rotmat(fname);
     } else { 
-      init_optima_rand();
+      init_optima_rand(random);
       /* M_ Identity matrices */
       init_rotmat_identity();
     }
@@ -706,7 +700,7 @@ namespace mabe {
     return evaluate_inner_(x);
   }
 
-  CF4::CF4(const int dim) : CFunction(dim, 8)
+  CF4::CF4(const int dim, emp::Random random) : CFunction(dim, 8, random)
   {
     for (int i=0; i<nofunc_; ++i) {
       sigma_[i] = 1.0;
@@ -743,7 +737,7 @@ namespace mabe {
       fname = "data/CF4_M_D" + std::to_string(dim) + ".dat";
       load_rotmat(fname);
     } else {
-      init_optima_rand();
+      init_optima_rand(random);
       /* M_ Identity matrices */
       init_rotmat_identity();
     }
