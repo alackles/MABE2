@@ -388,6 +388,12 @@ namespace mabe {
   {
   }
 
+  // Set the random number generator for this landscape
+  // Useful when you want to use the composite functions
+  void SetSeed(emp::Random & random) {
+    
+  }
+
   void CFunction::calculate_weights(const emp::vector<double> x)
   {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
@@ -472,7 +478,7 @@ namespace mabe {
   {	
     for (int i=0; i< nofunc_; ++i) {
       for (int j=0; j< dimension_; ++j) {
-        O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng.GetDouble();
+        O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * rng_.GetDouble();
       }
     }
   }
