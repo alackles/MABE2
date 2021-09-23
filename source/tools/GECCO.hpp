@@ -388,12 +388,6 @@ namespace mabe {
   {
   }
 
-  // Set the random number generator for this landscape
-  // Useful when you want to use the composite functions
-  void SetSeed(emp::Random & random) {
-    
-  }
-
   void CFunction::calculate_weights(const emp::vector<double> x)
   {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
