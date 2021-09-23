@@ -572,7 +572,7 @@ namespace mabe {
     if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
         || dimension_ == 10 || dimension_ == 20 ) {
       std::string fname;
-      fname = "data/CF1_M_D" + std::to_string(dim) + "_opt.dat";
+      fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
     } else { 
       init_optima_rand(random);
@@ -613,7 +613,7 @@ namespace mabe {
     if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
         || dimension_ == 10 || dimension_ == 20 ) {
       std::string fname;
-      fname = "data/CF2_M_D" + std::to_string(dim) + "_opt.dat";
+      fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
     } else { 
       init_optima_rand(random);
@@ -659,9 +659,9 @@ namespace mabe {
     if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
         || dimension_ == 10 || dimension_ == 20 ) {
       std::string fname;
-      fname = "data/CF3_M_D" + std::to_string(dim) + "_opt.dat";
+      fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
-      fname = "data/CF3_M_D" + std::to_string(dim) + ".dat";
+      fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
       load_rotmat(fname);
     } else { 
       init_optima_rand(random);
@@ -710,9 +710,9 @@ namespace mabe {
     if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
         || dimension_ == 10 || dimension_ == 20) {
       std::string fname;
-      fname = "data/CF4_M_D" + std::to_string(dim) + "_opt.dat";
+      fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
-      fname = "data/CF4_M_D" + std::to_string(dim) + ".dat";
+      fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
       load_rotmat(fname);
     } else {
       init_optima_rand(random);
