@@ -591,7 +591,7 @@ namespace mabe {
       fname = "data/CF1_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
     } else { 
-      init_optima_rand();
+      init_optima_rand(random);
     }
     /* M_ Identity matrices */
     init_rotmat_identity();
