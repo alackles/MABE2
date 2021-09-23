@@ -45,7 +45,7 @@ namespace mabe {
   	CFunction& operator=(const CFunction &);
   public:
   	CFunction();
-  	CFunction(const int &dim, const int &nofunc);
+  	CFunction(const int &dim, const int &nofunc, emp::Random &random);
   	virtual ~CFunction();
 
   	virtual double evaluate(const emp::vector<double> x) = 0;
@@ -339,7 +339,7 @@ namespace mabe {
     CF1(const CF1 &);
     CF1& operator=(const CF1&);
   public:
-    CF1(const int dim);
+    CF1(const int dim, emp::Random random);
     double evaluate(const emp::vector<double> x);
   };
 
@@ -348,7 +348,7 @@ namespace mabe {
     CF2(const CF2 &);
     CF2& operator=(const CF2&);
   public:
-    CF2(const int dim);
+    CF2(const int dim, emp::Random random);
   double evaluate(const emp::vector<double> x);
   };
 
@@ -357,7 +357,7 @@ namespace mabe {
     CF3(const CF3 &);
     CF3& operator=(const CF3&);
   public:
-    CF3(const int dim);
+    CF3(const int dim, emp::Random random);
     double evaluate(const emp::vector<double> x);
   };
 
@@ -366,7 +366,7 @@ namespace mabe {
     CF4(const CF4 &);
     CF4& operator=(const CF4&);
   public:
-    CF4(const int dim);
+    CF4(const int dim, emp::Random random);
     double evaluate(const emp::vector<double> x);
   };
 
@@ -526,14 +526,14 @@ namespace mabe {
   {
     /* functions */
     for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
-    double *x5 = new double[dimension_];
-    for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
-
+    emp::vector<double> x5(dimension_);
+    for (int i=0; i<dimension_; ++i) { 
+      x5[i] = 5 ;
+    }
     for (int i=0; i<nofunc_; ++i) {
       transform_to_z_noshift(x5, i);
       fmaxi_[i] = (*function_[i])(z_, dimension_);
     }
-    delete [] x5;
   }
 
   double CFunction::evaluate_inner_(const emp::vector<double> x)
