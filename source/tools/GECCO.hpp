@@ -32,11 +32,11 @@ namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
-    typedef double tFtiness;
+    typedef double tFitness;
 
     // array of function pointers 
     // so that we can composite functions at will 
-    typedef tFitness (*compFunction)(const emp::vector<double>, const int &)
+    typedef tFitness (*compFunction)(const emp::vector<double>, const int &);
 
   /* Composition Functions framework */
   class CFunction {
@@ -70,7 +70,7 @@ namespace mabe {
   	emp::vector<emp::vector<double>> O_;
     emp::vector<emp::vector<emp::vector<double>>> M_;
     emp::Random rng_;
-    compFunction *function_
+    compFunction *function_;
 
 
   	/* Inner help functions */
@@ -148,7 +148,7 @@ namespace mabe {
   double himmelblau(const emp::vector<double> x, const int &dim) {
     return 200 - (x[0]*x[0] + x[1] - 11)*(x[0]*x[0] + x[1] - 11) - 
     (x[0] + x[1]*x[1] - 7)*(x[0] + x[1]*x[1] - 7);
-  }  	double f_bias_;
+  }  	
 
   /******************************************************************************
   * F5: Six-Hump Camel Back
@@ -169,7 +169,7 @@ namespace mabe {
   *****************************************************************************/
   double shubert(const emp::vector<double> x, const int &dim) {
     double result(1), sum(0); 
-    for (int i=0;  	double f_bias_; i<dim; i++) {
+    for (int i=0; i<dim; i++) {
     sum=0;
     for (int j=1; j<6; j++) {
       sum = sum + j * cos((j+1) * x[i] + j);
@@ -233,7 +233,7 @@ namespace mabe {
     sum2 /= dim;
     result = 20.0 + emp::E - 20.0*exp(sum1) - exp(sum2);
     return result;
-  }  	double f_bias_;
+  } 
 
   /* Rastrigin's function */
   tFitness FRastrigin(const emp::vector<double> x, const int &dim) {
@@ -308,7 +308,7 @@ namespace mabe {
   }
 
   /* FEF8F2 function */
-  tFitness FEF8F2(const emp::vector<double> x, const int &dim) {
+  tFitness FEF8F2(const emp::vector<double> xx, const int &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
 
