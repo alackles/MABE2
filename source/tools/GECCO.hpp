@@ -382,64 +382,11 @@ namespace mabe {
     lbound_(NULL), ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0),
     fmaxi_(NULL), tmpx_(NULL), function_(NULL)
   {
-    allocate_memory();
   }
 
   /* Destructor */
   CFunction::~CFunction()
   {
-    deallocate_memory();
-  }
-
-  void CFunction::allocate_memory()
-  {
-    if (dimension_ < 1 || nofunc_ < 1) return;
-    lambda_ = new double[nofunc_];
-    sigma_	= new double[nofunc_];
-    bias_	= new double[nofunc_];
-    O_ 	= new double*[nofunc_];
-    M_ 	= new double**[nofunc_];
-    for (int i=0; i<nofunc_; ++i) {
-      O_[i] = new double[dimension_];
-      M_[i] = new double*[dimension_];
-      for (int j=0; j<dimension_; ++j) {
-        M_[i][j] = new double[dimension_];
-      }
-    }
-    weight_	= new double[nofunc_];
-    lbound_	= new double[dimension_];
-    ubound_	= new double[dimension_];
-    fi_	= new double[nofunc_];
-    z_	= new double[dimension_];
-    fmaxi_	= new double[nofunc_];
-    tmpx_	= new double[dimension_];
-    function_ = new compFunction[nofunc_];
-  }
-
-  void CFunction::deallocate_memory()
-  {
-    if (dimension_ < 1 || nofunc_ < 1) return;
-    /* Clean up the mess */
-    delete [] function_;
-    delete [] tmpx_;
-    delete [] fmaxi_;
-    delete [] z_;
-    delete [] fi_;
-    delete [] ubound_;
-    delete [] lbound_;
-    delete [] weight_;
-    for (int i=0; i<nofunc_; ++i) { 
-      for (int j=0; j<dimension_; ++j) {
-        delete [] M_[i][j];
-      }
-      delete [] M_[i]; 
-    }
-    delete [] M_;
-    for (int i=0; i<nofunc_; ++i) { delete [] O_[i]; }
-    delete [] O_;
-    delete [] bias_;
-    delete [] sigma_;
-    delete [] lambda_;
   }
 
   void CFunction::calculate_weights(const emp::vector<double> x)
