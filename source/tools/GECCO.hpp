@@ -21,13 +21,11 @@
 #include "emp/base/Ptr.hpp"
 #include "emp/base/vector.hpp"
 
-#include "emp/bits/BitVector.hpp"
 #include "emp/io/File.hpp"
 #include "emp/math/math.hpp"
 #include "emp/math/Random.hpp"
 #include "emp/base/vector.hpp"
 #include "emp/bits/BitVector.hpp"
-#include "emp/math/math.hpp"
 #include "emp/math/constants.hpp"
 
 namespace mabe {
@@ -65,7 +63,6 @@ namespace mabe {
   	double f_bias_;
   	double *fmaxi_;
   	double *tmpx_;
-  	compFunction *function_;
 
   	/* Inner help functions */
   	void init_rotmat_identity();
