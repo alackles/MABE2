@@ -50,17 +50,17 @@ namespace mabe {
   	int dimension_;
   	int nofunc_;
   	double C_;
-  	double *lambda_;
-  	double *sigma_;
-  	double *bias_;
-  	double *weight_;
-  	double *lbound_;
-  	double *ubound_;
-  	double *fi_;
-  	double *z_;
   	double f_bias_;
-  	double *fmaxi_;
-  	double *tmpx_;
+  	emp::vector<double> lambda_;
+  	emp::vector<double> sigma_;
+  	emp::vector<double> bias_;
+  	emp::vector<double> weight_;
+  	emp::vector<double> lbound_;
+  	emp::vector<double> ubound_;
+  	emp::vector<double> fi_;
+  	emp::vector<double> z_;
+  	emp::vector<double> fmaxi_;
+  	emp::vector<double> tmpx_;
   	emp::vector<emp::vector<double>> O_;
     emp::vector<emp::vector<emp::vector<double>>> M_;
     emp::Random rng_;
@@ -411,6 +411,7 @@ namespace mabe {
     }
     sum = 0.0;
     for (int i=0; i<nofunc_; ++i) {
+      //if (weight_[i] != maxi) {
       if (i != maxindex) {
         weight_[i] *= (1.0 - pow(maxi, 10.0));
       }
@@ -524,13 +525,14 @@ namespace mabe {
   {
     /* functions */
     for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
-    double x5 = dimension_;
+    double *x5 = new double[dimension_];
     for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
 
     for (int i=0; i<nofunc_; ++i) {
       transform_to_z_noshift(x5, i);
       fmaxi_[i] = (*function_[i])(z_, dimension_);
     }
+    delete [] x5;
   }
 
   double CFunction::evaluate_inner_(const emp::vector<double> x)
