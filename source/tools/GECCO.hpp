@@ -411,7 +411,6 @@ namespace mabe {
     }
     sum = 0.0;
     for (int i=0; i<nofunc_; ++i) {
-      //if (weight_[i] != maxi) {
       if (i != maxindex) {
         weight_[i] *= (1.0 - pow(maxi, 10.0));
       }
@@ -426,6 +425,7 @@ namespace mabe {
     }
   }
 
+  // Load specified optima from an outside .dat file
   void CFunction::load_optima(const std::string &filename)
   {
     std::fstream file;
@@ -444,6 +444,7 @@ namespace mabe {
     file.close();
   }
 
+  // Load specified rotation matrix from an outside .dat file
   void CFunction::load_rotmat(const std::string &filename)
   {
     std::fstream file;
@@ -463,7 +464,10 @@ namespace mabe {
     }
     file.close();
   }
-
+ 
+ // 3-Dimensional identity matrix 
+ // One "layer" per function to be composited
+ // Each "layer" of the matrix is an ID matrix
   void CFunction::init_rotmat_identity() {
     for (int i=0; i<nofunc_; ++i) {
       for (int j=0; j<dimension_; ++j) {
@@ -474,6 +478,9 @@ namespace mabe {
     }	
   }
 
+  // 2-dimensional random optima matrix
+  // Each row represents a function
+  // Each column represents a random optima for each dimension of the function
   void CFunction::init_optima_rand()
   {	
     for (int i=0; i< nofunc_; ++i) {
@@ -517,14 +524,13 @@ namespace mabe {
   {
     /* functions */
     for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
-    double *x5 = new double[dimension_];
+    double x5 = dimension_;
     for (int i=0; i<dimension_; ++i) { x5[i] = 5 ; }
 
     for (int i=0; i<nofunc_; ++i) {
       transform_to_z_noshift(x5, i);
       fmaxi_[i] = (*function_[i])(z_, dimension_);
     }
-    delete [] x5;
   }
 
   double CFunction::evaluate_inner_(const emp::vector<double> x)
