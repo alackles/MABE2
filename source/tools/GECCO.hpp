@@ -32,11 +32,10 @@ namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
-    typedef double tFitness;
+  typedef double tFitness;
 
-    // array of function pointers 
-    // so that we can composite functions at will 
-    typedef tFitness (*compFunction)(const emp::vector<double>, const int &);
+  // array of function pointers so that we can composite functions at will 
+  typedef tFitness (*compFunction)(const emp::vector<double>, const int &);
 
   /* Composition Functions framework */
   class CFunction {
@@ -170,11 +169,11 @@ namespace mabe {
   double shubert(const emp::vector<double> x, const int &dim) {
     double result(1), sum(0); 
     for (int i=0; i<dim; i++) {
-    sum=0;
-    for (int j=1; j<6; j++) {
-      sum = sum + j * cos((j+1) * x[i] + j);
-    }
-    result = result * sum;
+      sum=0;
+      for (int j=1; j<6; j++) {
+        sum = sum + j * cos((j+1) * x[i] + j);
+      }
+      result = result * sum;
     }
     return -result;
   }
@@ -188,11 +187,11 @@ namespace mabe {
   double vincent(const emp::vector<double> x, const int &dim) {
     double result(0);
     for (int i=0; i<dim; i++){
-    if (x[i]<=0){
-      std::cerr << "Illegal value: " << x[i] << std::endl;
-      exit(-1);
-    }
-    result = result + sin(10 * log(x[i]));
+      if (x[i]<=0){
+        std::cerr << "Illegal value: " << x[i] << std::endl;
+        exit(-1);
+      }
+      result = result + sin(10 * log(x[i]));
     }
     return result/dim;
   }
@@ -211,10 +210,10 @@ namespace mabe {
   double modified_rastrigin_all(const emp::vector<double> x, const int &dim)
   {
     double result(0);
-    for (int i=0; i<dim; i++){
-    if (dim == 2)  { result = result + 10+ 9*cos(2*emp::PI*MPPF92[i]*x[i]); }
-    if (dim == 8)  { result = result + 10+ 9*cos(2*emp::PI*MPPF98[i]*x[i]); }
-    if (dim == 16) { result = result + 10+ 9*cos(2*emp::PI*MPPF916[i]*x[i]); }
+    for (int i=0; i<dim; i++) {
+      if (dim == 2)  { result = result + 10+ 9*cos(2*emp::PI*MPPF92[i]*x[i]); }
+      if (dim == 8)  { result = result + 10+ 9*cos(2*emp::PI*MPPF98[i]*x[i]); }
+      if (dim == 16) { result = result + 10+ 9*cos(2*emp::PI*MPPF916[i]*x[i]); }
     }
     return -result;
   }
@@ -226,8 +225,8 @@ namespace mabe {
   tFitness FAckley(const emp::vector<double> x, const int &dim) {
     double sum1(0.0), sum2(0.0), result;
     for (int i=0; i<dim; ++i) {
-    sum1 += x[i]*x[i];
-    sum2 += cos(2.0*emp::PI*x[i]);
+      sum1 += x[i]*x[i];
+      sum2 += cos(2.0*emp::PI*x[i]);
     }
     sum1 = -0.2*sqrt(sum1/dim);
     sum2 /= dim;
@@ -239,7 +238,7 @@ namespace mabe {
   tFitness FRastrigin(const emp::vector<double> x, const int &dim) {
     double result(0.0);
     for (int i=0; i<dim; ++i) {
-    result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
+      result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
     }
     return result;
   }
@@ -248,12 +247,11 @@ namespace mabe {
   tFitness FWeierstrass(const emp::vector<double> x, const int &dim) {
     double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
     int k_max(20);
-
     for (int j=0; j<=k_max; ++j) {
-    sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
+      sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
     }
     for (int i=0; i<dim; ++i) {
-    sum = 0.0;
+      sum = 0.0;
     for (int j=0; j<=k_max; ++j) {
       sum += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(x[i]+0.5));
     }
@@ -265,10 +263,9 @@ namespace mabe {
   /* Griewank's function */
   tFitness FGriewank(const emp::vector<double> x, const int &dim) {
     double sum(0.0), prod(1.0), result(0.0);
-
     for (int i=0; i<dim; ++i) {
-    sum  += x[i]*x[i]/4000.0;
-    prod *= cos( x[i]/sqrt(double(1.0+i)) );
+      sum  += x[i]*x[i]/4000.0;
+      prod *= cos( x[i]/sqrt(double(1.0+i)) );
     }
     result = 1.0 + sum - prod;
     return result;
@@ -278,7 +275,7 @@ namespace mabe {
   tFitness FSphere(const emp::vector<double> x, const int &dim) {
     double result(0.0);
     for (int i=0; i<dim; ++i) {
-    result += x[i]*x[i];
+      result += x[i]*x[i];
     }
     return result;
   }
@@ -286,13 +283,12 @@ namespace mabe {
   /* Schwefel's function */
   tFitness FSchwefel(const emp::vector<double> x, const int &dim) {
     double sum1(0.0), sum2(0.0);
-
     for (int i=0; i<dim; ++i) {
-    sum2 = 0.0;
-    for (int j=0; j<=i; ++j) {
-      sum2 += x[j];
-    }
-    sum1 += sum2*sum2;
+      sum2 = 0.0;
+      for (int j=0; j<=i; ++j) {
+        sum2 += x[j];
+      }
+      sum1 += sum2*sum2;
     }
     return sum1;
   }
@@ -300,9 +296,8 @@ namespace mabe {
   /* Rosenbrock's function */
   tFitness FRosenbrock(const emp::vector<double> x, const int &dim) {
     double result(0.0);
-
     for (int i=0; i<dim-1; ++i) {
-    result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
+      result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
     }
     return result;
   }
@@ -311,15 +306,14 @@ namespace mabe {
   tFitness FEF8F2(const emp::vector<double> xx, const int &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
-
     for (int i=0; i<dim-1; ++i) {
-    x = xx[i]   +1;
-    y = xx[i+1] +1;
+      x = xx[i]   +1;
+      y = xx[i+1] +1;
 
-    f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
-    f  = 1.0 + f2*f2/4000.0 - cos(f2);
+      f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
+      f  = 1.0 + f2*f2/4000.0 - cos(f2);
 
-    result += f;
+      result += f;
     }
     /* do not forget the (dim-1,0) case! */
     x = xx[dim-1] +1;
@@ -374,29 +368,28 @@ namespace mabe {
   * Composition Functions
   *****************************************************************************/
   /* Constructors */
-  CFunction::CFunction() : 
-    dimension_(-1), nofunc_(-1), C_(-1), lambda_(NULL), sigma_(NULL),
-    bias_(NULL), O_(NULL), M_(NULL), weight_(NULL), lbound_(NULL),
-    ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0), fmaxi_(NULL), 
-    tmpx_(NULL), function_(NULL), rng_(-1) 
-  {
-  }
+  CFunction::CFunction() 
+    : dimension_(-1), nofunc_(-1), C_(-1), rng_(-1);
+    , lambda_(NULL), sigma_(NULL), bias_(NULL)
+    , O_(NULL), M_(NULL)
+    , weight_(NULL), lbound_(NULL), ubound_(NULL)
+    , fi_(NULL), z_(NULL), f_bias_(0)
+    , fmaxi_(NULL), tmpx_(NULL), function_(NULL)
+    { ; }
 
-  CFunction::CFunction(const int & dim, const int & nofunc, emp::Random & random) : 
-    dimension_(dim), nofunc_(nofunc), C_(2000.0), lambda_(NULL), 
-    sigma_(NULL), bias_(NULL), O_(NULL), M_(NULL), weight_(NULL),
-    lbound_(NULL), ubound_(NULL), fi_(NULL), z_(NULL), f_bias_(0),
-    fmaxi_(NULL), tmpx_(NULL), function_(NULL), rng_(random)
-  {
-  }
+  CFunction::CFunction(const int & dim, const int & nofunc, emp::Random & random) 
+    : dimension_(dim), nofunc_(nofunc), C_(2000.0), rng_(random)
+    , lambda_(NULL), sigma_(NULL), bias_(NULL)
+    , O_(NULL), M_(NULL)
+    , weight_(NULL), lbound_(NULL), ubound_(NULL)
+    , fi_(NULL), z_(NULL), f_bias_(0)
+    , fmaxi_(NULL), tmpx_(NULL), function_(NULL)
+    { ; }
 
   /* Destructor */
-  CFunction::~CFunction()
-  {
-  }
+  CFunction::~CFunction() { ; }
 
-  void CFunction::calculate_weights(const emp::vector<double> x)
-  {
+  void CFunction::calculate_weights(const emp::vector<double> x) {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
     for (int i=0; i<nofunc_; ++i) {
       sum = 0.0;
@@ -428,8 +421,7 @@ namespace mabe {
   }
 
   // Load specified optima from an outside .dat file
-  void CFunction::load_optima(const std::string &filename)
-  {
+  void CFunction::load_optima(const std::string &filename) {
     std::fstream file;
     file.open(filename.c_str(), std::fstream::in);
     if (!file.is_open()) {
@@ -447,8 +439,7 @@ namespace mabe {
   }
 
   // Load specified rotation matrix from an outside .dat file
-  void CFunction::load_rotmat(const std::string &filename)
-  {
+  void CFunction::load_rotmat(const std::string &filename) {
     std::fstream file;
     file.open(filename.c_str(), std::fstream::in);
     if (!file.is_open()) {
@@ -483,8 +474,7 @@ namespace mabe {
   // 2-dimensional random optima matrix
   // Each row represents a function
   // Each column represents a random optima for each dimension of the function
-  void CFunction::init_optima_rand(emp::Random & random)
-  {	
+  void CFunction::init_optima_rand(emp::Random & random) {	
     for (int i=0; i< nofunc_; ++i) {
       for (int j=0; j< dimension_; ++j) {
         O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * random.GetDouble();
@@ -492,8 +482,7 @@ namespace mabe {
     }
   }
 
-  void CFunction::transform_to_z(const emp::vector<double> x, const int &index)
-  {
+  void CFunction::transform_to_z(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambda_i */
     for (int i=0; i<dimension_; ++i) {
       tmpx_[i] = (x[i] - O_[index][i])/lambda_[index];
@@ -507,8 +496,7 @@ namespace mabe {
     }
   }
 
-  void CFunction::transform_to_z_noshift(const emp::vector<double> x, const int &index)
-  {
+  void CFunction::transform_to_z_noshift(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambda_i */
     for (int i=0; i<dimension_; ++i) {
       tmpx_[i] = (x[i])/lambda_[index];
@@ -522,8 +510,7 @@ namespace mabe {
     }
   }
 
-  void CFunction::calculate_fmaxi()
-  {
+  void CFunction::calculate_fmaxi() {
     /* functions */
     for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
     emp::vector<double> x5(dimension_);
@@ -536,8 +523,7 @@ namespace mabe {
     }
   }
 
-  double CFunction::evaluate_inner_(const emp::vector<double> x)
-  {
+  double CFunction::evaluate_inner_(const emp::vector<double> x) {
     double result(0);
     calculate_weights(x);
     for (int i=0; i<nofunc_; ++i) {
@@ -551,8 +537,7 @@ namespace mabe {
     return -result + f_bias_;
   }
 
-  std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const
-  {
+  std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const {
     assert(O_ != NULL && "O_ == NULL");
     std::vector< std::vector<double> > OO;
 
@@ -566,8 +551,7 @@ namespace mabe {
     return OO;
   }
 
-  CF1::CF1(const int dim, emp::Random random) : CFunction(dim, 6, random)
-  {
+  CF1::CF1(const int dim, emp::Random random) : CFunction(dim, 6, random) {
     for (int i=0; i<nofunc_; ++i) {
       sigma_[i] = 1;
       bias_[i]  = 0;
@@ -602,13 +586,11 @@ namespace mabe {
     calculate_fmaxi();
   }
 
-  double CF1::evaluate(const emp::vector<double> x)
-  {
+  double CF1::evaluate(const emp::vector<double> x) {
     return evaluate_inner_(x);
   }
 
-  CF2::CF2(const int dim, emp::Random random) : CFunction(dim, 8, random)
-  {
+  CF2::CF2(const int dim, emp::Random random) : CFunction(dim, 8, random) {
     for (int i=0; i<nofunc_; ++i) {
       sigma_[i] = 1.0;
       bias_[i]  = 0.0;
@@ -647,13 +629,11 @@ namespace mabe {
     calculate_fmaxi();
   }
 
-  double CF2::evaluate(const emp::vector<double> x)
-  {
+  double CF2::evaluate(const emp::vector<double> x) {
     return evaluate_inner_(x);
   }
 
-  CF3::CF3(const int dim, emp::Random random) : CFunction(dim, 6, random)
-  {
+  CF3::CF3(const int dim, emp::Random random) : CFunction(dim, 6, random) {
     for (int i=0; i<nofunc_; ++i) {
       bias_[i]  = 0.0;
       weight_[i]= 0.0;
@@ -695,13 +675,11 @@ namespace mabe {
     calculate_fmaxi();
   }
 
-  double CF3::evaluate(const emp::vector<double> x)
-  {
+  double CF3::evaluate(const emp::vector<double> x) {
     return evaluate_inner_(x);
   }
 
-  CF4::CF4(const int dim, emp::Random random) : CFunction(dim, 8, random)
-  {
+  CF4::CF4(const int dim, emp::Random random) : CFunction(dim, 8, random) {
     for (int i=0; i<nofunc_; ++i) {
       sigma_[i] = 1.0;
       bias_[i]  = 0.0;
@@ -749,8 +727,7 @@ namespace mabe {
     calculate_fmaxi();
   }
 
-  double CF4::evaluate(const emp::vector<double> x)
-  {
+  double CF4::evaluate(const emp::vector<double> x) {
     return evaluate_inner_(x);
   }
 
