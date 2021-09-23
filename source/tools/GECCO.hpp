@@ -369,7 +369,7 @@ namespace mabe {
   *****************************************************************************/
   /* Constructors */
   CFunction::CFunction() 
-    : dimension_(-1), nofunc_(-1), C_(-1), rng_(-1);
+    : dimension_(-1), nofunc_(-1), C_(-1), rng_(-1)
     , lambda_(NULL), sigma_(NULL), bias_(NULL)
     , O_(NULL), M_(NULL)
     , weight_(NULL), lbound_(NULL), ubound_(NULL)
