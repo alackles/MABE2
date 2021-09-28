@@ -166,8 +166,8 @@ namespace mabe {
           ubound[i] = 5.0;
         }
         /* load optima */
-        if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-            || dimension_ == 10 || dimension_ == 20 ) {
+        if (dim == 2 || dim == 3 || dim == 5 
+            || dim == 10 || dim == 20 ) {
           std::string fname;
           fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
           load_optima(fname);
@@ -210,13 +210,13 @@ namespace mabe {
     lambda_[4] = 1.0/5.0; 
     lambda_[5] = 1.0/5.0;
     /* Lower/Upper Bounds */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       lbound_[i] = -5.0;
       ubound_[i] = 5.0;
     }
     /* load optima */
-    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-        || dimension_ == 10 || dimension_ == 20 ) {
+    if (dim == 2 || dim == 3 || dim == 5 
+        || dim == 10 || dim == 20 ) {
       std::string fname;
       fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
@@ -247,13 +247,13 @@ namespace mabe {
     lambda_[6] = 1.0/7.0;
     lambda_[7] = 1.0/7.0;
     /* Lower/Upper Bounds */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       lbound_[i] = -5.0;
       ubound_[i] = 5.0;
     }
     /* load optima */
-    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-        || dimension_ == 10 || dimension_ == 20 ) {
+    if (dim == 2 || dim == 3 || dim == 5 
+        || dim == 10 || dim == 20 ) {
       std::string fname;
       fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
@@ -293,13 +293,13 @@ namespace mabe {
     lambda_[4] = 2.0; 
     lambda_[5] = 5.0;
     /* Lower/Upper Bounds */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       lbound_[i] = -5.0;
       ubound_[i] = 5.0;
     }
     /* load optima */
-    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-        || dimension_ == 10 || dimension_ == 20 ) {
+    if (dim == 2 || dim == 3 || dim == 5 
+        || dim == 10 || dim == 20 ) {
       std::string fname;
       fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
@@ -344,13 +344,13 @@ namespace mabe {
     lambda_[6] = 1.0/10.0;
     lambda_[7] = 1.0/40.0;
     /* Lower/Upper Bounds */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       lbound_[i] = -5.0;
       ubound_[i] = 5.0;
     }
     /* load optima */
-    if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
-        || dimension_ == 10 || dimension_ == 20) {
+    if (dim == 2 || dim == 3 || dim == 5 
+        || dim == 10 || dim == 20) {
       std::string fname;
       fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + "_opt.dat";
       load_optima(fname);
@@ -622,10 +622,10 @@ namespace mabe {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
     for (int i=0; i<nofunc_; ++i) {
       sum = 0.0;
-      for (int j=0; j<dimension_; ++j) {
+      for (int j=0; j<dim; ++j) {
         sum += ( x[j] - O_[i][j] ) * ( x[j] - O_[i][j] );
       }
-      weight_[i] = exp( -sum/(2.0 * dimension_ * sigma_[i] * sigma_[i]) );
+      weight_[i] = exp( -sum/(2.0 * dim * sigma_[i] * sigma_[i]) );
       if (i==0) { maxi = weight_[i]; }
       if (weight_[i] > maxi) {
         maxi = weight_[i];
@@ -659,7 +659,7 @@ namespace mabe {
     }
     double tmp;
     for (int i=0; i< nofunc_; ++i) {
-      for (int j=0; j< dimension_; ++j) {
+      for (int j=0; j< dim; ++j) {
         file >> tmp; 
         O_[i][j] = tmp;
       }
@@ -677,8 +677,8 @@ namespace mabe {
     }
     double tmp(-1);
     for (int i=0; i<nofunc_; ++i) {
-      for (int j=0; j<dimension_; ++j) {
-        for (int k=0; k<dimension_; ++k) {
+      for (int j=0; j<dim; ++j) {
+        for (int k=0; k<dim; ++k) {
           file >> tmp; 
           M_[i][j][k] = tmp;
         }
@@ -692,8 +692,8 @@ namespace mabe {
  // Each "layer" of the matrix is an ID matrix
   void CFunction::init_rotmat_identity() {
     for (int i=0; i<nofunc_; ++i) {
-      for (int j=0; j<dimension_; ++j) {
-        for (int k=0; k<dimension_; ++k) {
+      for (int j=0; j<dim; ++j) {
+        for (int k=0; k<dim; ++k) {
           M_[i][j][k] = (j==k ? 1 : 0 );
         }
       }
@@ -705,7 +705,7 @@ namespace mabe {
   // Each column represents a random optima for each dimension of the function
   void CFunction::init_optima_rand(emp::Random & random) {	
     for (int i=0; i< nofunc_; ++i) {
-      for (int j=0; j< dimension_; ++j) {
+      for (int j=0; j< dim; ++j) {
         O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * random.GetDouble();
       }
     }
@@ -713,13 +713,13 @@ namespace mabe {
 
   void CFunction::transform_to_z(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambda_i */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       tmpx_[i] = (x[i] - O_[index][i])/lambda_[index];
     }
     /* Multiply z_i * M_i */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       z_[i] = 0;
-      for (int j=0; j<dimension_; ++j) {
+      for (int j=0; j<dim; ++j) {
         z_[i] += M_[index][j][i] * tmpx_[j];
       }
     }
@@ -727,13 +727,13 @@ namespace mabe {
 
   void CFunction::transform_to_z_noshift(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambda_i */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       tmpx_[i] = (x[i])/lambda_[index];
     }
     /* Multiply z_i * M_i */
-    for (int i=0; i<dimension_; ++i) {
+    for (int i=0; i<dim; ++i) {
       z_[i] = 0;
-      for (int j=0; j<dimension_; ++j) {
+      for (int j=0; j<dim; ++j) {
         z_[i] += M_[index][j][i] * tmpx_[j];
       }
     }
@@ -742,13 +742,13 @@ namespace mabe {
   void CFunction::calculate_fmaxi() {
     /* functions */
     for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
-    emp::vector<double> x5(dimension_);
-    for (int i=0; i<dimension_; ++i) { 
+    emp::vector<double> x5(dim);
+    for (int i=0; i<dim; ++i) { 
       x5[i] = 5 ;
     }
     for (int i=0; i<nofunc_; ++i) {
       transform_to_z_noshift(x5, i);
-      fmaxi_[i] = (*function_[i])(z_, dimension_);
+      fmaxi_[i] = (*function_[i])(z_, dim);
     }
   }
 
@@ -758,7 +758,7 @@ namespace mabe {
 
     for (int i=0; i< nofunc_; ++i) {
       std::vector<double> kk;
-      for (int j=0; j< dimension_; ++j) {
+      for (int j=0; j< dim; ++j) {
         kk.push_back(O_[i][j]);
       }
       OO.push_back(kk);
