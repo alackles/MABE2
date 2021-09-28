@@ -483,31 +483,31 @@ namespace mabe {
   *****************************************************************************/
   void CFunction::calculate_weights(const emp::vector<double> x) {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
-    for (int i=0; i<nofunc_; ++i) {
+    for (int i=0; i<numfunc; ++i) {
       sum = 0.0;
       for (int j=0; j<dim; ++j) {
-        sum += ( x[j] - O_[i][j] ) * ( x[j] - O_[i][j] );
+        sum += ( x[j] - O[i][j] ) * ( x[j] - O[i][j] );
       }
-      weight_[i] = exp( -sum/(2.0 * dim * sigma_[i] * sigma_[i]) );
-      if (i==0) { maxi = weight_[i]; }
-      if (weight_[i] > maxi) {
-        maxi = weight_[i];
+      weight[i] = exp( -sum/(2.0 * dim * sigma[i] * sigma[i]) );
+      if (i==0) { maxi = weight[i]; }
+      if (weight[i] > maxi) {
+        maxi = weight[i];
         maxindex = i;
       }
     }
     sum = 0.0;
-    for (int i=0; i<nofunc_; ++i) {
-      //if (weight_[i] != maxi) {
+    for (int i=0; i<numfunc; ++i) {
+      //if (weight[i] != maxi) {
       if (i != maxindex) {
-        weight_[i] *= (1.0 - pow(maxi, 10.0));
+        weight[i] *= (1.0 - pow(maxi, 10.0));
       }
-      sum += weight_[i];
+      sum += weight[i];
     }
-    for (int i=0; i<nofunc_; ++i) {
+    for (int i=0; i<numfunc; ++i) {
       if (sum == 0.0) {
-        weight_[i] = 1.0/(double)nofunc_;
+        weight[i] = 1.0/(double)numfunc;
       } else {
-        weight_[i] /= sum;
+        weight[i] /= sum;
       }
     }
   }
@@ -521,10 +521,10 @@ namespace mabe {
       exit(0);
     }
     double tmp;
-    for (int i=0; i< nofunc_; ++i) {
+    for (int i=0; i< numfunc; ++i) {
       for (int j=0; j< dim; ++j) {
         file >> tmp; 
-        O_[i][j] = tmp;
+        O[i][j] = tmp;
       }
     }
     file.close();
@@ -539,11 +539,11 @@ namespace mabe {
       exit(0);
     }
     double tmp(-1);
-    for (int i=0; i<nofunc_; ++i) {
+    for (int i=0; i<numfunc; ++i) {
       for (int j=0; j<dim; ++j) {
         for (int k=0; k<dim; ++k) {
           file >> tmp; 
-          M_[i][j][k] = tmp;
+          M[i][j][k] = tmp;
         }
       }
     }
@@ -554,10 +554,10 @@ namespace mabe {
  // One "layer" per function to be composited
  // Each "layer" of the matrix is an ID matrix
   void CFunction::init_rotmat_identity() {
-    for (int i=0; i<nofunc_; ++i) {
+    for (int i=0; i<numfunc; ++i) {
       for (int j=0; j<dim; ++j) {
         for (int k=0; k<dim; ++k) {
-          M_[i][j][k] = (j==k ? 1 : 0 );
+          M[i][j][k] = (j==k ? 1 : 0 );
         }
       }
     }	
@@ -567,51 +567,51 @@ namespace mabe {
   // Each row represents a function
   // Each column represents a random optima for each dimension of the function
   void CFunction::init_optima_rand(emp::Random & random) {	
-    for (int i=0; i< nofunc_; ++i) {
+    for (int i=0; i< numfunc; ++i) {
       for (int j=0; j< dim; ++j) {
-        O_[i][j] = lbound_[j] + (ubound_[j] - lbound_[j]) * random.GetDouble();
+        O[i][j] = lbound[j] + (ubound[j] - lbound[j]) * random.GetDouble();
       }
     }
   }
 
   void CFunction::transform_to_z(const emp::vector<double> x, const int &index) {
-    /* Calculate z_i = (x - o_i)/\lambda_i */
+    /* Calculate z_i = (x - o_i)/\lambdai */
     for (int i=0; i<dim; ++i) {
-      tmpx_[i] = (x[i] - O_[index][i])/lambda_[index];
+      tmpx[i] = (x[i] - O[index][i])/lambda[index];
     }
     /* Multiply z_i * M_i */
     for (int i=0; i<dim; ++i) {
-      z_[i] = 0;
+      z[i] = 0;
       for (int j=0; j<dim; ++j) {
-        z_[i] += M_[index][j][i] * tmpx_[j];
+        z[i] += M[index][j][i] * tmpx[j];
       }
     }
   }
 
   void CFunction::transform_to_z_noshift(const emp::vector<double> x, const int &index) {
-    /* Calculate z_i = (x - o_i)/\lambda_i */
+    /* Calculate z_i = (x - o_i)/\lambdai */
     for (int i=0; i<dim; ++i) {
-      tmpx_[i] = (x[i])/lambda_[index];
+      tmpx[i] = (x[i])/lambda[index];
     }
     /* Multiply z_i * M_i */
     for (int i=0; i<dim; ++i) {
-      z_[i] = 0;
+      z[i] = 0;
       for (int j=0; j<dim; ++j) {
-        z_[i] += M_[index][j][i] * tmpx_[j];
+        z[i] += M[index][j][i] * tmpx[j];
       }
     }
   }
 
   void CFunction::calculate_fmaxi() {
     /* functions */
-    for (int i=0; i<nofunc_; ++i) assert(function[i] != NULL);
+    for (int i=0; i<numfunc; ++i) assert(function[i] != NULL);
     emp::vector<double> x5(dim);
     for (int i=0; i<dim; ++i) { 
       x5[i] = 5 ;
     }
-    for (int i=0; i<nofunc_; ++i) {
+    for (int i=0; i<numfunc; ++i) {
       transform_to_z_noshift(x5, i);
-      fmaxi_[i] = (*function[i])(z_, dim);
+      fmaxi[i] = (*function[i])(z_, dim);
     }
   }
 
@@ -619,10 +619,10 @@ namespace mabe {
     assert(O_ != NULL && "O_ == NULL");
     std::vector< std::vector<double> > OO;
 
-    for (int i=0; i< nofunc_; ++i) {
+    for (int i=0; i< numfunc; ++i) {
       std::vector<double> kk;
       for (int j=0; j< dim; ++j) {
-        kk.push_back(O_[i][j]);
+        kk.push_back(O[i][j]);
       }
       OO.push_back(kk);
     }
