@@ -628,21 +628,6 @@ namespace mabe {
     }
   }
 
-  std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const {
-    assert(O != NULL && "O == NULL");
-    std::vector< std::vector<double> > OO;
-
-    for (int i=0; i< numfunc; ++i) {
-      std::vector<double> kk;
-      for (int j=0; j< dim; ++j) {
-        kk.push_back(O[i][j]);
-      }
-      OO.push_back(kk);
-    }
-    return OO;
-  }
-
-
 };
 
 #endif
