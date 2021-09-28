@@ -20,6 +20,9 @@ namespace mabe {
 
   class EvalGECCO : public Module {
   private:
+    size_t dims;
+    CF3 comp3;
+    CF4 comp4;
     mabe::Collection target_collect;
 
     std::string fcn_name;
@@ -30,9 +33,11 @@ namespace mabe {
     EvalGECCO(mabe::MABE & control,
            const std::string & name="EvalGECCO",
            const std::string & desc="Module to evaluate bitstrings on one of the GECCO Niching Competition 3D landscapes.",
+           size_t _dims=3,
            const std::string & _fname="Shubert",
            const std::string & _vtrait="vals", const std::string & _ftrait="fitness")
       : Module(control, name, desc)
+      , dim(_dims),
       , target_collect(control.GetPopulation(0))
       , fcn_name(_fname)
       , vals_trait(_vtrait)
@@ -53,6 +58,9 @@ namespace mabe {
       // Setup the traits.
       AddRequiredTrait<emp::vector<double>>(vals_trait);
       AddOwnedTrait<double>(fitness_trait, "Landscape fitness value", 0.0);
+
+      comp3.CF3(dims, control.GetRandom());
+      comp4.CF4(dims, control.GetRandom());
     }
 
     void OnUpdate(size_t /* update */) override {
@@ -66,17 +74,17 @@ namespace mabe {
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
         const auto & val = org.GetTrait<emp::vector<double>>(vals_trait);
-        tFitness fitness;
-
+        double fitness;
         if (fcn_name == "Shubert") {
           fitness = shubert(val, dims);
         } else if (fcn_name == "Vincent") {
-          //fitness = vincent(val, dims);
+          fitness = vincent(val, dims);
         } else if (fcn_name == "CF3") {
-          
+          fitness = comp3.evaluate(val);
         } else if (fcn_name == "CF4") {
-          
+          fitness = comp4.evaluate(val);
         } else {
+          std::cout << "Invalid function name." << std::endl;
         }
 
         // Store the count on the organism in the fitness trait.
