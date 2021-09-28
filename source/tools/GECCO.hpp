@@ -73,11 +73,11 @@ namespace mabe {
   	CFunction() 
     : dim(-1), numfunc(-1), rng(-1)
     , C(-1)
-    , lambda(NULL), sigma(NULL), bias(NULL)
-    , O(NULL), M(NULL)
-    , weight(NULL), lbound(NULL), ubound(NULL)
-    , fi(NULL), z(NULL), fbias(0)
-    , fmaxi(NULL), tmpx_(NULL), function(NULL)
+    , lambda(0), sigma(0), bias(0)
+    , O(0), M(0)
+    , weight(0), lbound(0), ubound(0)
+    , fi(0), z(0), fbias(0)
+    , fmaxi(0), tmpx(0), function(0)
     { ; }
     CFunction(const CFunction &) = default;
     CFunction(CFunction &&) = default;
@@ -89,11 +89,11 @@ namespace mabe {
   	CFunction(size_t _dim, size_t _numfunc, emp::Random & random) 
     : dim(_dim), numfunc(_numfunc), rng(random),
     , C(2000.0)
-    , lambda(NULL), sigma(NULL), bias(NULL)
-    , O(NULL), M(NULL)
-    , weight(NULL), lbound(NULL), ubound(NULL)
-    , fi(NULL), z(NULL), fbias(0)
-    , fmaxi(NULL), tmpx_(NULL), function(NULL)
+    , lambda(8), sigma(8), bias(8)
+    , O(_dim * 8), M(_dim * _dim * 8)
+    , weight(8), lbound(8), ubound(8)
+    , fi(8), z(8), fbias(8)
+    , fmaxi(8), tmpx(8), function(8)
     { ; }
     CFunction & operator=(const CFunction &) = delete;
     CFunction & operator=(CFunction &&) = default;
@@ -101,9 +101,10 @@ namespace mabe {
   	double GetLower(const int &ivar) const { return lbound[ivar]; } 
   	double GetUpper(const int &ivar) const { return ubound[ivar]; } 
 
-    void Config(const size_t _dim, emp::Random & _rng) {
+    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       dim = _dim;
       rng = _rng;
+      numfunc = _numfunc;
       lbound.assign(dim, -5.0);
       ubound.assign(dim, 5.0);
     }
@@ -127,12 +128,9 @@ namespace mabe {
   class CF1 : public CFunction {
   public:
     CF1();
-    void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
-      numfunc = 6;
+    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
+      CFunction::Config(_dim, _numfunc, _rng);
       sigma.assign(numfunc, 1.0);
-      bias.assign(numfunc, 0.0);
-      weight.assign(numfunc, 0.0);
       lambda = {1.0, 1.0, 8.0, 8.0, 1.0/5.0, 1.0/5.0};
       /* load optima */
       if (dim == 2 || dim == 3 || dim == 5 
@@ -155,12 +153,9 @@ namespace mabe {
   class CF2 : public CFunction {
   public:
     CF2();
-    void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
-      numfunc = 8;
+    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
+      CFunction::Config(_dim, _numfunc, _rng);
       sigma.assign(numfunc, 1.0);
-      bias.assign(numfunc, 0.0);
-      weight.assign(numfunc, 0.0);
       lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0}
       /* load optima */
       if (dim == 2 || dim == 3 || dim == 5 
@@ -187,11 +182,8 @@ namespace mabe {
   public:
     CF3();
     // Set up the composition
-    void Config(size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
-      numfunc = 6;
-      bias.assign(numfunc, 0.0);
-      weight.assign(numfunc, 0.0);
+    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
+      CFunction::Config(_dim, _numfunc, _rng);
       sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
       lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
       /* load optima */
@@ -218,14 +210,10 @@ namespace mabe {
   class CF4 : public CFunction {
   public:
     CF4();
-    void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
-      numfunc = 8;
+    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
+      CFunction::Config(_dim, _numfunc, _rng);
       sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0};
       lambda = {4.0, 1.0, 4.0, 1.0, 1.0/10.0, 1.0/5.0, 1.0/10.0, 1.0/40.0};
-      sigma.assign(numfunc, 1.0);
-      bias.assign(numfunc, 0.0);
-      weight.assign(numfunc, 0.0);
       /* load optima */
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20) {
