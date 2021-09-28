@@ -67,7 +67,6 @@ namespace mabe {
   	void transform_to_z(const emp::vector<double> x, const int &index);
   	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
   	void calculate_fmaxi();
-  	double evaluate_inner_(const emp::vector<double> x);
   	std::vector< std::vector<double> > get_copy_of_goptima() const;
 
   public:
@@ -99,17 +98,22 @@ namespace mabe {
     CFunction & operator=(const CFunction &) = delete;
     CFunction & operator=(CFunction &&) = default;
 
-  	virtual double evaluate(const emp::vector<double> x) = 0;
-  	double get_lbound(const int &ivar) const { return lbound_[ivar]; } 
-  	double get_ubound(const int &ivar) const { return ubound_[ivar]; } 
+  	double GetLower(const int &ivar) const { return lbound[ivar]; } 
+  	double GetUpper(const int &ivar) const { return ubound[ivar]; } 
 
-    /// Configure for new values
-    void Config(size_t _dim, size_t numfunc, emp::Random & random) {
-      // save new values
-      dim = _dim;
-      numfunc = _numfunc;
-      rng = random;
+    double GetFitness(const emp::vector<double> x) {
+      double result = 0;
+      calculate_weights(x);
+      for (int i=0; i<numfunc; ++i) {
+        transform_to_z(x, i);
+        fi[i] = (*function[i])(z, dimension);
+      }
+      for (int i=0; i<numfunc; ++i) {
+        result += weight[i]*( C * fi[i] / fmaxi[i] + bias[i] );
+      }
+      return -result + fbias;
     }
+
 
   };
 
@@ -135,7 +139,6 @@ namespace mabe {
   class CF3 : public CFunction {
     public:
       CF3();
-
       // Set up the composition
       void Config(size_t _dim, emp::Random & _rng) {
         dim = _dim;
@@ -227,10 +230,6 @@ namespace mabe {
     function_[2] = function_[3] = &FWeierstrass;
     function_[4] = function_[5] = &FSphere;
     calculate_fmaxi();
-  }
-
-  double CF1::evaluate(const emp::vector<double> x) {
-    return evaluate_inner_(x);
   }
 
   CF2::CF2(const size_t dim, emp::Random random) : CFunction(dim, 8, random) {
@@ -617,7 +616,7 @@ namespace mabe {
 
 
   /******************************************************************************
-  * Composition Functions
+  * Composition Function Helpers
   *****************************************************************************/
   void CFunction::calculate_weights(const emp::vector<double> x) {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
@@ -751,20 +750,6 @@ namespace mabe {
       transform_to_z_noshift(x5, i);
       fmaxi_[i] = (*function_[i])(z_, dimension_);
     }
-  }
-
-  double CFunction::evaluate_inner_(const emp::vector<double> x) {
-    double result(0);
-    calculate_weights(x);
-    for (int i=0; i<nofunc_; ++i) {
-      transform_to_z(x, i);
-      fi_[i] = (*function_[i])(z_, dimension_);
-    }
-    for (int i=0; i<nofunc_; ++i) {
-      result += weight_[i]*( C_ * fi_[i] / fmaxi_[i] + bias_[i] );
-    }
-
-    return -result + f_bias_;
   }
 
   std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const {
