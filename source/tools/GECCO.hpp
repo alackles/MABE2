@@ -144,27 +144,12 @@ namespace mabe {
         dim = _dim;
         rng = _rng;
         numfunc = 6;
-        for (int i=0; i<numfunc; ++i) {
-          bias_[i]  = 0.0;
-          weight_[i]= 0.0;
-        }
-        sigma[0] = 1.0;
-        sigma[1] = 1.0;
-        sigma[2] = 2.0;
-        sigma[3] = 2.0;
-        sigma[4] = 2.0;
-        sigma[5] = 2.0;
-        lambda[0] = 1.0/4.0; 
-        lambda[1] = 1.0/10.0; 
-        lambda[2] = 2.0; 
-        lambda[3] = 1.0; 
-        lambda[4] = 2.0; 
-        lambda_[5] = 5.0;
-        /* Lower/Upper Bounds */
-        for (int i=0; i<dim; ++i) {
-          lbound[i] = -5.0;
-          ubound[i] = 5.0;
-        }
+        bias(numfunc);
+        weight(numfunc);
+        sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
+        lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
+        lbound(dim, -5.0);
+        ubound(dim, 5.0);
         /* load optima */
         if (dim == 2 || dim == 3 || dim == 5 
             || dim == 10 || dim == 20 ) {
@@ -184,11 +169,6 @@ namespace mabe {
         function[4] = function[5] = &FGriewank;
         calculate_fmaxi();
       }
-
-      // evaluate the landscape 
-      double evaluate(const emp::vector<double> x);
-
-
   };
 
   class CF4 : public CFunction {
