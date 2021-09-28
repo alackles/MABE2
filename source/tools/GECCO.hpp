@@ -68,7 +68,6 @@ namespace mabe {
   	void transform_to_z(const emp::vector<double> x, const int &index);
   	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
   	void calculate_fmaxi();
-    std::vector< std::vector<double> > get_copy_of_goptima() const;
 
     // initialize composite functions
     tfitness FAckley(const emp::vector<double> x, const size_t & dim);
@@ -110,7 +109,8 @@ namespace mabe {
     CFunction & operator=(CFunction &&) = default;
 
   	double GetLower(const int &ivar) const { return lbound[ivar]; } 
-  	double GetUpper(const int &ivar) const { return ubound[ivar]; } 
+  	double GetUpper(const int &ivar) const { return ubound[ivar]; }
+    emp::vector<emp::vector<double>> GetMaxima() const { return O; } 
 
     void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       dim = _dim;
