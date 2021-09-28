@@ -37,7 +37,7 @@ namespace mabe {
            const std::string & _fname="Shubert",
            const std::string & _vtrait="vals", const std::string & _ftrait="fitness")
       : Module(control, name, desc)
-      , dim(_dims),
+      , dims(_dims)
       , target_collect(control.GetPopulation(0))
       , fcn_name(_fname)
       , vals_trait(_vtrait)
