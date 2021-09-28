@@ -39,7 +39,7 @@ namespace mabe {
 
   /* Composition Functions framework */
   class CFunction {
-  private:
+  protected:
   	size_t dim;
   	size_t numfunc;
   	double C;
@@ -59,7 +59,17 @@ namespace mabe {
     emp::vector<emp::vector<emp::vector<double>>> M;
     compFunction *function;
 
-
+    // internal helper functions
+  	void init_rotmat_identity();
+  	void init_optima_rand(emp::Random & random);
+  	void load_optima(const std::string &filename);
+  	void load_rotmat(const std::string &filename);
+  	void calculate_weights(const emp::vector<double> x);
+  	void transform_to_z(const emp::vector<double> x, const int &index);
+  	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
+  	void calculate_fmaxi();
+    std::vector< std::vector<double> > get_copy_of_goptima() const;
+  
   public:
   	CFunction() 
     : dim(-1), numfunc(-1), rng(-1)
@@ -89,17 +99,6 @@ namespace mabe {
     CFunction & operator=(const CFunction &) = delete;
     CFunction & operator=(CFunction &&) = default;
 
-    // internal helper functions
-  	void init_rotmat_identity();
-  	void init_optima_rand(emp::Random & random);
-  	void load_optima(const std::string &filename);
-  	void load_rotmat(const std::string &filename);
-  	void calculate_weights(const emp::vector<double> x);
-  	void transform_to_z(const emp::vector<double> x, const int &index);
-  	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
-  	void calculate_fmaxi();
-  	
-    std::vector< std::vector<double> > get_copy_of_goptima() const;
   	double GetLower(const int &ivar) const { return lbound[ivar]; } 
   	double GetUpper(const int &ivar) const { return ubound[ivar]; } 
 
