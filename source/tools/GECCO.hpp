@@ -69,6 +69,16 @@ namespace mabe {
   	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
   	void calculate_fmaxi();
     std::vector< std::vector<double> > get_copy_of_goptima() const;
+
+    // initialize composite functions
+    tfitness FAckley(const emp::vector<double> x, const size_t & dim);
+    tfitness FRastringin(const emp::vector<double> x, const size_t & dim);
+    tfitness FWeierstrass(const emp::vector<double> x, const size_t & dim);
+    tfitness FGriewank(const emp::vector<double> x, const size_t & dim);
+    tfitness FSphere(const emp::vector<double> x, const size_t & dim);
+    tfitness FSchwefel(const emp::vector<double> x, const size_t & dim);
+    tfitness FRosenbrock(const emp::vector<double> x, const size_t & dim);
+    tfitness FEF8F2(const emp::vector<double> x, const size_t & dim);
   
   public:
   	CFunction() 
@@ -140,7 +150,7 @@ namespace mabe {
         fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
-        init_optima_rand(rng);
+        init_optima_rand(random);
       }
       /* M_ Identity matrices */
       init_rotmat_identity();
@@ -166,7 +176,7 @@ namespace mabe {
         fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
-        init_optima_rand(rng);
+        init_optima_rand(random);
       }
       /* M_ Identity matrices */
       init_rotmat_identity();
@@ -197,7 +207,7 @@ namespace mabe {
         fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else { 
-        init_optima_rand(rng);
+        init_optima_rand(rng.GetInt());
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
@@ -225,7 +235,7 @@ namespace mabe {
         fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else {
-        init_optima_rand(rng);
+        init_optima_rand(random);
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
@@ -619,7 +629,7 @@ namespace mabe {
   }
 
   std::vector< std::vector<double> > CFunction::get_copy_of_goptima() const {
-    assert(O_ != NULL && "O_ == NULL");
+    assert(O != NULL && "O == NULL");
     std::vector< std::vector<double> > OO;
 
     for (int i=0; i< numfunc; ++i) {
