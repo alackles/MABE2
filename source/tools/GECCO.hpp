@@ -101,6 +101,13 @@ namespace mabe {
   	double GetLower(const int &ivar) const { return lbound[ivar]; } 
   	double GetUpper(const int &ivar) const { return ubound[ivar]; } 
 
+    void Config(const size_t _dim, emp::Random & _rng) {
+      dim = _dim;
+      rng = _rng;
+      lbound.assign(dim, -5.0);
+      ubound.assign(dim, 5.0);
+    }
+
     double GetFitness(const emp::vector<double> x) {
       double result = 0;
       calculate_weights(x);
@@ -114,244 +121,132 @@ namespace mabe {
       return -result + fbias;
     }
 
-
   };
 
   /* Interfaces for Composition functions */
   class CF1 : public CFunction {
-    //non-copyable
-    CF1(const CF1 &);
-    CF1& operator=(const CF1&);
   public:
-    CF1(const size_t dim, emp::Random random);
-    double evaluate(const emp::vector<double> x);
+    CF1();
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 6;
+      sigma.assign(numfunc, 1.0);
+      bias.assign(numfunc, 0.0);
+      weight.assign(numfunc, 0.0);
+      lambda = {1.0, 1.0, 8.0, 8.0, 1.0/5.0, 1.0/5.0};
+      /* load optima */
+      if (dim == 2 || dim == 3 || dim == 5 
+          || dim == 10 || dim == 20 ) {
+        std::string fname;
+        fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
+        load_optima(fname);
+      } else { 
+        init_optima_rand(random);
+      }
+      /* M_ Identity matrices */
+      init_rotmat_identity();
+      /* Initialize functions of the composition */
+      function[0] = function[1] = &FGriewank;
+      function[2] = function[3] = &FWeierstrass;
+      function[4] = function[5] = &FSphere;
+      calculate_fmaxi();
   };
 
   class CF2 : public CFunction {
-    //non-copyable
-    CF2(const CF2 &);
-    CF2& operator=(const CF2&);
   public:
-    CF2(const size_t dim, emp::Random random);
-  double evaluate(const emp::vector<double> x);
+    CF2();
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 8;
+      sigma.assign(numfunc, 1.0);
+      bias.assign(numfunc, 0.0);
+      weight.assign(numfunc, 0.0);
+      lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0}
+      /* load optima */
+      if (dim == 2 || dim == 3 || dim == 5 
+          || dim == 10 || dim == 20 ) {
+        std::string fname;
+        fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
+        load_optima(fname);
+      } else { 
+        init_optima_rand(random);
+      }
+      /* M_ Identity matrices */
+      init_rotmat_identity();
+
+      /* Initialize functions of the composition */
+      function[0] = function[1] = &FRastrigin;
+      function[2] = function[3] = &FWeierstrass;
+      function[4] = function[5] = &FGriewank;
+      function[6] = function[7] = &FSphere;
+      calculate_fmaxi();
+  }
   };
 
   class CF3 : public CFunction {
-    public:
-      CF3();
-      // Set up the composition
-      void Config(size_t _dim, emp::Random & _rng) {
-        dim = _dim;
-        rng = _rng;
-        numfunc = 6;
-        bias(numfunc);
-        weight(numfunc);
-        sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
-        lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
-        lbound(dim, -5.0);
-        ubound(dim, 5.0);
-        /* load optima */
-        if (dim == 2 || dim == 3 || dim == 5 
-            || dim == 10 || dim == 20 ) {
-          std::string fname;
-          fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
-          load_optima(fname);
-          fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
-          load_rotmat(fname);
-        } else { 
-          init_optima_rand(rng);
-          /* M_ Identity matrices */
-          init_rotmat_identity();
-        }
-        /* Initialize functions of the composition */
-        function[0] = function[1] = &FEF8F2;
-        function[2] = function[3] = &FWeierstrass;
-        function[4] = function[5] = &FGriewank;
-        calculate_fmaxi();
+  public:
+    CF3();
+    // Set up the composition
+    void Config(size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 6;
+      bias.assign(numfunc, 0.0);
+      weight.assign(numfunc, 0.0);
+      sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
+      lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
+      /* load optima */
+      if (dim == 2 || dim == 3 || dim == 5 
+          || dim == 10 || dim == 20 ) {
+        std::string fname;
+        fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
+        load_optima(fname);
+        fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
+        load_rotmat(fname);
+      } else { 
+        init_optima_rand(rng);
+        /* M_ Identity matrices */
+        init_rotmat_identity();
       }
+      /* Initialize functions of the composition */
+      function[0] = function[1] = &FEF8F2;
+      function[2] = function[3] = &FWeierstrass;
+      function[4] = function[5] = &FGriewank;
+      calculate_fmaxi();
+    }
   };
 
   class CF4 : public CFunction {
   public:
-    CF4(const size_t dim, emp::Random random);
-    double evaluate(const emp::vector<double> x);
+    CF4();
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 8;
+      sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0};
+      lambda = {4.0, 1.0, 4.0, 1.0, 1.0/10.0, 1.0/5.0, 1.0/10.0, 1.0/40.0};
+      sigma.assign(numfunc, 1.0);
+      bias.assign(numfunc, 0.0);
+      weight.assign(numfunc, 0.0);
+      /* load optima */
+      if (dim == 2 || dim == 3 || dim == 5 
+          || dim == 10 || dim == 20) {
+        std::string fname;
+        fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + "_opt.dat";
+        load_optima(fname);
+        fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
+        load_rotmat(fname);
+      } else {
+        init_optima_rand(random);
+        /* M_ Identity matrices */
+        init_rotmat_identity();
+      }
+      /* Initialize functions of the composition */
+      function[0] = function[1] = &FRastrigin;
+      function[2] = function[3] = &FEF8F2;
+      function[4] = function[5] = &FWeierstrass;
+      function[6] = function[7] = &FGriewank;
+      calculate_fmaxi();
   };
 
-  CF1::CF1(const size_t dim, emp::Random random) : CFunction(dim, 6, random) {
-    for (int i=0; i<nofunc_; ++i) {
-      sigma_[i] = 1;
-      bias_[i]  = 0;
-      weight_[i]= 0;
-    }
-    lambda_[0] = 1.0; 
-    lambda_[1] = 1.0; 
-    lambda_[2] = 8.0; 
-    lambda_[3] = 8.0; 
-    lambda_[4] = 1.0/5.0; 
-    lambda_[5] = 1.0/5.0;
-    /* Lower/Upper Bounds */
-    for (int i=0; i<dim; ++i) {
-      lbound_[i] = -5.0;
-      ubound_[i] = 5.0;
-    }
-    /* load optima */
-    if (dim == 2 || dim == 3 || dim == 5 
-        || dim == 10 || dim == 20 ) {
-      std::string fname;
-      fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
-      load_optima(fname);
-    } else { 
-      init_optima_rand(random);
-    }
-    /* M_ Identity matrices */
-    init_rotmat_identity();
-    /* Initialize functions of the composition */
-    function_[0] = function_[1] = &FGriewank;
-    function_[2] = function_[3] = &FWeierstrass;
-    function_[4] = function_[5] = &FSphere;
-    calculate_fmaxi();
-  }
-
-  CF2::CF2(const size_t dim, emp::Random random) : CFunction(dim, 8, random) {
-    for (int i=0; i<nofunc_; ++i) {
-      sigma_[i] = 1.0;
-      bias_[i]  = 0.0;
-      weight_[i]= 0.0;
-    }
-    lambda_[0] = 1.0; 
-    lambda_[1] = 1.0; 
-    lambda_[2] = 10.0; 
-    lambda_[3] = 10.0; 
-    lambda_[4] = 1.0/10.0; 
-    lambda_[5] = 1.0/10.0;
-    lambda_[6] = 1.0/7.0;
-    lambda_[7] = 1.0/7.0;
-    /* Lower/Upper Bounds */
-    for (int i=0; i<dim; ++i) {
-      lbound_[i] = -5.0;
-      ubound_[i] = 5.0;
-    }
-    /* load optima */
-    if (dim == 2 || dim == 3 || dim == 5 
-        || dim == 10 || dim == 20 ) {
-      std::string fname;
-      fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
-      load_optima(fname);
-    } else { 
-      init_optima_rand(random);
-    }
-    /* M_ Identity matrices */
-    init_rotmat_identity();
-
-    /* Initialize functions of the composition */
-    function_[0] = function_[1] = &FRastrigin;
-    function_[2] = function_[3] = &FWeierstrass;
-    function_[4] = function_[5] = &FGriewank;
-    function_[6] = function_[7] = &FSphere;
-    calculate_fmaxi();
-  }
-
-  double CF2::evaluate(const emp::vector<double> x) {
-    return evaluate_inner_(x);
-  }
-
-  CF3::CF3() : CFunction(dim, 6, random) {
-    for (int i=0; i<nofunc_; ++i) {
-      bias_[i]  = 0.0;
-      weight_[i]= 0.0;
-    }
-    sigma_[0] = 1.0;
-    sigma_[1] = 1.0;
-    sigma_[2] = 2.0;
-    sigma_[3] = 2.0;
-    sigma_[4] = 2.0;
-    sigma_[5] = 2.0;
-    lambda_[0] = 1.0/4.0; 
-    lambda_[1] = 1.0/10.0; 
-    lambda_[2] = 2.0; 
-    lambda_[3] = 1.0; 
-    lambda_[4] = 2.0; 
-    lambda_[5] = 5.0;
-    /* Lower/Upper Bounds */
-    for (int i=0; i<dim; ++i) {
-      lbound_[i] = -5.0;
-      ubound_[i] = 5.0;
-    }
-    /* load optima */
-    if (dim == 2 || dim == 3 || dim == 5 
-        || dim == 10 || dim == 20 ) {
-      std::string fname;
-      fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
-      load_optima(fname);
-      fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
-      load_rotmat(fname);
-    } else { 
-      init_optima_rand(random);
-      /* M_ Identity matrices */
-      init_rotmat_identity();
-    }
-    /* Initialize functions of the composition */
-    function_[0] = function_[1] = &FEF8F2;
-    function_[2] = function_[3] = &FWeierstrass;
-    function_[4] = function_[5] = &FGriewank;
-    calculate_fmaxi();
-  }
-
-  double CF3::evaluate(const emp::vector<double> x) {
-    return evaluate_inner_(x);
-  }
-
-  CF4::CF4(const size_t dim, emp::Random random) : CFunction(dim, 8, random) {
-    for (int i=0; i<nofunc_; ++i) {
-      sigma_[i] = 1.0;
-      bias_[i]  = 0.0;
-      weight_[i]= 0.0;
-    }
-    sigma_[0] = 1.0;
-    sigma_[1] = 1.0;
-    sigma_[2] = 1.0;
-    sigma_[3] = 1.0;
-    sigma_[4] = 1.0;
-    sigma_[5] = 2.0;
-    sigma_[6] = 2.0;
-    sigma_[7] = 2.0;
-    lambda_[0] = 4.0; 
-    lambda_[1] = 1.0; 
-    lambda_[2] = 4.0; 
-    lambda_[3] = 1.0; 
-    lambda_[4] = 1.0/10.0; 
-    lambda_[5] = 1.0/5.0;
-    lambda_[6] = 1.0/10.0;
-    lambda_[7] = 1.0/40.0;
-    /* Lower/Upper Bounds */
-    for (int i=0; i<dim; ++i) {
-      lbound_[i] = -5.0;
-      ubound_[i] = 5.0;
-    }
-    /* load optima */
-    if (dim == 2 || dim == 3 || dim == 5 
-        || dim == 10 || dim == 20) {
-      std::string fname;
-      fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + "_opt.dat";
-      load_optima(fname);
-      fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
-      load_rotmat(fname);
-    } else {
-      init_optima_rand(random);
-      /* M_ Identity matrices */
-      init_rotmat_identity();
-    }
-    /* Initialize functions of the composition */
-    function_[0] = function_[1] = &FRastrigin;
-    function_[2] = function_[3] = &FEF8F2;
-    function_[4] = function_[5] = &FWeierstrass;
-    function_[6] = function_[7] = &FGriewank;
-    calculate_fmaxi();
-  }
-
-  double CF4::evaluate(const emp::vector<double> x) {
-    return evaluate_inner_(x);
-  }
   /* Basic Benchmark functions */
 
   /******************************************************************************
@@ -721,14 +616,14 @@ namespace mabe {
 
   void CFunction::calculate_fmaxi() {
     /* functions */
-    for (int i=0; i<nofunc_; ++i) assert(function_[i] != NULL);
+    for (int i=0; i<nofunc_; ++i) assert(function[i] != NULL);
     emp::vector<double> x5(dim);
     for (int i=0; i<dim; ++i) { 
       x5[i] = 5 ;
     }
     for (int i=0; i<nofunc_; ++i) {
       transform_to_z_noshift(x5, i);
-      fmaxi_[i] = (*function_[i])(z_, dim);
+      fmaxi_[i] = (*function[i])(z_, dim);
     }
   }
 
