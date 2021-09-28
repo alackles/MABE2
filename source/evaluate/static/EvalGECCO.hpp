@@ -21,7 +21,7 @@ namespace mabe {
   class EvalGECCO : public Module {
   private:
     size_t dims;
-    CF3 comp3;
+    //CF3 comp3;
     //CF4 comp4()
     mabe::Collection target_collect;
     std::string fcn_name;
@@ -59,7 +59,7 @@ namespace mabe {
       AddOwnedTrait<double>(fitness_trait, "Landscape fitness value", 0.0);
      
       // set up the composite functions
-      comp3.Config(dims, control.GetRandom());
+      //comp3.Config(dims, control.GetRandom());
       //CF3 comp4(dims, control.GetRandom());
     }
 
@@ -80,7 +80,7 @@ namespace mabe {
         } else if (fcn_name == "Vincent") {
           fitness = vincent(val, dims);
         } else if (fcn_name == "CF3") {
-          fitness = comp3().evaluate(val)
+          //fitness = comp3().evaluate(val)
         } else if (fcn_name == "CF4") {
           //fitness = comp4.evaluate(val);
         } else {
