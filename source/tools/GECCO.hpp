@@ -140,7 +140,7 @@ namespace mabe {
         fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
-        init_optima_rand(random);
+        init_optima_rand(rng);
       }
       /* M_ Identity matrices */
       init_rotmat_identity();
@@ -166,7 +166,7 @@ namespace mabe {
         fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
-        init_optima_rand(random);
+        init_optima_rand(rng);
       }
       /* M_ Identity matrices */
       init_rotmat_identity();
@@ -225,7 +225,7 @@ namespace mabe {
         fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else {
-        init_optima_rand(random);
+        init_optima_rand(rng);
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
