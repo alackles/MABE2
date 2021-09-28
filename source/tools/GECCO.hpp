@@ -70,14 +70,14 @@ namespace mabe {
   	void calculate_fmaxi();
 
     // initialize composite functions
-    tfitness FAckley(const emp::vector<double> x, const size_t & dim);
-    tfitness FRastringin(const emp::vector<double> x, const size_t & dim);
-    tfitness FWeierstrass(const emp::vector<double> x, const size_t & dim);
-    tfitness FGriewank(const emp::vector<double> x, const size_t & dim);
-    tfitness FSphere(const emp::vector<double> x, const size_t & dim);
-    tfitness FSchwefel(const emp::vector<double> x, const size_t & dim);
-    tfitness FRosenbrock(const emp::vector<double> x, const size_t & dim);
-    tfitness FEF8F2(const emp::vector<double> x, const size_t & dim);
+    tFitness FAckley(const emp::vector<double> x, const size_t & dim);
+    tFitness FRastringin(const emp::vector<double> x, const size_t & dim);
+    tFitness FWeierstrass(const emp::vector<double> x, const size_t & dim);
+    tFitness FGriewank(const emp::vector<double> x, const size_t & dim);
+    tFitness FSphere(const emp::vector<double> x, const size_t & dim);
+    tFitness FSchwefel(const emp::vector<double> x, const size_t & dim);
+    tFitness FRosenbrock(const emp::vector<double> x, const size_t & dim);
+    tFitness FEF8F2(const emp::vector<double> x, const size_t & dim);
   
   public:
   	CFunction() 
@@ -150,7 +150,7 @@ namespace mabe {
         fname = "DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
-        init_optima_rand(random);
+        init_optima_rand(rng);
       }
       /* M_ Identity matrices */
       init_rotmat_identity();
@@ -176,7 +176,7 @@ namespace mabe {
         fname = "DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
-        init_optima_rand(random);
+        init_optima_rand(rng);
       }
       /* M_ Identity matrices */
       init_rotmat_identity();
@@ -235,7 +235,7 @@ namespace mabe {
         fname = "DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else {
-        init_optima_rand(random);
+        init_optima_rand(rng);
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
