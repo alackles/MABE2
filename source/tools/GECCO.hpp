@@ -135,11 +135,57 @@ namespace mabe {
   class CF3 : public CFunction {
     public:
       CF3();
-      double evaluate(const emp::vector<double> x);
-      void Config(size_t dim, emp::Random & rng) {
-        dimension_ = dim;
-        rng_ = rng;
+
+      // Set up the composition
+      void Config(size_t _dim, emp::Random & _rng) {
+        dim = _dim;
+        rng = _rng;
+        numfunc = 6;
+        for (int i=0; i<numfunc; ++i) {
+          bias_[i]  = 0.0;
+          weight_[i]= 0.0;
+        }
+        sigma[0] = 1.0;
+        sigma[1] = 1.0;
+        sigma[2] = 2.0;
+        sigma[3] = 2.0;
+        sigma[4] = 2.0;
+        sigma[5] = 2.0;
+        lambda[0] = 1.0/4.0; 
+        lambda[1] = 1.0/10.0; 
+        lambda[2] = 2.0; 
+        lambda[3] = 1.0; 
+        lambda[4] = 2.0; 
+        lambda_[5] = 5.0;
+        /* Lower/Upper Bounds */
+        for (int i=0; i<dim; ++i) {
+          lbound[i] = -5.0;
+          ubound[i] = 5.0;
+        }
+        /* load optima */
+        if (dimension_ == 2 || dimension_ == 3 || dimension_ == 5 
+            || dimension_ == 10 || dimension_ == 20 ) {
+          std::string fname;
+          fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
+          load_optima(fname);
+          fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
+          load_rotmat(fname);
+        } else { 
+          init_optima_rand(rng);
+          /* M_ Identity matrices */
+          init_rotmat_identity();
+        }
+        /* Initialize functions of the composition */
+        function[0] = function[1] = &FEF8F2;
+        function[2] = function[3] = &FWeierstrass;
+        function[4] = function[5] = &FGriewank;
+        calculate_fmaxi();
       }
+
+      // evaluate the landscape 
+      double evaluate(const emp::vector<double> x);
+
+
   };
 
   class CF4 : public CFunction {
