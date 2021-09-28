@@ -39,40 +39,26 @@ namespace mabe {
 
   /* Composition Functions framework */
   class CFunction {
-  	//non-copyable
-  	CFunction(const CFunction&);
-  	CFunction& operator=(const CFunction &);
-  public:
-  	CFunction();
-  	CFunction(const size_t &dim, const size_t &nofunc, emp::Random &random);
-  	virtual ~CFunction();
+  private:
+  	size_t dim;
+  	size_t numfunc;
+  	double C;
+  	double fbias;
+  	emp::vector<double> lambda;
+  	emp::vector<double> sigma;
+  	emp::vector<double> bias;
+  	emp::vector<double> weight;
+  	emp::vector<double> lbound;
+  	emp::vector<double> ubound;
+  	emp::vector<double> fi;
+  	emp::vector<double> z;
+  	emp::vector<double> fmaxi;
+  	emp::vector<double> tmpx;
+  	emp::vector<emp::vector<double>> O;
+    emp::vector<emp::vector<emp::vector<double>>> M;
+    compFunction *function;
 
-  	virtual double evaluate(const emp::vector<double> x) = 0;
-  	double get_lbound(const int &ivar) const { return lbound_[ivar]; } 
-  	double get_ubound(const int &ivar) const { return ubound_[ivar]; } 
-
-  protected:
-  	size_t dimension_;
-  	size_t nofunc_;
-  	double C_;
-  	double f_bias_;
-  	emp::vector<double> lambda_;
-  	emp::vector<double> sigma_;
-  	emp::vector<double> bias_;
-  	emp::vector<double> weight_;
-  	emp::vector<double> lbound_;
-  	emp::vector<double> ubound_;
-  	emp::vector<double> fi_;
-  	emp::vector<double> z_;
-  	emp::vector<double> fmaxi_;
-  	emp::vector<double> tmpx_;
-  	emp::vector<emp::vector<double>> O_;
-    emp::vector<emp::vector<emp::vector<double>>> M_;
-    emp::Random rng_;
-    compFunction *function_;
-
-
-  	/* Inner help functions */
+    // internal helper functions
   	void init_rotmat_identity();
   	void init_optima_rand(emp::Random & random);
   	void load_optima(const std::string &filename);
@@ -83,6 +69,35 @@ namespace mabe {
   	void calculate_fmaxi();
   	double evaluate_inner_(const emp::vector<double> x);
   	std::vector< std::vector<double> > get_copy_of_goptima() const;
+
+  public:
+  	CFunction() 
+    : dim(-1), numfunc(-1), C(-1), rng(-1)
+    , lambda(NULL), sigma(NULL), bias(NULL)
+    , O(NULL), M(NULL)
+    , weight(NULL), lbound(NULL), ubound(NULL)
+    , fi(NULL), z(NULL), fbias(0)
+    , fmaxi(NULL), tmpx_(NULL), function(NULL)
+    { ; }
+    
+    // dimensions are the number of dimensions each function should have
+    // numfunc is the number of functions to composite
+    // rng is the random number generator used to generate this landscape
+  	CFunction(size_t _dim, size_t _numfunc, ) 
+    : dim(-1), numfunc(-1), C(-1), rng(-1)
+    , lambda(NULL), sigma(NULL), bias(NULL)
+    , O(NULL), M(NULL)
+    , weight(NULL), lbound(NULL), ubound(NULL)
+    , fi(NULL), z(NULL), fbias(0)
+    , fmaxi(NULL), tmpx_(NULL), function(NULL)
+    { ; }
+  	void Config(const size_t &dim, const size_t &nofunc, emp::Random &random);
+  	~CFunction();
+
+  	virtual double evaluate(const emp::vector<double> x) = 0;
+  	double get_lbound(const int &ivar) const { return lbound_[ivar]; } 
+  	double get_ubound(const int &ivar) const { return ubound_[ivar]; } 
+
   };
 
   /* Basic Benchmark functions */
@@ -347,18 +362,16 @@ namespace mabe {
   };
 
   class CF3 : public CFunction {
-    //non-copyable
-    CF3(const CF3 &);
-    CF3& operator=(const CF3&);
-  public:
-    CF3(const size_t dim, emp::Random random);
-    double evaluate(const emp::vector<double> x);
+    public:
+      CF3();
+      double evaluate(const emp::vector<double> x);
+      void Config(size_t dim, emp::Random & rng) {
+        dimension_ = dim;
+        rng_ = rng;
+      }
   };
 
   class CF4 : public CFunction {
-    //non-copyable
-    CF4(const CF4 &);
-    CF4& operator=(const CF4&);
   public:
     CF4(const size_t dim, emp::Random random);
     double evaluate(const emp::vector<double> x);
@@ -367,18 +380,9 @@ namespace mabe {
   /******************************************************************************
   * Composition Functions
   *****************************************************************************/
-  /* Constructors */
+  /* Constructor */
   CFunction::CFunction() 
     : dimension_(-1), nofunc_(-1), C_(-1), rng_(-1)
-    , lambda_(NULL), sigma_(NULL), bias_(NULL)
-    , O_(NULL), M_(NULL)
-    , weight_(NULL), lbound_(NULL), ubound_(NULL)
-    , fi_(NULL), z_(NULL), f_bias_(0)
-    , fmaxi_(NULL), tmpx_(NULL), function_(NULL)
-    { ; }
-
-  CFunction::CFunction(const size_t & dim, const size_t & nofunc, emp::Random & random) 
-    : dimension_(dim), nofunc_(nofunc), C_(2000.0), rng_(random)
     , lambda_(NULL), sigma_(NULL), bias_(NULL)
     , O_(NULL), M_(NULL)
     , weight_(NULL), lbound_(NULL), ubound_(NULL)
@@ -633,7 +637,7 @@ namespace mabe {
     return evaluate_inner_(x);
   }
 
-  CF3::CF3(const size_t dim, emp::Random random) : CFunction(dim, 6, random) {
+  CF3::CF3() : CFunction(dim, 6, random) {
     for (int i=0; i<nofunc_; ++i) {
       bias_[i]  = 0.0;
       weight_[i]= 0.0;
