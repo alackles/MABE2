@@ -44,6 +44,7 @@ namespace mabe {
   	size_t numfunc;
   	double C;
   	double fbias;
+    emp::Random rng;
   	emp::vector<double> lambda;
   	emp::vector<double> sigma;
   	emp::vector<double> bias;
@@ -58,16 +59,6 @@ namespace mabe {
     emp::vector<emp::vector<emp::vector<double>>> M;
     compFunction *function;
 
-    // internal helper functions
-  	void init_rotmat_identity();
-  	void init_optima_rand(emp::Random & random);
-  	void load_optima(const std::string &filename);
-  	void load_rotmat(const std::string &filename);
-  	void calculate_weights(const emp::vector<double> x);
-  	void transform_to_z(const emp::vector<double> x, const int &index);
-  	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
-  	void calculate_fmaxi();
-  	std::vector< std::vector<double> > get_copy_of_goptima() const;
 
   public:
   	CFunction() 
@@ -77,7 +68,7 @@ namespace mabe {
     , O(0), M(0)
     , weight(0), lbound(0), ubound(0)
     , fi(0), z(0), fbias(0)
-    , fmaxi(0), tmpx(0), function(0)
+    , fmaxi(0), tmpx(0), function(NULL)
     { ; }
     CFunction(const CFunction &) = default;
     CFunction(CFunction &&) = default;
@@ -87,17 +78,28 @@ namespace mabe {
     // rng is the random number generator used to generate this landscape
     // I actually do not know what C is?
   	CFunction(size_t _dim, size_t _numfunc, emp::Random & random) 
-    : dim(_dim), numfunc(_numfunc), rng(random),
+    : dim(_dim), numfunc(_numfunc), rng(random)
     , C(2000.0)
     , lambda(8), sigma(8), bias(8)
     , O(_dim * 8), M(_dim * _dim * 8)
     , weight(8), lbound(8), ubound(8)
     , fi(8), z(8), fbias(8)
-    , fmaxi(8), tmpx(8), function(8)
+    , fmaxi(8), tmpx(8), function(NULL)
     { ; }
     CFunction & operator=(const CFunction &) = delete;
     CFunction & operator=(CFunction &&) = default;
 
+    // internal helper functions
+  	void init_rotmat_identity();
+  	void init_optima_rand(emp::Random & random);
+  	void load_optima(const std::string &filename);
+  	void load_rotmat(const std::string &filename);
+  	void calculate_weights(const emp::vector<double> x);
+  	void transform_to_z(const emp::vector<double> x, const int &index);
+  	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
+  	void calculate_fmaxi();
+  	
+    std::vector< std::vector<double> > get_copy_of_goptima() const;
   	double GetLower(const int &ivar) const { return lbound[ivar]; } 
   	double GetUpper(const int &ivar) const { return ubound[ivar]; } 
 
@@ -114,7 +116,7 @@ namespace mabe {
       calculate_weights(x);
       for (int i=0; i<numfunc; ++i) {
         transform_to_z(x, i);
-        fi[i] = (*function[i])(z, dimension);
+        fi[i] = (*function[i])(z, dim);
       }
       for (int i=0; i<numfunc; ++i) {
         result += weight[i]*( C * fi[i] / fmaxi[i] + bias[i] );
@@ -148,6 +150,7 @@ namespace mabe {
       function[2] = function[3] = &FWeierstrass;
       function[4] = function[5] = &FSphere;
       calculate_fmaxi();
+    };
   };
 
   class CF2 : public CFunction {
@@ -175,7 +178,7 @@ namespace mabe {
       function[4] = function[5] = &FGriewank;
       function[6] = function[7] = &FSphere;
       calculate_fmaxi();
-  }
+    }
   };
 
   class CF3 : public CFunction {
@@ -233,6 +236,7 @@ namespace mabe {
       function[4] = function[5] = &FWeierstrass;
       function[6] = function[7] = &FGriewank;
       calculate_fmaxi();
+    };
   };
 
   /* Basic Benchmark functions */
