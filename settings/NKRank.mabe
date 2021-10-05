@@ -52,4 +52,4 @@ BitsOrg bits_org {              // Organism consisting of a series of N bits.
 
 @start(0) print("random_seed = ", random_seed, "\n");
 @start(0) inject("bits_org", "main_pop", pop_size);
-@update(10) exit();
+@update(500) exit();
