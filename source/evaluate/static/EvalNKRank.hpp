@@ -27,19 +27,19 @@ namespace mabe {
 
     std::string bits_trait;
     std::string fitness_trait;
-    std::string knockout_file;
+    std::string mutant_file;
 
   public:
     EvalNKRank(mabe::MABE & control,
            const std::string & name="EvalNKRank",
            const std::string & desc="Module to evaluate bitstrings on an NK Fitness Lanscape WITH rank epistasis baked in.",
-           size_t _N=100, size_t _K=3, const std::string & _btrait="bits", const std::string & _ftrait="fitness", const std::string & _kfile="knockouts.csv")
+           size_t _N=100, size_t _K=3, const std::string & _btrait="bits", const std::string & _ftrait="fitness", const std::string & _mfile="mutants.csv")
       : Module(control, name, desc)
       , N(_N), K(_K)
       , target_collect(control.GetPopulation(0))
       , bits_trait(_btrait)
       , fitness_trait(_ftrait)
-      , knockout_file(_kfile)
+      , mutant_file(_mfile)
     {
       SetEvaluateMod(true);
     }
@@ -51,7 +51,7 @@ namespace mabe {
       LinkVar(K, "K", "Number of bits used in each gene");
       LinkVar(bits_trait, "bits_trait", "Which trait stores the bit sequence to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store NK fitness in?");
-      LinkVar(knockout_file, "knockout_file", "Where should we save the information about knockouts?");
+      LinkVar(mutant_file, "mutant_file", "Where should we save the information about mutants?");
     }
 
     void SetupModule() override {
@@ -93,29 +93,31 @@ namespace mabe {
     }
 
     // Rank epistasis analysis on the final population
+    // 
     void BeforeExit() override {
-      std::ofstream kfileout(knockout_file);
-      kfileout << "org_ID,mt_pos,ko_pos,score_MT,score_KO,\n";
+      std::ofstream mutFilename(mutant_file);
+      mfile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
       int org_id = 0;
-      std::cout << "exit test " << std::endl;
       const auto & bits = max_bits;
       for (int i = 0; i < N ; ++i) {
-        int mt_pos = i;
-        auto knockout = bits;
-        knockout.Toggle(i); 
-        double mt_fitness = landscape.GetFitness(knockout);
+        int pos_ref = i;
+        auto mutant = bits;
+        mutant.Toggle(i); 
+        // get fitness of org with single mutation (i)
+        double fitness_ref = landscape.GetFitness(mutant);
         for (int j = 0 ; j < N ; ++j) {
           if (j != i) {
-            int ko_pos = j;
-            knockout.Toggle(j);
-            double ko_fitness = landscape.GetFitness(knockout);
-            knockout.Toggle(j);
-            kfileout << org_id << "," << mt_pos << "," << ko_pos << "," << mt_fitness << "," << ko_fitness << "," << "\n";
+            int pos_mut = j;
+            mutant.Toggle(j);
+            // get fitness of org with dual mutations (i and j)
+            double fitness_mut = landscape.GetFitness(mutant);
+            mutant.Toggle(j);
+            mutFilename << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
           }
         }
-        knockout.Toggle(i);
+        mutant.Toggle(i);
       }
-      kfileout.close();
+      mutFilename.close();
     }
       
   };
