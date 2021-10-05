@@ -1,4 +1,4 @@
-random_seed = 1431727272;      // Seed for random number generator; use 0 to base on time.
+random_seed = 1324777372;       // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
 Value pop_size = 200;           // Local value variable.
@@ -14,6 +14,7 @@ EvalNKRank eval_nkrank {        // Evaluate bitstrings on an NK fitness lanscape
   fitness_trait = "fitness";    // Which trait should we store NK fitness in?
   mutant_file = "mutants.csv";  // Where should we save the information about mutants?
   nk_file = "nk.csv";           // Where should we save the actual NK landscape?
+  genome_file = "ref_genome.csv";// Where should we save the maximally performing (i.e. reference) genome (in case we happen to need it later)?
 }
 FileOutput output {             // Output collected data into a specified file.
   filename = "output.csv";      // Name of file for output data.

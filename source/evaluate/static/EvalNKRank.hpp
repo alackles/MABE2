@@ -29,6 +29,7 @@ namespace mabe {
     std::string fitness_trait;
     std::string mutant_file;
     std::string nk_file;
+    std::string genome_file;
 
   public:
     EvalNKRank(mabe::MABE & control,
@@ -36,7 +37,7 @@ namespace mabe {
            const std::string & desc="Module to evaluate bitstrings on an NK Fitness Lanscape WITH rank epistasis baked in.",
            size_t _N=100, size_t _K=3, 
            const std::string & _btrait="bits", const std::string & _ftrait="fitness", 
-           const std::string & _mfile="mutants.csv", const std::string & _nkfile="nk.csv")
+           const std::string & _mfile="mutants.csv", const std::string & _nkfile="nk.csv", const std::string & _gfile="ref_genome.csv")
       : Module(control, name, desc)
       , N(_N), K(_K)
       , target_collect(control.GetPopulation(0))
@@ -44,6 +45,7 @@ namespace mabe {
       , fitness_trait(_ftrait)
       , mutant_file(_mfile)
       , nk_file(_nkfile)
+      , genome_file(_gfile)
     {
       SetEvaluateMod(true);
     }
@@ -57,6 +59,7 @@ namespace mabe {
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store NK fitness in?");
       LinkVar(mutant_file, "mutant_file", "Where should we save the information about mutants?");
       LinkVar(nk_file, "nk_file", "Where should we save the actual NK landscape?");
+      LinkVar(genome_file, "genome_file", "Where should we save the maximally performing (i.e. reference) genome (in case we happen to need it later)?");
     }
 
     void SetupModule() override {
@@ -85,6 +88,12 @@ namespace mabe {
     }
 
     emp::BitVector max_bits;
+
+    void PrintGenome(emp::BitVector genome) {
+      std::ofstream genomeFile(genome_file);
+      genomeFile << genome.ToString();
+      genomeFile.close();
+    }
     
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
@@ -116,6 +125,7 @@ namespace mabe {
     // Rank epistasis analysis on the final population
     // 
     void BeforeExit() override {
+      PrintGenome(max_bits);
       // use the existing landscape to evaluate and output the mutants
       std::ofstream mutFile(mutant_file);
       mutFile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
