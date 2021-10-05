@@ -33,13 +33,16 @@ namespace mabe {
     EvalNKRank(mabe::MABE & control,
            const std::string & name="EvalNKRank",
            const std::string & desc="Module to evaluate bitstrings on an NK Fitness Lanscape WITH rank epistasis baked in.",
-           size_t _N=100, size_t _K=3, const std::string & _btrait="bits", const std::string & _ftrait="fitness", const std::string & _mfile="mutants.csv")
+           size_t _N=100, size_t _K=3, 
+           const std::string & _btrait="bits", const std::string & _ftrait="fitness", 
+           const std::string & _mfile="mutants.csv", const std::string & _nkfile="nk.csv")
       : Module(control, name, desc)
       , N(_N), K(_K)
       , target_collect(control.GetPopulation(0))
       , bits_trait(_btrait)
       , fitness_trait(_ftrait)
       , mutant_file(_mfile)
+      , nk_file(_nkfile)
     {
       SetEvaluateMod(true);
     }
@@ -52,6 +55,7 @@ namespace mabe {
       LinkVar(bits_trait, "bits_trait", "Which trait stores the bit sequence to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store NK fitness in?");
       LinkVar(mutant_file, "mutant_file", "Where should we save the information about mutants?");
+      LinkVar(nk_file, "nk_file", "Where should we save the actual NK landscape?");
     }
 
     void SetupModule() override {
@@ -61,6 +65,22 @@ namespace mabe {
 
       // Setup the fitness landscape.
       landscape.Config(N, K, control.GetRandom());  // Setup the fitness landscape.
+    
+      // Output the fitness landscape.
+      PrintLandscape(landscape);
+    
+    }
+
+    void PrintLandscape(NKLandscape nk_landscape) {
+      std::ofstream nkFilename(nk_file);
+      rows = nk_landscape.GetStateCount();
+      for (r = 0; r < rows; ++r) {
+        for (n = 0; n < N; ++n) {
+          nk_file << nk_landscape.GetFitness(n, r) << ",";
+        }
+        nk_file << "\n";
+      }
+      nkFilename.close()
     }
 
     emp::BitVector max_bits;
@@ -95,6 +115,7 @@ namespace mabe {
     // Rank epistasis analysis on the final population
     // 
     void BeforeExit() override {
+      // use the existing landscape to evaluate and output the mutants
       std::ofstream mutFilename(mutant_file);
       mfile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
       int org_id = 0;
