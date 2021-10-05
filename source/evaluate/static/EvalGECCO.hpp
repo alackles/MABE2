@@ -84,7 +84,7 @@ namespace mabe {
         } else if (fcn_name == "CF4") {
           //fitness = comp4.evaluate(val);
         } else {
-          std::cout << "Invalid function name." << std::endl;
+          std::cout << "Invalid function name:" << fcn_name << std::endl;
         }
 
         // Store the count on the organism in the fitness trait.
