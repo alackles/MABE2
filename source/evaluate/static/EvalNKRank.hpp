@@ -28,6 +28,7 @@ namespace mabe {
     std::string bits_trait;
     std::string fitness_trait;
     std::string mutant_file;
+    std::string nk_file;
 
   public:
     EvalNKRank(mabe::MABE & control,
@@ -72,15 +73,15 @@ namespace mabe {
     }
 
     void PrintLandscape(NKLandscape nk_landscape) {
-      std::ofstream nkFilename(nk_file);
-      rows = nk_landscape.GetStateCount();
-      for (r = 0; r < rows; ++r) {
-        for (n = 0; n < N; ++n) {
-          nk_file << nk_landscape.GetFitness(n, r) << ",";
+      std::ofstream nkFile(nk_file);
+      size_t rows = nk_landscape.GetStateCount();
+      for (size_t r = 0; r < rows; ++r) {
+        for (size_t n = 0; n < N; ++n) {
+          nkFile << nk_landscape.GetFitness(n, r) << ",";
         }
-        nk_file << "\n";
+        nkFile << "\n";
       }
-      nkFilename.close()
+      nkFile.close();
     }
 
     emp::BitVector max_bits;
@@ -116,8 +117,8 @@ namespace mabe {
     // 
     void BeforeExit() override {
       // use the existing landscape to evaluate and output the mutants
-      std::ofstream mutFilename(mutant_file);
-      mfile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
+      std::ofstream mutFile(mutant_file);
+      mutFile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
       int org_id = 0;
       const auto & bits = max_bits;
       for (int i = 0; i < N ; ++i) {
@@ -133,12 +134,12 @@ namespace mabe {
             // get fitness of org with dual mutations (i and j)
             double fitness_mut = landscape.GetFitness(mutant);
             mutant.Toggle(j);
-            mutFilename << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
+            mutFile << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
           }
         }
         mutant.Toggle(i);
       }
-      mutFilename.close();
+      mutFile.close();
     }
       
   };
