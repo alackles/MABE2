@@ -615,7 +615,7 @@ namespace mabe {
 
   void CFunction::calculate_fmaxi() {
     /* functions */
-    for (int i=0; i<numfunc; ++i) assert(function[i] != NULL);
+    for (int i=0; i<numfunc; ++i) emp_assert(function[i] != NULL);
     emp::vector<double> x5(dim);
     for (int i=0; i<dim; ++i) { 
       x5[i] = 5 ;
