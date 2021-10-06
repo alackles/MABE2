@@ -69,57 +69,6 @@ namespace mabe {
   	void transform_to_z_noshift(const emp::vector<double> x, const int &index);
   	void calculate_fmaxi();
 
-<<<<<<< Updated upstream
-    // initialize composite functions
-    tFitness FAckley(const emp::vector<double> x, const size_t & dim);
-    tFitness FRastringin(const emp::vector<double> x, const size_t & dim);
-    tFitness FWeierstrass(const emp::vector<double> x, const size_t & dim);
-    tFitness FGriewank(const emp::vector<double> x, const size_t & dim);
-    tFitness FSphere(const emp::vector<double> x, const size_t & dim);
-    tFitness FSchwefel(const emp::vector<double> x, const size_t & dim);
-    tFitness FRosenbrock(const emp::vector<double> x, const size_t & dim);
-    tFitness FEF8F2(const emp::vector<double> x, const size_t & dim);
-  
-  public:
-  	CFunction() 
-    : dim(-1), numfunc(-1), rng(-1)
-    , C(-1)
-    , lambda(0), sigma(0), bias(0)
-    , O(0), M(0)
-    , weight(0), lbound(0), ubound(0)
-    , fi(0), z(0), fbias(0)
-    , fmaxi(0), tmpx(0), function(NULL)
-    { ; }
-    CFunction(const CFunction &) = default;
-    CFunction(CFunction &&) = default;
-
-    // dimensions are the number of dimensions each function should have
-    // numfunc is the number of functions to composite
-    // rng is the random number generator used to generate this landscape
-    // I actually do not know what C is?
-  	CFunction(size_t _dim, size_t _numfunc, emp::Random & random) 
-    : dim(_dim), numfunc(_numfunc), rng(random)
-    , C(2000.0)
-    , lambda(8), sigma(8), bias(8)
-    , O(_dim * 8), M(_dim * _dim * 8)
-    , weight(8), lbound(8), ubound(8)
-    , fi(8), z(8), fbias(8)
-    , fmaxi(8), tmpx(8), function(NULL)
-    { ; }
-    CFunction & operator=(const CFunction &) = delete;
-    CFunction & operator=(CFunction &&) = default;
-
-  	double GetLower(const int &ivar) const { return lbound[ivar]; } 
-  	double GetUpper(const int &ivar) const { return ubound[ivar]; }
-    emp::vector<emp::vector<double>> GetMaxima() const { return O; } 
-
-    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
-      dim = _dim;
-      rng = _rng;
-      numfunc = _numfunc;
-      lbound.assign(dim, -5.0);
-      ubound.assign(dim, 5.0);
-=======
     /* Basic Benchmark functions */
     
     /******************************************************************************
@@ -159,7 +108,6 @@ namespace mabe {
     tFitness equal_maxima(const double *x, const int &dim) {
       tFitness s = sin(5.0 * emp::PI * x[0]);
       return pow(s, 6);
->>>>>>> Stashed changes
     }
 
     double GetFitness(const emp::vector<double> x) {
@@ -281,31 +229,12 @@ namespace mabe {
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
-<<<<<<< Updated upstream
-      /* Initialize functions of the composition */
-      function[0] = function[1] = &FRastrigin;
-      function[2] = function[3] = &FEF8F2;
-      function[4] = function[5] = &FWeierstrass;
-      function[6] = function[7] = &FGriewank;
-      calculate_fmaxi();
-    };
-  };
-
-  /* Basic Benchmark functions */
-
-  /******************************************************************************
-    * F1: Five-Uneven-Peak Trap 
-    * Variable ranges: x in [0, 30
-    * No. of global peaks: 2
-    * No. of local peaks:  3. 
-=======
       return -result;
     }
   
 
     /******************************************************************************
     * Basic functions for composition 
->>>>>>> Stashed changes
     *****************************************************************************/
   double five_uneven_peak_trap(const emp::vector<double> x, const size_t &dim) {
     double result=-1.0;
@@ -650,9 +579,6 @@ namespace mabe {
         z[i] += M[index][j][i] * tmpx[j];
       }
     }
-<<<<<<< Updated upstream
-  }
-=======
 
   /* Interfaces for Composition functions */
   class CF1 : public CFunction {
@@ -663,7 +589,6 @@ namespace mabe {
     CF1(const int dim);
     tFitness evaluate(const double *x);
   };
->>>>>>> Stashed changes
 
   void CFunction::transform_to_z_noshift(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambdai */
@@ -694,8 +619,6 @@ namespace mabe {
 
 };
 
-<<<<<<< Updated upstream
-=======
 
 /******************************************************************************
  * Composition Functions
@@ -1129,5 +1052,4 @@ tFitness CF4::evaluate(const double *x)
 
 };
 
->>>>>>> Stashed changes
 #endif
