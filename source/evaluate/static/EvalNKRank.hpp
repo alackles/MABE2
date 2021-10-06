@@ -131,13 +131,13 @@ namespace mabe {
       mutFile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
       int org_id = 0;
       const auto & bits = max_bits;
-      for (int i = 0; i < N ; ++i) {
+      for (size_t i = 0; i < N ; ++i) {
         int pos_ref = i;
         auto mutant = bits;
         mutant.Toggle(i); 
         // get fitness of org with single mutation (i)
         double fitness_ref = landscape.GetFitness(mutant);
-        for (int j = 0 ; j < N ; ++j) {
+        for (size_t j = 0 ; j < N ; ++j) {
           if (j != i) {
             int pos_mut = j;
             mutant.Toggle(j);
