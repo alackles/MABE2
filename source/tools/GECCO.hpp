@@ -15,7 +15,7 @@
 
 #include <map>
 #include <string>
-#include <cassert>
+#include <functional>
 
 #include "emp/base/assert.hpp"
 #include "emp/base/Ptr.hpp"
