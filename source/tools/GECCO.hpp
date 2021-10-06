@@ -56,8 +56,6 @@ namespace mabe {
   	emp::vector<emp::vector<double>> O;
     emp::vector<emp::vector<emp::vector<double>>> M;
     emp::vector<comp_func_t> function;
-    
-    //[](const emp::vector<double> & x, const size_t dims) {};
 
     // internal helper functions
   	void init_rotmat_identity();
@@ -71,7 +69,7 @@ namespace mabe {
 
     // initialize composite functions
     comp_func_t FAckley(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FRastringin(const emp::vector<double> x, const size_t & dim);
+    comp_func_t FRastrigin(const emp::vector<double> x, const size_t & dim);
     comp_func_t FWeierstrass(const emp::vector<double> x, const size_t & dim);
     comp_func_t FGriewank(const emp::vector<double> x, const size_t & dim);
     comp_func_t FSphere(const emp::vector<double> x, const size_t & dim);
@@ -125,7 +123,7 @@ namespace mabe {
       calculate_weights(x);
       for (int i=0; i<numfunc; ++i) {
         transform_to_z(x, i);
-        fi[i] = (*function[i])(z, dim);
+        fi[i] = (function[i])(z, dim);
       }
       for (int i=0; i<numfunc; ++i) {
         result += weight[i]*( C * fi[i] / fmaxi[i] + bias[i] );
@@ -168,7 +166,7 @@ namespace mabe {
     void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       CFunction::Config(_dim, _numfunc, _rng);
       sigma.assign(numfunc, 1.0);
-      lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0}
+      lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0};
       /* load optima */
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20 ) {
