@@ -120,7 +120,7 @@ namespace mabe {
       ubound.assign(dim, 5.0);
     }
 
-    double Gecomp_func_t(const emp::vector<double> x) {
+    double GetFitness(const emp::vector<double> x) {
       double result = 0;
       calculate_weights(x);
       for (int i=0; i<numfunc; ++i) {
