@@ -28,11 +28,12 @@
 #include "emp/bits/BitVector.hpp"
 #include "emp/math/constants.hpp"
 
+using comp_func_t = std::function<double(const emp::vector<double> &, const size_t dims)>;
+
 namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
-  using comp_func_t = std::function<double(const emp::vector<double> &, const size_t dims)> 
 
   /* Composition Functions framework */
   class CFunction {
