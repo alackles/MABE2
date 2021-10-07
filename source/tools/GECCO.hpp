@@ -414,12 +414,12 @@ namespace mabe {
   comp_func_t FWeierstrass(const emp::vector<double> x, const size_t &dim) {
     double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
     int k_max(20);
-    for (size_t j=0; j<=k_max; ++j) {
+    for (int j=0; j<=k_max; ++j) {
       sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
     }
     for (size_t i=0; i<dim; ++i) {
       sum = 0.0;
-    for (size_t j=0; j<=k_max; ++j) {
+    for (int j=0; j<=k_max; ++j) {
       sum += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(x[i]+0.5));
     }
     result += sum;
