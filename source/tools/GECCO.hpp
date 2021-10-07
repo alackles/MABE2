@@ -90,7 +90,7 @@ namespace mabe {
     , O(0), M(0)
     , weight(0), lbound(0), ubound(0)
     , fi(0), z(0), fbias(0)
-    , fmaxi(0), tmpx(0), function(NULL)
+    , fmaxi(0), tmpx(0), function(0)
     { ; }
     CFunction(const CFunction &) = default;
     CFunction(CFunction &&) = default;
@@ -106,7 +106,7 @@ namespace mabe {
     , O(_dim * 8), M(_dim * _dim * 8)
     , weight(8), lbound(8), ubound(8)
     , fi(8), z(8), fbias(8)
-    , fmaxi(8), tmpx(8), function(NULL)
+    , fmaxi(8), tmpx(8), function(8)
     { ; }
     CFunction & operator=(const CFunction &) = delete;
     CFunction & operator=(CFunction &&) = default;
