@@ -38,6 +38,7 @@ namespace mabe {
   /* Composition Functions framework */
   class CFunction {
   protected:
+  
     size_t dim;
   	size_t numfunc;
     emp::Random rng;
@@ -73,14 +74,14 @@ namespace mabe {
   	void calculate_fmaxi();
 
     // initialize composite functions
-    comp_func_t FAckley(const emp::vector<double> x, const size_t & dim);
-    static comp_func_t FRastrigin(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FWeierstrass(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FGriewank(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FSphere(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FSchwefel(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FRosenbrock(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FEF8F2(const emp::vector<double> x, const size_t & dim);
+    comp_func_t FAckley;
+    comp_func_t FRastrigin;
+    comp_func_t FWeierstrass;
+    comp_func_t FGriewank;
+    comp_func_t FSphere;
+    comp_func_t FSchwefel;
+    comp_func_t FRosenbrock;
+    comp_func_t FEF8F2;
   
   public:
   	CFunction() 
@@ -243,12 +244,11 @@ namespace mabe {
         init_rotmat_identity();
       }
       /* Initialize functions of the composition */
-      function[0] = FRastrigin; 
-      //function[1] = FRastrigin;
-      //function[2] = function[3] = FEF8F2;
-      //function[4] = function[5] = FWeierstrass;
-      //function[6] = function[7] = FGriewank;
-      //calculate_fmaxi();
+      function[0] = function[1] = FRastrigin;
+      function[2] = function[3] = FEF8F2;
+      function[4] = function[5] = FWeierstrass;
+      function[6] = function[7] = FGriewank;
+      calculate_fmaxi();
     };
   };
 
@@ -404,7 +404,7 @@ namespace mabe {
   }; 
 
   /* Rastrigin's function */
-  static comp_func_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim; ++i) {
       result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
@@ -630,7 +630,7 @@ namespace mabe {
     }
     for (size_t i=0; i<numfunc; ++i) {
       transform_to_z_noshift(x5, i);
-      fmaxi[i] = (function[i])(z, dim);
+      fmaxi[i] = function[i](z, dim);
     }
   }
 
