@@ -38,23 +38,28 @@ namespace mabe {
   /* Composition Functions framework */
   class CFunction {
   protected:
-  	size_t dim;
+    size_t dim;
   	size_t numfunc;
-  	double C;
-  	double fbias;
     emp::Random rng;
+  	
+    double C;
+  	
   	emp::vector<double> lambda;
   	emp::vector<double> sigma;
   	emp::vector<double> bias;
+   
+  	emp::vector<emp::vector<double>> O;
+    emp::vector<emp::vector<emp::vector<double>>> M;
+   
   	emp::vector<double> weight;
   	emp::vector<double> lbound;
   	emp::vector<double> ubound;
   	emp::vector<double> fi;
   	emp::vector<double> z;
+    double fbias;
   	emp::vector<double> fmaxi;
   	emp::vector<double> tmpx;
-  	emp::vector<emp::vector<double>> O;
-    emp::vector<emp::vector<emp::vector<double>>> M;
+   
     emp::vector<comp_func_t> function;
 
     // internal helper functions
@@ -153,10 +158,10 @@ namespace mabe {
       /* M_ Identity matrices */
       init_rotmat_identity();
       /* Initialize functions of the composition */
-      function[0] = function[1] = FGriewank;
-      function[2] = function[3] = FWeierstrass;
-      function[4] = function[5] = FSphere;
-      calculate_fmaxi();
+      //function[0] = function[1] = FGriewank;
+      //function[2] = function[3] = FWeierstrass;
+      //function[4] = function[5] = FSphere;
+      //calculate_fmaxi();
     };
   };
 
@@ -180,11 +185,11 @@ namespace mabe {
       init_rotmat_identity();
 
       /* Initialize functions of the composition */
-      function[0] = function[1] = FRastrigin;
-      function[2] = function[3] = FWeierstrass;
-      function[4] = function[5] = FGriewank;
-      function[6] = function[7] = FSphere;
-      calculate_fmaxi();
+      //function[0] = function[1] = FRastrigin;
+      //function[2] = function[3] = FWeierstrass;
+      //function[4] = function[5] = FGriewank;
+      //function[6] = function[7] = FSphere;
+      //calculate_fmaxi();
     }
   };
 
@@ -210,10 +215,10 @@ namespace mabe {
         init_rotmat_identity();
       }
       /* Initialize functions of the composition */
-      function[0] = function[1] = FEF8F2;
-      function[2] = function[3] = FWeierstrass;
-      function[4] = function[5] = FGriewank;
-      calculate_fmaxi();
+      //function[0] = function[1] = FEF8F2;
+      //function[2] = function[3] = FWeierstrass;
+      //function[4] = function[5] = FGriewank;
+      //calculate_fmaxi();
     }
   };
 
@@ -238,11 +243,12 @@ namespace mabe {
         init_rotmat_identity();
       }
       /* Initialize functions of the composition */
-      function[0] = function[1] = FRastrigin;
-      function[2] = function[3] = FEF8F2;
-      function[4] = function[5] = FWeierstrass;
-      function[6] = function[7] = FGriewank;
-      calculate_fmaxi();
+      function[0] = FRastrigin; 
+      //function[1] = FRastrigin;
+      //function[2] = function[3] = FEF8F2;
+      //function[4] = function[5] = FWeierstrass;
+      //function[6] = function[7] = FGriewank;
+      //calculate_fmaxi();
     };
   };
 
