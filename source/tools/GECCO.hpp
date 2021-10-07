@@ -210,7 +210,7 @@ namespace mabe {
         fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else { 
-        init_optima_rand(&rng.GetUInt());
+        init_optima_rand(rng);
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
@@ -253,6 +253,8 @@ namespace mabe {
   };
 
   /* Basic Benchmark functions */
+  // NOTE: Each can take a dimension as a second argument, but this dimension does nothing.
+  // It is just to conform the benchmark function arguments to the composite function arguments.
 
   /******************************************************************************
     * F1: Five-Uneven-Peak Trap 
@@ -260,7 +262,7 @@ namespace mabe {
     * No. of global peaks: 2
     * No. of local peaks:  3. 
     *****************************************************************************/
-  double five_uneven_peak_trap(const emp::vector<double> x, const size_t &dim) {
+  double five_uneven_peak_trap(const emp::vector<double> x, const size_t) {
     double result=-1.0;
     if (x[0]>=0 && x[0]< 2.5) {
     result = 80*(2.5-x[0]);
@@ -288,7 +290,7 @@ namespace mabe {
   * No. of global peaks: 5
   * No. of local peaks:  0. 
   *****************************************************************************/
-  double equal_maxima(const emp::vector<double> x, const size_t &dim) {
+  double equal_maxima(const emp::vector<double> x, const size_t) {
     double s = sin(5.0 * emp::PI * x[0]);
     return pow(s, 6);
   }
@@ -299,7 +301,7 @@ namespace mabe {
   * No. of global peaks: 1
   * No. of local peaks:  4. 
   *****************************************************************************/
-  double uneven_decreasing_maxima(const emp::vector<double> x, const size_t &dim) {
+  double uneven_decreasing_maxima(const emp::vector<double> x, const size_t) {
     double tmp1 = -2*log(2)*((x[0]-0.08)/0.854)*((x[0]-0.08)/0.854);
     double tmp2 = sin( 5*emp::PI*(pow(x[0],3.0/4.0)-0.05) );
     return exp(tmp1) * pow(tmp2, 6);
@@ -311,7 +313,7 @@ namespace mabe {
   * No. of global peaks: 4
   * No. of local peaks:  0.
   *****************************************************************************/
-  double himmelblau(const emp::vector<double> x, const size_t &dim) {
+  double himmelblau(const emp::vector<double> x, const size_t) {
     return 200 - (x[0]*x[0] + x[1] - 11)*(x[0]*x[0] + x[1] - 11) - 
     (x[0] + x[1]*x[1] - 7)*(x[0] + x[1]*x[1] - 7);
   }  	
@@ -322,7 +324,7 @@ namespace mabe {
   * No. of global peaks: 2
   * No. of local peaks:  2.
   *****************************************************************************/
-  double six_hump_camel_back(const emp::vector<double> x, const size_t &dim) {
+  double six_hump_camel_back(const emp::vector<double> x, const size_t) {
     return -( (4 - 2.1*x[0]*x[0] + pow(x[0],4.0)/3.0)*x[0]*x[0] + 
     x[0]*x[1] + (4*x[1]*x[1] -4)*x[1]*x[1] );
   }
@@ -389,7 +391,7 @@ namespace mabe {
   * Basic functions for composition 
   *****************************************************************************/
   /* Ackley's function */
-  comp_func_t FAckley(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FAckley = [](const emp::vector<double> x, const size_t &dim) {
     double sum1(0.0), sum2(0.0), result;
     for (size_t i=0; i<dim; ++i) {
       sum1 += x[i]*x[i];
@@ -399,19 +401,19 @@ namespace mabe {
     sum2 /= dim;
     result = 20.0 + emp::E - 20.0*exp(sum1) - exp(sum2);
     return result;
-  } 
+  }; 
 
   /* Rastrigin's function */
-  comp_func_t FRastrigin(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim; ++i) {
       result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
     }
     return result;
-  }
+  };
 
   /* Weierstrass's function */
-  comp_func_t FWeierstrass(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FWeierstrass = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
     int k_max(20);
     for (int j=0; j<=k_max; ++j) {
@@ -425,10 +427,10 @@ namespace mabe {
     result += sum;
     }
     return result - sum2*dim;
-  }
+  };
 
   /* Griewank's function */
-  comp_func_t FGriewank(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FGriewank = [](const emp::vector<double> x, const size_t &dim) {
     double sum(0.0), prod(1.0), result(0.0);
     for (size_t i=0; i<dim; ++i) {
       sum  += x[i]*x[i]/4000.0;
@@ -436,19 +438,19 @@ namespace mabe {
     }
     result = 1.0 + sum - prod;
     return result;
-  }
+  };
 
   /* Sphere function */
-  comp_func_t FSphere(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FSphere = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim; ++i) {
       result += x[i]*x[i];
     }
     return result;
-  }
+  };
 
   /* Schwefel's function */
-  comp_func_t FSchwefel(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FSchwefel = [](const emp::vector<double> x, const size_t &dim) {
     double sum1(0.0), sum2(0.0);
     for (size_t i=0; i<dim; ++i) {
       sum2 = 0.0;
@@ -458,19 +460,19 @@ namespace mabe {
       sum1 += sum2*sum2;
     }
     return sum1;
-  }
+  };
 
   /* Rosenbrock's function */
-  comp_func_t FRosenbrock(const emp::vector<double> x, const size_t &dim) {
+  comp_func_t FRosenbrock = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim-1; ++i) {
       result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
     }
     return result;
-  }
+  };
 
   /* FEF8F2 function */
-  comp_func_t FEF8F2(const emp::vector<double> xx, const size_t &dim) {
+  comp_func_t FEF8F2 = [](const emp::vector<double> xx, const size_t &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
     for (size_t i=0; i<dim-1; ++i) {
@@ -492,7 +494,7 @@ namespace mabe {
     result += f;
 
     return result;
-  }
+  };
 
 
   /******************************************************************************
