@@ -74,7 +74,7 @@ namespace mabe {
 
     // initialize composite functions
     comp_func_t FAckley(const emp::vector<double> x, const size_t & dim);
-    comp_func_t FRastrigin(const emp::vector<double> x, const size_t & dim);
+    static comp_func_t FRastrigin(const emp::vector<double> x, const size_t & dim);
     comp_func_t FWeierstrass(const emp::vector<double> x, const size_t & dim);
     comp_func_t FGriewank(const emp::vector<double> x, const size_t & dim);
     comp_func_t FSphere(const emp::vector<double> x, const size_t & dim);
@@ -404,7 +404,7 @@ namespace mabe {
   }; 
 
   /* Rastrigin's function */
-  comp_func_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
+  static comp_func_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim; ++i) {
       result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
