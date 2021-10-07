@@ -210,7 +210,7 @@ namespace mabe {
         fname = "DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else { 
-        init_optima_rand(rng.GetInt());
+        init_optima_rand(&rng.GetUInt());
         /* M_ Identity matrices */
         init_rotmat_identity();
       }
