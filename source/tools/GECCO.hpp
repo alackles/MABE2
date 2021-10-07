@@ -126,11 +126,11 @@ namespace mabe {
     double GetFitness(const emp::vector<double> x) {
       double result = 0;
       calculate_weights(x);
-      for (int i=0; i<numfunc; ++i) {
+      for (size_t i=0; i<numfunc; ++i) {
         transform_to_z(x, i);
         fi[i] = (function[i])(z, dim);
       }
-      for (int i=0; i<numfunc; ++i) {
+      for (size_t i=0; i<numfunc; ++i) {
         result += weight[i]*( C * fi[i] / fmaxi[i] + bias[i] );
       }
       return -result + fbias;
@@ -335,9 +335,9 @@ namespace mabe {
   *****************************************************************************/
   double shubert(const emp::vector<double> x, const size_t &dim) {
     double result(1), sum(0); 
-    for (int i=0; i<dim; i++) {
+    for (size_t i=0; i<dim; i++) {
       sum=0;
-      for (int j=1; j<6; j++) {
+      for (size_t j=1; j<6; j++) {
         sum = sum + j * cos((j+1) * x[i] + j);
       }
       result = result * sum;
@@ -353,7 +353,7 @@ namespace mabe {
   *****************************************************************************/
   double vincent(const emp::vector<double> x, const size_t &dim) {
     double result(0);
-    for (int i=0; i<dim; i++){
+    for (size_t i=0; i<dim; i++){
       if (x[i]<=0){
         std::cerr << "Illegal value: " << x[i] << std::endl;
         exit(-1);
@@ -377,7 +377,7 @@ namespace mabe {
   double modified_rastrigin_all(const emp::vector<double> x, const size_t &dim)
   {
     double result(0);
-    for (int i=0; i<dim; i++) {
+    for (size_t i=0; i<dim; i++) {
       if (dim == 2)  { result = result + 10+ 9*cos(2*emp::PI*MPPF92[i]*x[i]); }
       if (dim == 8)  { result = result + 10+ 9*cos(2*emp::PI*MPPF98[i]*x[i]); }
       if (dim == 16) { result = result + 10+ 9*cos(2*emp::PI*MPPF916[i]*x[i]); }
@@ -391,7 +391,7 @@ namespace mabe {
   /* Ackley's function */
   comp_func_t FAckley(const emp::vector<double> x, const size_t &dim) {
     double sum1(0.0), sum2(0.0), result;
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       sum1 += x[i]*x[i];
       sum2 += cos(2.0*emp::PI*x[i]);
     }
@@ -404,7 +404,7 @@ namespace mabe {
   /* Rastrigin's function */
   comp_func_t FRastrigin(const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
     }
     return result;
@@ -414,12 +414,12 @@ namespace mabe {
   comp_func_t FWeierstrass(const emp::vector<double> x, const size_t &dim) {
     double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
     int k_max(20);
-    for (int j=0; j<=k_max; ++j) {
+    for (size_t j=0; j<=k_max; ++j) {
       sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
     }
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       sum = 0.0;
-    for (int j=0; j<=k_max; ++j) {
+    for (size_t j=0; j<=k_max; ++j) {
       sum += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(x[i]+0.5));
     }
     result += sum;
@@ -430,7 +430,7 @@ namespace mabe {
   /* Griewank's function */
   comp_func_t FGriewank(const emp::vector<double> x, const size_t &dim) {
     double sum(0.0), prod(1.0), result(0.0);
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       sum  += x[i]*x[i]/4000.0;
       prod *= cos( x[i]/sqrt(double(1.0+i)) );
     }
@@ -441,7 +441,7 @@ namespace mabe {
   /* Sphere function */
   comp_func_t FSphere(const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       result += x[i]*x[i];
     }
     return result;
@@ -450,9 +450,9 @@ namespace mabe {
   /* Schwefel's function */
   comp_func_t FSchwefel(const emp::vector<double> x, const size_t &dim) {
     double sum1(0.0), sum2(0.0);
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       sum2 = 0.0;
-      for (int j=0; j<=i; ++j) {
+      for (size_t j=0; j<=i; ++j) {
         sum2 += x[j];
       }
       sum1 += sum2*sum2;
@@ -463,7 +463,7 @@ namespace mabe {
   /* Rosenbrock's function */
   comp_func_t FRosenbrock(const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
-    for (int i=0; i<dim-1; ++i) {
+    for (size_t i=0; i<dim-1; ++i) {
       result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
     }
     return result;
@@ -473,7 +473,7 @@ namespace mabe {
   comp_func_t FEF8F2(const emp::vector<double> xx, const size_t &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
-    for (int i=0; i<dim-1; ++i) {
+    for (size_t i=0; i<dim-1; ++i) {
       x = xx[i]   +1;
       y = xx[i+1] +1;
 
@@ -500,9 +500,9 @@ namespace mabe {
   *****************************************************************************/
   void CFunction::calculate_weights(const emp::vector<double> x) {
     double sum(0), maxi(emp::MIN_INT), maxindex(0);
-    for (int i=0; i<numfunc; ++i) {
+    for (size_t i=0; i<numfunc; ++i) {
       sum = 0.0;
-      for (int j=0; j<dim; ++j) {
+      for (size_t j=0; j<dim; ++j) {
         sum += ( x[j] - O[i][j] ) * ( x[j] - O[i][j] );
       }
       weight[i] = exp( -sum/(2.0 * dim * sigma[i] * sigma[i]) );
@@ -513,14 +513,14 @@ namespace mabe {
       }
     }
     sum = 0.0;
-    for (int i=0; i<numfunc; ++i) {
+    for (size_t i=0; i<numfunc; ++i) {
       //if (weight[i] != maxi) {
       if (i != maxindex) {
         weight[i] *= (1.0 - pow(maxi, 10.0));
       }
       sum += weight[i];
     }
-    for (int i=0; i<numfunc; ++i) {
+    for (size_t i=0; i<numfunc; ++i) {
       if (sum == 0.0) {
         weight[i] = 1.0/(double)numfunc;
       } else {
@@ -538,8 +538,8 @@ namespace mabe {
       exit(0);
     }
     double tmp;
-    for (int i=0; i< numfunc; ++i) {
-      for (int j=0; j< dim; ++j) {
+    for (size_t i=0; i< numfunc; ++i) {
+      for (size_t j=0; j< dim; ++j) {
         file >> tmp; 
         O[i][j] = tmp;
       }
@@ -556,9 +556,9 @@ namespace mabe {
       exit(0);
     }
     double tmp(-1);
-    for (int i=0; i<numfunc; ++i) {
-      for (int j=0; j<dim; ++j) {
-        for (int k=0; k<dim; ++k) {
+    for (size_t i=0; i<numfunc; ++i) {
+      for (size_t j=0; j<dim; ++j) {
+        for (size_t k=0; k<dim; ++k) {
           file >> tmp; 
           M[i][j][k] = tmp;
         }
@@ -571,9 +571,9 @@ namespace mabe {
  // One "layer" per function to be composited
  // Each "layer" of the matrix is an ID matrix
   void CFunction::init_rotmat_identity() {
-    for (int i=0; i<numfunc; ++i) {
-      for (int j=0; j<dim; ++j) {
-        for (int k=0; k<dim; ++k) {
+    for (size_t i=0; i<numfunc; ++i) {
+      for (size_t j=0; j<dim; ++j) {
+        for (size_t k=0; k<dim; ++k) {
           M[i][j][k] = (j==k ? 1 : 0 );
         }
       }
@@ -584,8 +584,8 @@ namespace mabe {
   // Each row represents a function
   // Each column represents a random optima for each dimension of the function
   void CFunction::init_optima_rand(emp::Random & random) {	
-    for (int i=0; i< numfunc; ++i) {
-      for (int j=0; j< dim; ++j) {
+    for (size_t i=0; i< numfunc; ++i) {
+      for (size_t j=0; j< dim; ++j) {
         O[i][j] = lbound[j] + (ubound[j] - lbound[j]) * random.GetDouble();
       }
     }
@@ -593,13 +593,13 @@ namespace mabe {
 
   void CFunction::transform_to_z(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambdai */
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       tmpx[i] = (x[i] - O[index][i])/lambda[index];
     }
     /* Multiply z_i * M_i */
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       z[i] = 0;
-      for (int j=0; j<dim; ++j) {
+      for (size_t j=0; j<dim; ++j) {
         z[i] += M[index][j][i] * tmpx[j];
       }
     }
@@ -607,13 +607,13 @@ namespace mabe {
 
   void CFunction::transform_to_z_noshift(const emp::vector<double> x, const int &index) {
     /* Calculate z_i = (x - o_i)/\lambdai */
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       tmpx[i] = (x[i])/lambda[index];
     }
     /* Multiply z_i * M_i */
-    for (int i=0; i<dim; ++i) {
+    for (size_t i=0; i<dim; ++i) {
       z[i] = 0;
-      for (int j=0; j<dim; ++j) {
+      for (size_t j=0; j<dim; ++j) {
         z[i] += M[index][j][i] * tmpx[j];
       }
     }
@@ -621,12 +621,12 @@ namespace mabe {
 
   void CFunction::calculate_fmaxi() {
     /* functions */
-    for (int i=0; i<numfunc; ++i) emp_assert(function[i] != NULL);
+    for (size_t i=0; i<numfunc; ++i) emp_assert(function[i] != NULL);
     emp::vector<double> x5(dim);
-    for (int i=0; i<dim; ++i) { 
+    for (size_t i=0; i<dim; ++i) { 
       x5[i] = 5 ;
     }
-    for (int i=0; i<numfunc; ++i) {
+    for (size_t i=0; i<numfunc; ++i) {
       transform_to_z_noshift(x5, i);
       fmaxi[i] = (function[i])(z, dim);
     }
