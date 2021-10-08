@@ -67,14 +67,14 @@ namespace mabe {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
-      double max_fitness = 0.0;
+      double max_fitness = emp::MIN_INT;
       int dims = 3;
       emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
         const auto & val = org.GetTrait<emp::vector<double>>(vals_trait);
-        double fitness;
+        double fitness = emp::MIN_INT;
         if (fcn_name == "Shubert") {
           fitness = shubert(val, dims);
         } else if (fcn_name == "Vincent") {
