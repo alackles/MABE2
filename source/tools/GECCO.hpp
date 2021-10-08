@@ -137,6 +137,15 @@ namespace mabe {
       return -result + fbias;
     }
 
+    // initialize composite functions
+    tFitness FAckley(const emp::vector<double> x, const size_t & dim);
+    tFitness FRastingin(const emp::vector<double> x, const size_t & dim);
+    tFitness FWeierstrass(const emp::vector<double> x, const size_t & dim);
+    tFitness FGriewank(const emp::vector<double> x, const size_t & dim);
+    tFitness FSphere(const emp::vector<double> x, const size_t & dim);
+    tFitness FSchwefel(const emp::vector<double> x, const size_t & dim);
+    tFitness FRosenbrock(const emp::vector<double> x, const size_t & dim);
+    tFitness FEF8F2(const emp::vector<double> x, const size_t & dim);
   };
 
   /* Interfaces for Composition functions */
