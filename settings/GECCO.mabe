@@ -1,4 +1,4 @@
-random_seed = -1147822924;      // Seed for random number generator; use 0 to base on time.
+random_seed = 1147822924;      // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
 Value pop_size = 200;           // Local value variable.
@@ -29,7 +29,7 @@ SelectTournament select_tourny { // Select the top fitness organisms from random
   select_pop = "main_pop";      // Population from which to select parents
   birth_pop = "next_pop";       // Population into which offspring should be placed
   tournament_size = 7;          // Number of orgs in each tournament
-  num_tournaments = 1;          // Number of tournaments to run
+  num_tournaments = pop_size - select_e.total_count;  // Number of tournaments to run
   fitness_fun = "fitness";      // Trait equation that produces fitness value to use
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.
@@ -44,7 +44,7 @@ ValsOrg vals_org {              // Organism consisting of a series of N floating
   N = 3;                      // Number of values in organism
   mut_prob = 0.001;              // Probability of each value mutating on reproduction.
   mut_size = 1;                 // Standard deviation on size of mutations.
-  min_value = -100;                // Lower limit for value fields.
+  min_value = 0;                // Lower limit for value fields.
   max_value = 100;              // Upper limit for value fields.
   lower_bound = "rebound";      // How should the lower limit be enforced?
                                 //  no_limit: Allow values to be arbirarily low.
@@ -61,6 +61,6 @@ ValsOrg vals_org {              // Organism consisting of a series of N floating
   init_random = 1;              // Should we randomize ancestor?  (0 = all 0.0)
 }
 
-@start(0) print("random_seed = ", random_seed, "\n");
-@start(0) inject("bits_org", "main_pop", pop_size);
+@start(0) PRINT("random_seed = ", random_seed, "\n");
+@start(0) INJECT("bits_org", "main_pop", pop_size);
 @update(1000) exit();
