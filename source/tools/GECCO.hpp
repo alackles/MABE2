@@ -142,7 +142,7 @@ namespace mabe {
   /* Interfaces for Composition functions */
   class CF1 : public CFunction {
   public:
-    CF1();
+    CF1(){;}
     void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       CFunction::Config(_dim, _numfunc, _rng);
       sigma.assign(numfunc, 1.0);
@@ -168,7 +168,7 @@ namespace mabe {
 
   class CF2 : public CFunction {
   public:
-    CF2();
+    CF2(){;}
     void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       CFunction::Config(_dim, _numfunc, _rng);
       sigma.assign(numfunc, 1.0);
@@ -196,7 +196,7 @@ namespace mabe {
 
   class CF3 : public CFunction {
   public:
-    CF3();
+    CF3(){;}
     // Set up the composition
     void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       CFunction::Config(_dim, _numfunc, _rng);
@@ -225,7 +225,7 @@ namespace mabe {
 
   class CF4 : public CFunction {
   public:
-    CF4();
+    CF4(){;}
     void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
       CFunction::Config(_dim, _numfunc, _rng);
       sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0};
