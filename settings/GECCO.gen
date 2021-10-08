@@ -11,7 +11,7 @@ SelectTournament select_tourny;
 GrowthPlacement place_next;
 MovePopulation sync_gen;
 
-BitsOrg bits_org;
+ValsOrg vals_org;
 
 @start() print("random_seed = ", random_seed, "\n");
 @start() inject("bits_org", "main_pop", pop_size);
