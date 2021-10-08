@@ -40,9 +40,9 @@ namespace mabe {
   protected:
   
     size_t dim;
-  	size_t numfunc;
     emp::Random rng;
   	
+  	size_t numfunc;
     double C;
   	
   	emp::vector<double> lambda;
@@ -85,8 +85,8 @@ namespace mabe {
   
   public:
   	CFunction() 
-    : dim(-1), numfunc(-1), rng(-1)
-    , C(-1)
+    : dim(-1), rng(-1)
+    , numfunc(-1), C(-1)
     , lambda(0), sigma(0), bias(0)
     , O(0), M(0)
     , weight(0), lbound(0), ubound(0)
@@ -100,9 +100,9 @@ namespace mabe {
     // numfunc is the number of functions to composite
     // rng is the random number generator used to generate this landscape
     // I actually do not know what C is?
-  	CFunction(size_t _dim, size_t _numfunc, emp::Random & random) 
-    : dim(_dim), numfunc(_numfunc), rng(random)
-    , C(2000.0)
+  	CFunction(size_t _dim, emp::Random & random) 
+    : dim(_dim), rng(random)
+    , numfunc(0), C(2000.0)
     , lambda(8), sigma(8), bias(8)
     , O(_dim * 8), M(_dim * _dim * 8)
     , weight(8), lbound(8), ubound(8)
@@ -116,10 +116,9 @@ namespace mabe {
   	double GetUpper(const int &ivar) const { return ubound[ivar]; }
     emp::vector<emp::vector<double>> GetMaxima() const { return O; } 
 
-    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
+    void Config(const size_t _dim, emp::Random & _rng) {
       dim = _dim;
       rng = _rng;
-      numfunc = _numfunc;
       lbound.assign(dim, -5.0);
       ubound.assign(dim, 5.0);
     }
@@ -143,8 +142,9 @@ namespace mabe {
   class CF1 : public CFunction {
   public:
     CF1(){;}
-    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
-      CFunction::Config(_dim, _numfunc, _rng);
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 6;
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 8.0, 8.0, 1.0/5.0, 1.0/5.0};
       /* load optima */
@@ -169,8 +169,9 @@ namespace mabe {
   class CF2 : public CFunction {
   public:
     CF2(){;}
-    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
-      CFunction::Config(_dim, _numfunc, _rng);
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 8;
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0};
       /* load optima */
@@ -198,8 +199,9 @@ namespace mabe {
   public:
     CF3(){;}
     // Set up the composition
-    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
-      CFunction::Config(_dim, _numfunc, _rng);
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 6;
       sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
       lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
       /* load optima */
@@ -226,8 +228,9 @@ namespace mabe {
   class CF4 : public CFunction {
   public:
     CF4(){;}
-    void Config(const size_t _dim, const size_t _numfunc, emp::Random & _rng) {
-      CFunction::Config(_dim, _numfunc, _rng);
+    void Config(const size_t _dim, emp::Random & _rng) {
+      CFunction::Config(_dim, _rng);
+      numfunc = 8;
       sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0};
       lambda = {4.0, 1.0, 4.0, 1.0, 1.0/10.0, 1.0/5.0, 1.0/10.0, 1.0/40.0};
       /* load optima */

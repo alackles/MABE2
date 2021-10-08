@@ -59,8 +59,8 @@ namespace mabe {
       AddOwnedTrait<double>(fitness_trait, "Landscape fitness value", 0.0);
       
       // set up composite functions
-      comp3.Config(dims, 6, control.GetRandom());
-      comp4.Config(dims, 8, control.GetRandom());
+      comp3.Config(dims, control.GetRandom());
+      comp4.Config(dims, control.GetRandom());
     }
 
     void OnUpdate(size_t /* update */) override {
