@@ -32,7 +32,7 @@ namespace mabe {
     EvalGECCO(mabe::MABE & control,
            const std::string & name="EvalGECCO",
            const std::string & desc="Module to evaluate bitstrings on one of the GECCO Niching Competition 3D landscapes.",
-           size_t _dims=3,
+           const size_t & _dims=3,
            const std::string & _fname="Shubert",
            const std::string & _vtrait="vals", const std::string & _ftrait="fitness")
       : Module(control, name, desc)
@@ -59,22 +59,26 @@ namespace mabe {
       AddOwnedTrait<double>(fitness_trait, "Landscape fitness value", 0.0);
       
       // set up composite functions
-      comp3.Config(dims, control.GetRandom());
-      comp4.Config(dims, control.GetRandom());
+      if (fcn_name == "CF3") {
+        comp3.Config(dims, control.GetRandom());
+      }
+      if (fcn_name == "CF4") {
+        comp4.Config(dims, control.GetRandom());
+      }
     }
 
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
-      double max_fitness = emp::MIN_INT;
+      double max_fitness = 0.0;
       int dims = 3;
       emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
         org.GenerateOutput();
         const auto & val = org.GetTrait<emp::vector<double>>(vals_trait);
-        double fitness = emp::MIN_INT;
+        double fitness = 0.0;
         if (fcn_name == "Shubert") {
           fitness = shubert(val, dims);
         } else if (fcn_name == "Vincent") {
