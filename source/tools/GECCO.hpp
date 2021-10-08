@@ -33,7 +33,7 @@ namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
-  using comp_func_t = std::function<double(const emp::vector<double> &, const size_t dims)>;
+  using gecco_cfunction_t = std::function<double(const emp::vector<double> &, const size_t dims)>;
 
   /* Composition Functions framework */
   class CFunction {
@@ -61,7 +61,7 @@ namespace mabe {
   	emp::vector<double> fmaxi;
   	emp::vector<double> tmpx;
    
-    emp::vector<comp_func_t> function;
+    emp::vector<gecco_cfunction_t> function;
 
     // internal helper functions
   	void init_rotmat_identity();
@@ -74,14 +74,14 @@ namespace mabe {
   	void calculate_fmaxi();
 
     // initialize composite functions
-    comp_func_t FAckley;
-    comp_func_t FRastrigin;
-    comp_func_t FWeierstrass;
-    comp_func_t FGriewank;
-    comp_func_t FSphere;
-    comp_func_t FSchwefel;
-    comp_func_t FRosenbrock;
-    comp_func_t FEF8F2;
+    gecco_cfunction_t FAckley;
+    gecco_cfunction_t FRastrigin;
+    gecco_cfunction_t FWeierstrass;
+    gecco_cfunction_t FGriewank;
+    gecco_cfunction_t FSphere;
+    gecco_cfunction_t FSchwefel;
+    gecco_cfunction_t FRosenbrock;
+    gecco_cfunction_t FEF8F2;
   
   public:
   	CFunction() 
@@ -137,15 +137,6 @@ namespace mabe {
       return -result + fbias;
     }
 
-    // initialize composite functions
-    tFitness FAckley(const emp::vector<double> x, const size_t & dim);
-    tFitness FRastingin(const emp::vector<double> x, const size_t & dim);
-    tFitness FWeierstrass(const emp::vector<double> x, const size_t & dim);
-    tFitness FGriewank(const emp::vector<double> x, const size_t & dim);
-    tFitness FSphere(const emp::vector<double> x, const size_t & dim);
-    tFitness FSchwefel(const emp::vector<double> x, const size_t & dim);
-    tFitness FRosenbrock(const emp::vector<double> x, const size_t & dim);
-    tFitness FEF8F2(const emp::vector<double> x, const size_t & dim);
   };
 
   /* Interfaces for Composition functions */
@@ -168,10 +159,10 @@ namespace mabe {
       /* M_ Identity matrices */
       init_rotmat_identity();
       /* Initialize functions of the composition */
-      //function[0] = function[1] = FGriewank;
-      //function[2] = function[3] = FWeierstrass;
-      //function[4] = function[5] = FSphere;
-      //calculate_fmaxi();
+      function[0] = function[1] = FGriewank;
+      function[2] = function[3] = FWeierstrass;
+      function[4] = function[5] = FSphere;
+      calculate_fmaxi();
     };
   };
 
@@ -195,11 +186,11 @@ namespace mabe {
       init_rotmat_identity();
 
       /* Initialize functions of the composition */
-      //function[0] = function[1] = FRastrigin;
-      //function[2] = function[3] = FWeierstrass;
-      //function[4] = function[5] = FGriewank;
-      //function[6] = function[7] = FSphere;
-      //calculate_fmaxi();
+      function[0] = function[1] = FRastrigin;
+      function[2] = function[3] = FWeierstrass;
+      function[4] = function[5] = FGriewank;
+      function[6] = function[7] = FSphere;
+      calculate_fmaxi();
     }
   };
 
@@ -225,10 +216,10 @@ namespace mabe {
         init_rotmat_identity();
       }
       /* Initialize functions of the composition */
-      //function[0] = function[1] = FEF8F2;
-      //function[2] = function[3] = FWeierstrass;
-      //function[4] = function[5] = FGriewank;
-      //calculate_fmaxi();
+      function[0] = function[1] = FEF8F2;
+      function[2] = function[3] = FWeierstrass;
+      function[4] = function[5] = FGriewank;
+      calculate_fmaxi();
     }
   };
 
@@ -400,7 +391,7 @@ namespace mabe {
   * Basic functions for composition 
   *****************************************************************************/
   /* Ackley's function */
-  comp_func_t FAckley = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FAckley = [](const emp::vector<double> x, const size_t &dim) {
     double sum1(0.0), sum2(0.0), result;
     for (size_t i=0; i<dim; ++i) {
       sum1 += x[i]*x[i];
@@ -413,7 +404,7 @@ namespace mabe {
   }; 
 
   /* Rastrigin's function */
-  comp_func_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim; ++i) {
       result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
@@ -422,7 +413,7 @@ namespace mabe {
   };
 
   /* Weierstrass's function */
-  comp_func_t FWeierstrass = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FWeierstrass = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
     int k_max(20);
     for (int j=0; j<=k_max; ++j) {
@@ -439,7 +430,7 @@ namespace mabe {
   };
 
   /* Griewank's function */
-  comp_func_t FGriewank = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FGriewank = [](const emp::vector<double> x, const size_t &dim) {
     double sum(0.0), prod(1.0), result(0.0);
     for (size_t i=0; i<dim; ++i) {
       sum  += x[i]*x[i]/4000.0;
@@ -450,7 +441,7 @@ namespace mabe {
   };
 
   /* Sphere function */
-  comp_func_t FSphere = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FSphere = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim; ++i) {
       result += x[i]*x[i];
@@ -459,7 +450,7 @@ namespace mabe {
   };
 
   /* Schwefel's function */
-  comp_func_t FSchwefel = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FSchwefel = [](const emp::vector<double> x, const size_t &dim) {
     double sum1(0.0), sum2(0.0);
     for (size_t i=0; i<dim; ++i) {
       sum2 = 0.0;
@@ -472,7 +463,7 @@ namespace mabe {
   };
 
   /* Rosenbrock's function */
-  comp_func_t FRosenbrock = [](const emp::vector<double> x, const size_t &dim) {
+  gecco_cfunction_t FRosenbrock = [](const emp::vector<double> x, const size_t &dim) {
     double result(0.0);
     for (size_t i=0; i<dim-1; ++i) {
       result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
@@ -481,7 +472,7 @@ namespace mabe {
   };
 
   /* FEF8F2 function */
-  comp_func_t FEF8F2 = [](const emp::vector<double> xx, const size_t &dim) {
+  gecco_cfunction_t FEF8F2 = [](const emp::vector<double> xx, const size_t &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
     for (size_t i=0; i<dim-1; ++i) {
