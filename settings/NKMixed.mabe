@@ -35,7 +35,7 @@ SelectTournament select_tourny { // Select the top fitness organisms from random
   select_pop = "main_pop";      // Population from which to select parents
   birth_pop = "next_pop";       // Population into which offspring should be placed
   tournament_size = 7;          // Number of orgs in each tournament
-  num_tournaments = 1;          // Number of tournaments to run
+  num_tournaments = pop_size - select_elite.copy_count;          // Number of tournaments to run
   fitness_fun = "fitness";      // Trait equation that produces fitness value to use
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.
