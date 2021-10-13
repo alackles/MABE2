@@ -151,7 +151,7 @@ namespace mabe {
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20 ) {
         std::string fname;
-        fname = "./../source/tools/DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
+        fname = "./../tools/DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
         init_optima_rand(rng);

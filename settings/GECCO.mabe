@@ -8,7 +8,7 @@ CommandLine cl {                // Handle basic I/O on the command line.
 }
 EvalGECCO eval_gecco {          // Evaluate bitstrings on a 3D GECCO niching lanscape.
   target = "main_pop";          // Which population(s) should we evaluate?
-  fcn_name = "Shubert";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
+  fcn_name = "CF3";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
   vals_trait = "vals";          // Which trait stores the 3-tuple to evaluate?
   fitness_trait = "fitness";    // Which trait should we store fitness in?
 }
@@ -23,13 +23,14 @@ SelectElite select_elite {      // Choose the top fitness organisms for replicat
   birth_pop = "next_pop";       // Which population should births go into?
   top_count = 1;                // Number of top-fitness orgs to be replicated
   copy_count = 1;               // Number of copies to make of replicated organisms
+  Value total_count = top_count * copy_count;
   fitness_trait = "fitness";    // Which trait provides the fitness value to use?
 }
 SelectTournament select_tourny { // Select the top fitness organisms from random subgroups for replication.
   select_pop = "main_pop";      // Population from which to select parents
   birth_pop = "next_pop";       // Population into which offspring should be placed
   tournament_size = 7;          // Number of orgs in each tournament
-  num_tournaments = pop_size - select_e.total_count;  // Number of tournaments to run
+  num_tournaments = pop_size - select_elite.total_count;  // Number of tournaments to run
   fitness_fun = "fitness";      // Trait equation that produces fitness value to use
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.
@@ -62,5 +63,5 @@ ValsOrg vals_org {              // Organism consisting of a series of N floating
 }
 
 @start(0) PRINT("random_seed = ", random_seed, "\n");
-@start(0) INJECT("bits_org", "main_pop", pop_size);
+@start(0) INJECT("vals_org", "main_pop", pop_size);
 @update(1000) exit();

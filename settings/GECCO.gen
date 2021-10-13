@@ -14,5 +14,5 @@ MovePopulation sync_gen;
 ValsOrg vals_org;
 
 @start() print("random_seed = ", random_seed, "\n");
-@start() inject("bits_org", "main_pop", pop_size);
+@start() inject("vals_org", "main_pop", pop_size);
 @update(1000) exit();
