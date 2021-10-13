@@ -179,7 +179,7 @@ namespace mabe {
               auto mut_b = genome.Export(midpt, midpt);
               double mut_fitness_a = landscape_a.GetFitness(mut_a);
               double mut_fitness_b = landscape_b.GetFitness(mut_b);
-              double fitness_mut = mut_fitness_a + mut_fitness_b;
+              fitness_mut = mut_fitness_a + mut_fitness_b;
         } else if (nk_type == "mixed") {
           // tbd
         }
