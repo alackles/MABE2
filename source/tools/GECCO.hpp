@@ -16,6 +16,7 @@
 #include <map>
 #include <string>
 #include <functional>
+#include <fstream>
 
 #include "emp/base/assert.hpp"
 #include "emp/base/Ptr.hpp"
@@ -74,41 +75,131 @@ namespace mabe {
   	void calculate_fmaxi();
 
     // initialize composite functions
-    gecco_cfunction_t FAckley;
-    gecco_cfunction_t FRastrigin;
-    gecco_cfunction_t FWeierstrass;
-    gecco_cfunction_t FGriewank;
-    gecco_cfunction_t FSphere;
-    gecco_cfunction_t FSchwefel;
-    gecco_cfunction_t FRosenbrock;
-    gecco_cfunction_t FEF8F2;
+  /******************************************************************************
+  * Basic functions for composition 
+  *****************************************************************************/
+  /* Ackley's function */
+  gecco_cfunction_t FAckley = [](const emp::vector<double> x, const size_t &dim) {
+    double sum1(0.0), sum2(0.0), result;
+    for (size_t i=0; i<dim; ++i) {
+      sum1 += x[i]*x[i];
+      sum2 += cos(2.0*emp::PI*x[i]);
+    }
+    sum1 = -0.2*sqrt(sum1/dim);
+    sum2 /= dim;
+    result = 20.0 + emp::E - 20.0*exp(sum1) - exp(sum2);
+    return result;
+  }; 
+
+  /* Rastrigin's function */
+  gecco_cfunction_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
+    double result(0.0);
+    for (size_t i=0; i<dim; ++i) {
+      result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
+    }
+    return result;
+  };
+
+  /* Weierstrass's function */
+  gecco_cfunction_t FWeierstrass = [](const emp::vector<double> x, const size_t &dim) {
+    double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
+    int k_max(20);
+    for (int j=0; j<=k_max; ++j) {
+      sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
+    }
+    for (size_t i=0; i<dim; ++i) {
+      sum = 0.0;
+    for (int j=0; j<=k_max; ++j) {
+      sum += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(x[i]+0.5));
+    }
+    result += sum;
+    }
+    return result - sum2*dim;
+  };
+
+  /* Griewank's function */
+  gecco_cfunction_t FGriewank = [](const emp::vector<double> x, const size_t &dim) {
+    double sum(0.0), prod(1.0), result(0.0);
+    for (size_t i=0; i<dim; ++i) {
+      sum  += x[i]*x[i]/4000.0;
+      prod *= cos( x[i]/sqrt(double(1.0+i)) );
+    }
+    result = 1.0 + sum - prod;
+    return result;
+  };
+
+  /* Sphere function */
+  gecco_cfunction_t FSphere = [](const emp::vector<double> x, const size_t &dim) {
+    double result(0.0);
+    for (size_t i=0; i<dim; ++i) {
+      result += x[i]*x[i];
+    }
+    return result;
+  };
+
+  /* Schwefel's function */
+  gecco_cfunction_t FSchwefel = [](const emp::vector<double> x, const size_t &dim) {
+    double sum1(0.0), sum2(0.0);
+    for (size_t i=0; i<dim; ++i) {
+      sum2 = 0.0;
+      for (size_t j=0; j<=i; ++j) {
+        sum2 += x[j];
+      }
+      sum1 += sum2*sum2;
+    }
+    return sum1;
+  };
+
+  /* Rosenbrock's function */
+  gecco_cfunction_t FRosenbrock = [](const emp::vector<double> x, const size_t &dim) {
+    double result(0.0);
+    for (size_t i=0; i<dim-1; ++i) {
+      result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
+    }
+    return result;
+  };
+
+  /* FEF8F2 function */
+  gecco_cfunction_t FEF8F2 = [](const emp::vector<double> xx, const size_t &dim) {
+    double result(0.0);
+    double x(0), y(0), f(0), f2(0);
+    for (size_t i=0; i<dim-1; ++i) {
+      x = xx[i]   +1;
+      y = xx[i+1] +1;
+
+      f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
+      f  = 1.0 + f2*f2/4000.0 - cos(f2);
+
+      result += f;
+    }
+    /* do not forget the (dim-1,0) case! */
+    x = xx[dim-1] +1;
+    y = xx[0]     +1;
+
+    f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
+    f  = 1.0 + f2*f2/4000.0 - cos(f2);
+
+    result += f;
+
+    return result;
+  };
   
   public:
-  	CFunction() 
-    : dim(-1), rng(-1)
-    , numfunc(-1), C(-1)
-    , lambda(0), sigma(0), bias(0)
-    , O(0), M(0)
-    , weight(0), lbound(0), ubound(0)
-    , fi(0), z(0), fbias(0)
-    , fmaxi(0), tmpx(0), function(0)
-    { ; }
-    CFunction(const CFunction &) = default;
-    CFunction(CFunction &&) = default;
-
     // dimensions are the number of dimensions each function should have
     // numfunc is the number of functions to composite
     // rng is the random number generator used to generate this landscape
     // I actually do not know what C is?
-  	CFunction(size_t _dim, emp::Random & random) 
-    : dim(_dim), rng(random)
+  	CFunction() 
+    : dim(0), rng(0)
     , numfunc(0), C(2000.0)
     , lambda(8), sigma(8), bias(8)
-    , O(_dim * 8), M(_dim * _dim * 8)
+    , O(8), M(8)
     , weight(8), lbound(8), ubound(8)
     , fi(8), z(8), fbias(8)
     , fmaxi(8), tmpx(8), function(8)
     { ; }
+    CFunction(const CFunction &) = default;
+    CFunction(CFunction &&) = default;
     CFunction & operator=(const CFunction &) = delete;
     CFunction & operator=(CFunction &&) = default;
 
@@ -145,6 +236,17 @@ namespace mabe {
     void Config(const size_t _dim, emp::Random & _rng) {
       CFunction::Config(_dim, _rng);
       numfunc = 6;
+      O.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        O[i].resize(dim);
+      }
+      M.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        M[i].resize(dim);
+        for (size_t j = 0; j < dim; j++) {
+          M[i][j].resize(dim);
+        }
+      }
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 8.0, 8.0, 1.0/5.0, 1.0/5.0};
       /* load optima */
@@ -172,6 +274,17 @@ namespace mabe {
     void Config(const size_t _dim, emp::Random & _rng) {
       CFunction::Config(_dim, _rng);
       numfunc = 8;
+      O.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        O[i].resize(dim);
+      }
+      M.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        M[i].resize(dim);
+        for (size_t j = 0; j < dim; j++) {
+          M[i][j].resize(dim);
+        }
+      }
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0};
       /* load optima */
@@ -202,6 +315,17 @@ namespace mabe {
     void Config(const size_t _dim, emp::Random & _rng) {
       CFunction::Config(_dim, _rng);
       numfunc = 6;
+      O.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        O[i].resize(dim);
+      }
+      M.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        M[i].resize(dim);
+        for (size_t j = 0; j < dim; j++) {
+          M[i][j].resize(dim);
+        }
+      }
       sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
       lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
       /* load optima */
@@ -218,9 +342,12 @@ namespace mabe {
         init_rotmat_identity();
       }
       /* Initialize functions of the composition */
-      function[0] = function[1] = FEF8F2;
-      function[2] = function[3] = FWeierstrass;
-      function[4] = function[5] = FGriewank;
+      function[0] = FEF8F2;
+      function[1] = FEF8F2;
+      function[2] = FWeierstrass;
+      function[3] = FWeierstrass;
+      function[4] = FGriewank;
+      function[5] = FGriewank;
       calculate_fmaxi();
     }
   };
@@ -231,6 +358,17 @@ namespace mabe {
     void Config(const size_t _dim, emp::Random & _rng) {
       CFunction::Config(_dim, _rng);
       numfunc = 8;
+      O.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        O[i].resize(dim);
+      }
+      M.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        M[i].resize(dim);
+        for (size_t j = 0; j < dim; j++) {
+          M[i][j].resize(dim);
+        }
+      }
       sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0};
       lambda = {4.0, 1.0, 4.0, 1.0, 1.0/10.0, 1.0/5.0, 1.0/10.0, 1.0/40.0};
       /* load optima */
@@ -390,114 +528,6 @@ namespace mabe {
     return -result;
   }
 
-  /******************************************************************************
-  * Basic functions for composition 
-  *****************************************************************************/
-  /* Ackley's function */
-  gecco_cfunction_t FAckley = [](const emp::vector<double> x, const size_t &dim) {
-    double sum1(0.0), sum2(0.0), result;
-    for (size_t i=0; i<dim; ++i) {
-      sum1 += x[i]*x[i];
-      sum2 += cos(2.0*emp::PI*x[i]);
-    }
-    sum1 = -0.2*sqrt(sum1/dim);
-    sum2 /= dim;
-    result = 20.0 + emp::E - 20.0*exp(sum1) - exp(sum2);
-    return result;
-  }; 
-
-  /* Rastrigin's function */
-  gecco_cfunction_t FRastrigin = [](const emp::vector<double> x, const size_t &dim) {
-    double result(0.0);
-    for (size_t i=0; i<dim; ++i) {
-      result += (x[i]*x[i] - 10.0*cos(2.0*emp::PI*x[i]) + 10.0);
-    }
-    return result;
-  };
-
-  /* Weierstrass's function */
-  gecco_cfunction_t FWeierstrass = [](const emp::vector<double> x, const size_t &dim) {
-    double result(0.0), sum(0.0), sum2(0.0), a(0.5), b(3.0);
-    int k_max(20);
-    for (int j=0; j<=k_max; ++j) {
-      sum2 += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(0.5));
-    }
-    for (size_t i=0; i<dim; ++i) {
-      sum = 0.0;
-    for (int j=0; j<=k_max; ++j) {
-      sum += pow(a,j)*cos(2.0*emp::PI*pow(b,j)*(x[i]+0.5));
-    }
-    result += sum;
-    }
-    return result - sum2*dim;
-  };
-
-  /* Griewank's function */
-  gecco_cfunction_t FGriewank = [](const emp::vector<double> x, const size_t &dim) {
-    double sum(0.0), prod(1.0), result(0.0);
-    for (size_t i=0; i<dim; ++i) {
-      sum  += x[i]*x[i]/4000.0;
-      prod *= cos( x[i]/sqrt(double(1.0+i)) );
-    }
-    result = 1.0 + sum - prod;
-    return result;
-  };
-
-  /* Sphere function */
-  gecco_cfunction_t FSphere = [](const emp::vector<double> x, const size_t &dim) {
-    double result(0.0);
-    for (size_t i=0; i<dim; ++i) {
-      result += x[i]*x[i];
-    }
-    return result;
-  };
-
-  /* Schwefel's function */
-  gecco_cfunction_t FSchwefel = [](const emp::vector<double> x, const size_t &dim) {
-    double sum1(0.0), sum2(0.0);
-    for (size_t i=0; i<dim; ++i) {
-      sum2 = 0.0;
-      for (size_t j=0; j<=i; ++j) {
-        sum2 += x[j];
-      }
-      sum1 += sum2*sum2;
-    }
-    return sum1;
-  };
-
-  /* Rosenbrock's function */
-  gecco_cfunction_t FRosenbrock = [](const emp::vector<double> x, const size_t &dim) {
-    double result(0.0);
-    for (size_t i=0; i<dim-1; ++i) {
-      result += 100.0*pow((x[i]*x[i]-x[i+1]),2.0) + 1.0*pow((x[i]-1.0),2.0);
-    }
-    return result;
-  };
-
-  /* FEF8F2 function */
-  gecco_cfunction_t FEF8F2 = [](const emp::vector<double> xx, const size_t &dim) {
-    double result(0.0);
-    double x(0), y(0), f(0), f2(0);
-    for (size_t i=0; i<dim-1; ++i) {
-      x = xx[i]   +1;
-      y = xx[i+1] +1;
-
-      f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
-      f  = 1.0 + f2*f2/4000.0 - cos(f2);
-
-      result += f;
-    }
-    /* do not forget the (dim-1,0) case! */
-    x = xx[dim-1] +1;
-    y = xx[0]     +1;
-
-    f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
-    f  = 1.0 + f2*f2/4000.0 - cos(f2);
-
-    result += f;
-
-    return result;
-  };
 
 
   /******************************************************************************
@@ -537,10 +567,10 @@ namespace mabe {
   // Load specified optima from an outside .dat file
   void CFunction::load_optima(const std::string &filename) {
     std::fstream file;
-    file.open(filename.c_str(), std::fstream::in);
+    file.open(filename, std::fstream::in);
     if (!file.is_open()) {
       std::cerr<< "Error: Can not open file: " << filename << std::endl;
-      exit(0);
+      exit(1);
     }
     double tmp;
     for (size_t i=0; i< numfunc; ++i) {
@@ -555,10 +585,10 @@ namespace mabe {
   // Load specified rotation matrix from an outside .dat file
   void CFunction::load_rotmat(const std::string &filename) {
     std::fstream file;
-    file.open(filename.c_str(), std::fstream::in);
+    file.open(filename, std::fstream::in);
     if (!file.is_open()) {
       std::cerr<< "Error: Can not open file: " << filename << std::endl;
-      exit(0);
+      exit(1);
     }
     double tmp(-1);
     for (size_t i=0; i<numfunc; ++i) {
@@ -626,7 +656,7 @@ namespace mabe {
 
   void CFunction::calculate_fmaxi() {
     /* functions */
-    for (size_t i=0; i<numfunc; ++i) emp_assert(function[i] != NULL);
+    for (size_t i=0; i<numfunc; ++i) emp_assert(function[i] != NULL, i);
     emp::vector<double> x5(dim);
     for (size_t i=0; i<dim; ++i) { 
       x5[i] = 5 ;
