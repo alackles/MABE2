@@ -1,4 +1,4 @@
-random_seed = 0;      // Seed for random number generator; use 0 to base on time.
+random_seed = -1896465081;      // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
 Value pop_size = 200;           // Local value variable.
@@ -11,6 +11,7 @@ EvalGECCO eval_gecco {          // Evaluate bitstrings on a 3D GECCO niching lan
   fcn_name = "Shubert";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
   vals_trait = "vals";          // Which trait stores the 3-tuple to evaluate?
   fitness_trait = "fitness";    // Which trait should we store fitness in?
+  genome_file = "genome.csv";   // Where should we output the genome?
 }
 FileOutput output {             // Output collected data into a specified file.
   filename = "output.csv";      // Name of file for output data.
