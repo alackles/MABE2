@@ -27,6 +27,7 @@ namespace mabe {
     std::string fcn_name;
     std::string vals_trait;
     std::string fitness_trait;
+    std::string genome_file;
 
   public:
     EvalGECCO(mabe::MABE & control,
@@ -34,13 +35,15 @@ namespace mabe {
            const std::string & desc="Module to evaluate bitstrings on one of the GECCO Niching Competition 3D landscapes.",
            const size_t & _dims=3,
            const std::string & _fname="Shubert",
-           const std::string & _vtrait="vals", const std::string & _ftrait="fitness")
+           const std::string & _vtrait="vals", const std::string & _ftrait="fitness",
+           const std::string & _gfile="genome.csv")
       : Module(control, name, desc)
       , dims(_dims)
       , target_collect(control.GetPopulation(0))
       , fcn_name(_fname)
       , vals_trait(_vtrait)
       , fitness_trait(_ftrait)
+      , genome_file(_gfile)
     {
       SetEvaluateMod(true);
     }
@@ -51,6 +54,7 @@ namespace mabe {
       LinkVar(fcn_name, "fcn_name", "Which function should we use? [Shubert, Vincent, CF3, CF4]");
       LinkVar(vals_trait, "vals_trait", "Which trait stores the 3-tuple to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store fitness in?");
+      LinkVar(genome_file, "genome_file", "Where should we output the genome?");
     }
 
     void SetupModule() override {
@@ -65,13 +69,26 @@ namespace mabe {
       if (fcn_name == "CF4") {
         comp4.Config(dims, control.GetRandom());
       }
+      
     }
 
+  
+    void PrintGenome(const emp::vector<double> & genome, const double & fitness) {
+      std::ofstream genomeFile;
+      genomeFile.open(genome_file, std::ios_base::app);
+      for (size_t i = 0; i < dims; i++) {
+        genomeFile << genome[i] << ",";
+      }
+      genomeFile << fitness << "\n";
+      genomeFile.close();
+    }
+    
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
       // Loop through the population and evaluate each organism.
       double max_fitness = 0.0;
+      emp::vector<double> max_val = {0, 0, 0};
       int dims = 3;
       emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
@@ -97,9 +114,10 @@ namespace mabe {
         if (fitness > max_fitness || !max_org) {
           max_fitness = fitness;
           max_org = &org;
+          max_val = val;
         }
       }
-
+      PrintGenome(max_val, max_fitness);
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
     }
   };
