@@ -59,7 +59,7 @@ ValsOrg vals_org {              // Organism consisting of a series of N floating
                                 //  rebound: Make high values 'bounce' back down.
   output_name = "vals";         // Name of variable to contain set of values.
   total_name = "total";         // Name of variable to contain total of all values.
-  init_random = 1;              // Should we randomize ancestor?  (0 = all 0.0)
+  init_random = 0;              // Should we randomize ancestor?  (0 = all 0.0)
 }
 
 @start(0) PRINT("random_seed = ", random_seed, "\n");
