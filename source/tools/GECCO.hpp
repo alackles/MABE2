@@ -207,11 +207,26 @@ namespace mabe {
   	double GetUpper(const int &ivar) const { return ubound[ivar]; }
     emp::vector<emp::vector<double>> GetMaxima() const { return O; } 
 
+    void Resize(const size_t & dim) {
+      O.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        O[i].resize(dim);
+      }
+      M.resize(numfunc);
+      for(size_t i = 0; i < numfunc; i++) {
+        M[i].resize(dim);
+        for (size_t j = 0; j < dim; j++) {
+          M[i][j].resize(dim);
+        }
+      }
+    }
+    
     void Config(const size_t _dim, emp::Random & _rng) {
       dim = _dim;
       rng = _rng;
       lbound.assign(dim, -5.0);
       ubound.assign(dim, 5.0);
+      Resize(dim);
     }
 
     double GetFitness(const emp::vector<double> x) {
@@ -234,19 +249,8 @@ namespace mabe {
   public:
     CF1(){;}
     void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
       numfunc = 6;
-      O.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        O[i].resize(dim);
-      }
-      M.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        M[i].resize(dim);
-        for (size_t j = 0; j < dim; j++) {
-          M[i][j].resize(dim);
-        }
-      }
+      CFunction::Config(_dim, _rng);
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 8.0, 8.0, 1.0/5.0, 1.0/5.0};
       /* load optima */
@@ -272,19 +276,8 @@ namespace mabe {
   public:
     CF2(){;}
     void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
       numfunc = 8;
-      O.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        O[i].resize(dim);
-      }
-      M.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        M[i].resize(dim);
-        for (size_t j = 0; j < dim; j++) {
-          M[i][j].resize(dim);
-        }
-      }
+      CFunction::Config(_dim, _rng);
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0};
       /* load optima */
@@ -313,19 +306,8 @@ namespace mabe {
     CF3(){;}
     // Set up the composition
     void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
       numfunc = 6;
-      O.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        O[i].resize(dim);
-      }
-      M.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        M[i].resize(dim);
-        for (size_t j = 0; j < dim; j++) {
-          M[i][j].resize(dim);
-        }
-      }
+      CFunction::Config(_dim, _rng);
       sigma = {1.0, 1.0, 2.0, 2.0, 2.0, 2.0};
       lambda = {1.0/4.0, 1.0/10.0, 2.0, 1.0, 2.0, 5.0};
       /* load optima */
@@ -356,19 +338,8 @@ namespace mabe {
   public:
     CF4(){;}
     void Config(const size_t _dim, emp::Random & _rng) {
-      CFunction::Config(_dim, _rng);
       numfunc = 8;
-      O.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        O[i].resize(dim);
-      }
-      M.resize(numfunc);
-      for(size_t i = 0; i < numfunc; i++) {
-        M[i].resize(dim);
-        for (size_t j = 0; j < dim; j++) {
-          M[i][j].resize(dim);
-        }
-      }
+      CFunction::Config(_dim, _rng);
       sigma = {1.0, 1.0, 1.0, 1.0, 1.0, 2.0, 2.0, 2.0};
       lambda = {4.0, 1.0, 4.0, 1.0, 1.0/10.0, 1.0/5.0, 1.0/10.0, 1.0/40.0};
       /* load optima */
