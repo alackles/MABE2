@@ -34,7 +34,6 @@ namespace mabe {
 
   /// The GECCO Niching Competition provides popular simple functions on which to test evolution of bitstrings.
 
-  // typename for array of function objects
   using gecco_cfunction_t = std::function<double(const emp::vector<double> &, const size_t dims)>;
 
   /* Composition Functions framework */
@@ -160,12 +159,12 @@ namespace mabe {
   };
 
   /* FEF8F2 function */
-  gecco_cfunction_t FEF8F2 = [](const emp::vector<double> v, const size_t &dim) {
+  gecco_cfunction_t FEF8F2 = [](const emp::vector<double> xx, const size_t &dim) {
     double result(0.0);
     double x(0), y(0), f(0), f2(0);
     for (size_t i=0; i<dim-1; ++i) {
-      x = v[i]   +1;
-      y = v[i+1] +1;
+      x = xx[i]   +1;
+      y = xx[i+1] +1;
 
       f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
       f  = 1.0 + f2*f2/4000.0 - cos(f2);
@@ -173,8 +172,8 @@ namespace mabe {
       result += f;
     }
     /* do not forget the (dim-1,0) case! */
-    x = v[dim-1] +1;
-    y = v[0]     +1;
+    x = xx[dim-1] +1;
+    y = xx[0]     +1;
 
     f2 = 100.0*(x*x - y)*(x*x - y) + (1.0 - x)*(1.0 - x);
     f  = 1.0 + f2*f2/4000.0 - cos(f2);
@@ -207,8 +206,6 @@ namespace mabe {
   	double GetUpper(const int &ivar) const { return ubound[ivar]; }
     emp::vector<emp::vector<double>> GetMaxima() const { return O; } 
 
-    // Sets the optima and rotation matrices to the correct size
-    // Called during Config, so numfunc must be adjusted before calling Config 
     void Resize(const size_t & dim) {
       O.resize(numfunc);
       for(size_t i = 0; i < numfunc; i++) {
@@ -223,7 +220,6 @@ namespace mabe {
       }
     }
     
-    // Set up dimension and RNG
     void Config(const size_t _dim, emp::Random & _rng) {
       dim = _dim;
       rng = _rng;
@@ -232,7 +228,6 @@ namespace mabe {
       Resize(dim);
     }
 
-    // Get the fitness of a particular genome
     double GetFitness(const emp::vector<double> x) {
       double result = 0;
       calculate_weights(x);
@@ -328,9 +323,12 @@ namespace mabe {
         init_rotmat_identity();
       }
       /* Initialize functions of the composition */
-      function[0] = function[1] = FEF8F2;
-      function[2] = function[3] = FWeierstrass;
-      function[4] = function[5] = FGriewank;
+      function[0] = FEF8F2;
+      function[1] = FEF8F2;
+      function[2] = FWeierstrass;
+      function[3] = FWeierstrass;
+      function[4] = FGriewank;
+      function[5] = FGriewank;
       calculate_fmaxi();
     }
   };
@@ -364,6 +362,141 @@ namespace mabe {
       calculate_fmaxi();
     };
   };
+
+  /* Basic Benchmark functions */
+  // NOTE: Each can take a dimension as a second argument, but this dimension does nothing.
+  // It is just to conform the benchmark function arguments to the composite function arguments.
+
+  /******************************************************************************
+    * F1: Five-Uneven-Peak Trap 
+    * Variable ranges: x in [0, 30
+    * No. of global peaks: 2
+    * No. of local peaks:  3. 
+    *****************************************************************************/
+  double five_uneven_peak_trap(const emp::vector<double> x, const size_t) {
+    double result=-1.0;
+    if (x[0]>=0 && x[0]< 2.5) {
+    result = 80*(2.5-x[0]);
+    } else if (x[0] >= 2.5 && x[0] < 5.0) {
+    result = 64*(x[0]-2.5);
+    } else if (x[0] >= 5.0 && x[0] < 7.5) {
+    result = 64*(7.5-x[0]);
+    } else if (x[0] >= 7.5 && x[0] < 12.5) {
+    result = 28*(x[0]-7.5);
+    } else if (x[0] >= 12.5 && x[0] < 17.5) {
+    result = 28*(17.5-x[0]);
+    } else if (x[0] >= 17.5 && x[0] < 22.5) {
+    result = 32*(x[0]-17.5);
+    } else if (x[0] >= 22.5 && x[0] < 27.5) {
+    result = 32*(27.5-x[0]);
+    } else if (x[0] >= 27.5 && x[0] <= 30) {
+    result = 80*(x[0]-27.5);
+    }
+    return result;
+  }
+
+  /******************************************************************************
+  * F2: Equal Maxima
+  * Variable ranges: x in [0, 1]
+  * No. of global peaks: 5
+  * No. of local peaks:  0. 
+  *****************************************************************************/
+  double equal_maxima(const emp::vector<double> x, const size_t) {
+    double s = sin(5.0 * emp::PI * x[0]);
+    return pow(s, 6);
+  }
+
+  /******************************************************************************
+  * F3: Uneven Decreasing Maxima
+  * Variable ranges: x in [0, 1]
+  * No. of global peaks: 1
+  * No. of local peaks:  4. 
+  *****************************************************************************/
+  double uneven_decreasing_maxima(const emp::vector<double> x, const size_t) {
+    double tmp1 = -2*log(2)*((x[0]-0.08)/0.854)*((x[0]-0.08)/0.854);
+    double tmp2 = sin( 5*emp::PI*(pow(x[0],3.0/4.0)-0.05) );
+    return exp(tmp1) * pow(tmp2, 6);
+  }
+
+  /******************************************************************************
+  * F4: Himmelblau
+  * Variable ranges: x, y in [−6, 6
+  * No. of global peaks: 4
+  * No. of local peaks:  0.
+  *****************************************************************************/
+  double himmelblau(const emp::vector<double> x, const size_t) {
+    return 200 - (x[0]*x[0] + x[1] - 11)*(x[0]*x[0] + x[1] - 11) - 
+    (x[0] + x[1]*x[1] - 7)*(x[0] + x[1]*x[1] - 7);
+  }  	
+
+  /******************************************************************************
+  * F5: Six-Hump Camel Back
+  * Variable ranges: x in [−1.9, 1.9]; y in [−1.1, 1.1]
+  * No. of global peaks: 2
+  * No. of local peaks:  2.
+  *****************************************************************************/
+  double six_hump_camel_back(const emp::vector<double> x, const size_t) {
+    return -( (4 - 2.1*x[0]*x[0] + pow(x[0],4.0)/3.0)*x[0]*x[0] + 
+    x[0]*x[1] + (4*x[1]*x[1] -4)*x[1]*x[1] );
+  }
+
+  /******************************************************************************
+  * F6: Shubert
+  * Variable ranges: x_i in  [−10, 10]^n, i=1,2,...,n
+  * No. of global peaks: n*3^n
+  * No. of local peaks: many
+  *****************************************************************************/
+  double shubert(const emp::vector<double> x, const size_t &dim) {
+    double result(1), sum(0); 
+    for (size_t i=0; i<dim; i++) {
+      sum=0;
+      for (size_t j=1; j<6; j++) {
+        sum = sum + j * cos((j+1) * x[i] + j);
+      }
+      result = result * sum;
+    }
+    return -result;
+  }
+
+  /******************************************************************************
+  * F7: Vincent
+  * Variable range: x_i in [0.25, 10]^n, i=1,2,...,n
+  * No. of global optima: 6^n
+  * No. of local optima:  0.
+  *****************************************************************************/
+  double vincent(const emp::vector<double> x, const size_t &dim) {
+    double result(0);
+    for (size_t i=0; i<dim; i++){
+      if (x[i]<=0){
+        std::cerr << "Illegal value: " << x[i] << std::endl;
+        exit(-1);
+      }
+      result = result + sin(10 * log(x[i]));
+    }
+    return result/dim;
+  }
+
+  /******************************************************************************
+  * F8: Modified Rastrigin - All Global Optima
+  * Variable ranges: x_i in [0, 1]^n, i=1,2,...,n
+  * No. of global peaks: \prod_{i=1}^n k_i
+  * No. of local peaks:  0.
+  *****************************************************************************/
+  /* Modified Rastrigin -- All Global Optima */
+  constexpr static double MPPF92[2] = {3, 4};
+  constexpr static double MPPF98[8] = {1, 2, 1, 2, 1, 3, 1, 4};
+  constexpr static double MPPF916[16] = {1, 1, 1, 2, 1, 1, 1, 2, 1, 1, 1, 3, 1, 1, 1, 4};
+
+  double modified_rastrigin_all(const emp::vector<double> x, const size_t &dim)
+  {
+    double result(0);
+    for (size_t i=0; i<dim; i++) {
+      if (dim == 2)  { result = result + 10+ 9*cos(2*emp::PI*MPPF92[i]*x[i]); }
+      if (dim == 8)  { result = result + 10+ 9*cos(2*emp::PI*MPPF98[i]*x[i]); }
+      if (dim == 16) { result = result + 10+ 9*cos(2*emp::PI*MPPF916[i]*x[i]); }
+    }
+    return -result;
+  }
 
 
 
@@ -639,7 +772,7 @@ namespace mabe {
     }
     return -result;
   }
-  
+
   }
 
 };
