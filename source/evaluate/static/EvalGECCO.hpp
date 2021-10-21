@@ -97,9 +97,9 @@ namespace mabe {
         const auto & val = org.GetTrait<emp::vector<double>>(vals_trait);
         double fitness = 0.0;
         if (fcn_name == "Shubert") {
-          fitness = shubert(val, dims);
+          fitness = gecco::shubert(val, dims);
         } else if (fcn_name == "Vincent") {
-          fitness = vincent(val, dims);
+          fitness = gecco::vincent(val, dims);
         } else if (fcn_name == "CF3") {
           fitness = comp3.GetFitness(val);
         } else if (fcn_name == "CF4") {
