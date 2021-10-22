@@ -3,7 +3,7 @@
  *  @copyright Copyright (C) Michigan State University, MIT Software license; see doc/LICENSE.md
  *  @date 2019-2021.
  *
- *  @file  EvalNKMixed.hpp
+ *  @file  EvalNKVar.hpp
  *  @brief MABE Evaluation module for NK Landscapes which hardcodes metrics from rank epistasis and also allows 2 different landscapes. Hopefully soon depreciable. 
  */
 
@@ -18,7 +18,7 @@
 
 namespace mabe {
 
-  class EvalNKMixed : public Module {
+  class EvalNKVar : public Module {
   private:
     size_t N;
     size_t K_a;
@@ -35,8 +35,8 @@ namespace mabe {
     std::string genome_file;
 
   public:
-    EvalNKMixed(mabe::MABE & control,
-           const std::string & name="EvalNKMixed",
+    EvalNKVar(mabe::MABE & control,
+           const std::string & name="EvalNKVar",
            const std::string & desc="Module to evaluate bitstrings on a mixed NK Fitness Lanscape WITH rank epistasis baked in.",
            size_t _N=100, size_t _Ka=3, size_t _Kb=3,
            const std::string & _nktype="half",
@@ -54,7 +54,7 @@ namespace mabe {
     {
       SetEvaluateMod(true);
     }
-    ~EvalNKMixed() { }
+    ~EvalNKVar() { }
 
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
@@ -202,7 +202,7 @@ namespace mabe {
       
   };
 
-  MABE_REGISTER_MODULE(EvalNKMixed, "Evaluate bitstrings on a Mixed NK fitness lanscape with Rank Epistasis.");
+  MABE_REGISTER_MODULE(EvalNKVar, "Evaluate bitstrings on a Mixed NK fitness lanscape with Rank Epistasis.");
 }
 
 #endif

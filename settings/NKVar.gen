@@ -4,8 +4,8 @@ Population next_pop;
 Value pop_size = 200;
 
 CommandLine cl;
-EvalNKMixed eval_nkmixed;
 FileOutput output;
+EvalNKVar eval_nkvar;
 SelectElite select_elite;
 SelectTournament select_tourny;
 GrowthPlacement place_next;
