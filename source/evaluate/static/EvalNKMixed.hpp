@@ -125,13 +125,21 @@ namespace mabe {
 
         double fitness = 0;
         if (nk_type == "half") {
-          const auto & bits_a = bits.Export(midpt, 0);
-          const auto & bits_b = bits.Export(midpt, midpt);
+          const auto & bits_a = bits.Export(midpt, 0); // export first N/2 bits 
+          const auto & bits_b = bits.Export(midpt, midpt); // export last N/2 bits
           double fitness_a = landscape_a.GetFitness(bits_a);
           double fitness_b = landscape_b.GetFitness(bits_b);
           fitness = fitness_a + fitness_b;
         } else if (nk_type == "mixed") {
-          // to be added
+          for (size_t i = 0; i < N; i++) {
+            if (i % 2 == 0) {
+              const auto & bits_a = bits.Export(K_a, i/2); // export length K bitstring starting at the index of interest
+              fitness += landscape_a.GetFitness(bits_a); // map evens to landscape A
+            } else {
+              const auto & bits_b = bits.Export(K_b, (i-1)/2); // export length K_b bitstring starting at index of interest
+              fitness += landscape_b.GetFitness(bits_b); // map odds to landscape B
+            }
+          }
         }
         org.SetTrait<double>(fitness_trait, fitness);
 
