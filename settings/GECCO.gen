@@ -4,6 +4,7 @@ Population next_pop;
 Value pop_size = 200;
 
 CommandLine cl;
+AnalyzeSystematics sys;
 EvalGECCO eval_gecco;
 FileOutput output;
 SelectElite select_elite;
@@ -13,6 +14,6 @@ MovePopulation sync_gen;
 
 ValsOrg vals_org;
 
-@start() print("random_seed = ", random_seed, "\n");
-@start() inject("vals_org", "main_pop", pop_size);
-@update(1000) exit();
+@start() PRINT("random_seed = ", random_seed, "\n");
+@start() INJECT("vals_org", "main_pop", pop_size);
+@update(1000) EXIT();
