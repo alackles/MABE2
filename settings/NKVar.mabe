@@ -1,4 +1,4 @@
-random_seed = -1132833229;      // Seed for random number generator; use 0 to base on time.
+random_seed = 0;      // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
 Value pop_size = 200;           // Local value variable.
@@ -15,9 +15,9 @@ FileOutput output {             // Output collected data into a specified file.
 EvalNKVar eval_nkvar {          // Evaluate bitstrings on a Mixed NK fitness lanscape with Rank Epistasis.
   target = "main_pop";          // Which population(s) should we evaluate?
   N = 100;                      // Number of bits required in output
-  K_a = 3;                      // Number of bits used in each gene for landscape a
-  K_b = 3;                      // Number of bits used in each gene for landscape b
-  nk_type = "half";             // Type of mixed landscape [half, merged]
+  K_a = 2;                      // Number of bits used in each gene for landscape a
+  K_b = 4;                      // Number of bits used in each gene for landscape b
+  nk_type = "mixed";             // Type of mixed landscape [half, merged]
   bits_trait = "bits";          // Which trait stores the bit sequence to evaluate?
   fitness_trait = "fitness";    // Which trait should we store NK fitness in?
   mutant_file = "mutants.csv";  // Where should we save the information about mutants?
@@ -35,7 +35,7 @@ SelectTournament select_tourny { // Select the top fitness organisms from random
   select_pop = "main_pop";      // Population from which to select parents
   birth_pop = "next_pop";       // Population into which offspring should be placed
   tournament_size = 7;          // Number of orgs in each tournament
-  num_tournaments = 1;          // Number of tournaments to run
+  num_tournaments = pop_size - select_elite.copy_count;          // Number of tournaments to run
   fitness_fun = "fitness";      // Trait equation that produces fitness value to use
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.
@@ -53,6 +53,6 @@ BitsOrg bits_org {              // Organism consisting of a series of N bits.
   init_random = 1;              // Should we randomize ancestor?  (0 = all zeros)
 }
 
-@start(0) print("random_seed = ", random_seed, "\n");
-@start(0) inject("bits_org", "main_pop", pop_size);
-@update(1000) exit();
+@start(0) PRINT("random_seed = ", random_seed, "\n");
+@start(0) INJECT("bits_org", "main_pop", pop_size);
+@update(1000) EXIT();
