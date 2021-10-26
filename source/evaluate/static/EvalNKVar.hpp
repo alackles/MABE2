@@ -106,6 +106,30 @@ namespace mabe {
       genomeFile << genome.ToString();
       genomeFile.close();
     }
+
+    double NKFitness(const emp::BitVector & bitstring) {
+      double fitness = 0;
+      if (nk_type == "half") {
+        const auto & bits_a = bitstring.Export(midpt, 0); // export first N/2 bits 
+        const auto & bits_b = bitstring.Export(midpt, midpt); // export last N/2 bits
+        double fitness_a = landscape_a.GetFitness(bits_a);
+        double fitness_b = landscape_b.GetFitness(bits_b);
+        fitness = fitness_a + fitness_b;
+      } else if (nk_type == "mixed") {
+          for (size_t i = 0; i < N; i++) {
+            if (i % 2 == 0) {
+              const auto & bits_a = bitstring.Export(K_a, i/2); // export length K bitstring starting at the index of interest
+              size_t dec_a = bits_a.GetUInt(0);
+              fitness += landscape_a.GetFitness(i, dec_a); // map evens to landscape A
+            } else {
+              const auto & bits_b = bitstring.Export(K_b, (i-1)/2); // export length K_b bitstring starting at index of interest
+              size_t dec_b = bits_b.GetUInt(0);
+              fitness += landscape_b.GetFitness(i, dec_b); // map odds to landscape B
+            }
+          }
+      }
+      return fitness;
+    }
     
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
@@ -122,25 +146,7 @@ namespace mabe {
                    N, " bits needed for NK landscape.",
                    "\nOrg: ", org.ToString());
         }
-
-        double fitness = 0;
-        if (nk_type == "half") {
-          const auto & bits_a = bits.Export(midpt, 0); // export first N/2 bits 
-          const auto & bits_b = bits.Export(midpt, midpt); // export last N/2 bits
-          double fitness_a = landscape_a.GetFitness(bits_a);
-          double fitness_b = landscape_b.GetFitness(bits_b);
-          fitness = fitness_a + fitness_b;
-        } else if (nk_type == "mixed") {
-          for (size_t i = 0; i < N; i++) {
-            if (i % 2 == 0) {
-              const auto & bits_a = bits.Export(K_a, i/2); // export length K bitstring starting at the index of interest
-              fitness += landscape_a.GetFitness(bits_a); // map evens to landscape A
-            } else {
-              const auto & bits_b = bits.Export(K_b, (i-1)/2); // export length K_b bitstring starting at index of interest
-              fitness += landscape_b.GetFitness(bits_b); // map odds to landscape B
-            }
-          }
-        }
+        double fitness = NKFitness(bits);
         org.SetTrait<double>(fitness_trait, fitness);
 
         if (fitness > max_fitness || !max_org) {
@@ -161,36 +167,18 @@ namespace mabe {
       mutFile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
       int org_id = 0;
       const auto & bits = max_bits;
-      double fitness_ref;
-      double fitness_mut;
       for (size_t i = 0; i < N ; ++i) {
         int pos_ref = i;
         auto genome = bits;
         genome.Toggle(i); 
         // get fitness of org with single mutation (i)
-        if (nk_type == "half") {
-          auto ref_a = genome.Export(midpt, 0);
-          auto ref_b = genome.Export(midpt, midpt);
-          double ref_fitness_a = landscape_a.GetFitness(ref_a);
-          double ref_fitness_b = landscape_b.GetFitness(ref_b);
-          fitness_ref = ref_fitness_a + ref_fitness_b;
-        } else if (nk_type == "mixed") {
-          // tbd
-        }
+        double fitness_ref = NKFitness(genome);
         for (size_t j = 0 ; j < N ; ++j) {
           if (j != i) {
             int pos_mut = j;
             genome.Toggle(j);
             // get fitness of org with dual mutations (i and j)
-            if (nk_type == "half") {
-              auto mut_a = genome.Export(midpt, 0);
-              auto mut_b = genome.Export(midpt, midpt);
-              double mut_fitness_a = landscape_a.GetFitness(mut_a);
-              double mut_fitness_b = landscape_b.GetFitness(mut_b);
-              fitness_mut = mut_fitness_a + mut_fitness_b;
-        } else if (nk_type == "mixed") {
-          // tbd
-        }
+            double fitness_mut = NKFitness(genome);
             genome.Toggle(j);
             mutFile << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
           }
