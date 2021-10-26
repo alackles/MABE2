@@ -33,8 +33,8 @@ SelectTournament select_tourny { // Select the top fitness organisms from random
   select_pop = "main_pop";      // Which population should we select parents from?
   birth_pop = "next_pop";       // Which population should births go into?
   tournament_size = 7;          // Number of orgs in each tournament
-  num_tournaments = pop_size - select_elite.copy_count;          // Number of tournaments to run
-  fitness_trait = "fitness";    // Which trait provides the fitness value to use?
+  num_tournaments = 199;          // Number of tournaments to run
+  fitness_fun = "fitness";    // Which trait provides the fitness value to use?
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.
   target = "main_pop,next_pop"; // Population(s) to manage.
@@ -51,6 +51,6 @@ BitsOrg bits_org {              // Organism consisting of a series of N bits.
   init_random = 1;              // Should we randomize ancestor?  (0 = all zeros)
 }
 
-@start(0) print("random_seed = ", random_seed, "\n");
-@start(0) inject("bits_org", "main_pop", pop_size);
-@update(500) exit();
+@start(0) PRINT("random_seed = ", random_seed, "\n");
+@start(0) INJECT("bits_org", "main_pop", pop_size);
+@update(500) EXIT();
