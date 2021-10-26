@@ -118,11 +118,11 @@ namespace mabe {
       } else if (nk_type == "mixed") {
           for (size_t i = 0; i < N; i++) {
             if (i % 2 == 0) {
-              const auto & bits_a = bitstring.Export(K_a, i/2); // export length K bitstring starting at the index of interest
+              const auto & bits_a = bitstring.Export(K_a+1, i/2); // export length K+1 bitstring starting at the index of interest
               size_t dec_a = bits_a.GetUInt(0);
               fitness += landscape_a.GetFitness(i, dec_a); // map evens to landscape A
             } else {
-              const auto & bits_b = bitstring.Export(K_b, (i-1)/2); // export length K_b bitstring starting at index of interest
+              const auto & bits_b = bitstring.Export(K_b+1, (i-1)/2); // export length K_b+1 bitstring starting at index of interest
               size_t dec_b = bits_b.GetUInt(0);
               fitness += landscape_b.GetFitness(i, dec_b); // map odds to landscape B
             }
