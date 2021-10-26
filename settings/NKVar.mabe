@@ -1,4 +1,4 @@
-random_seed = 0;      // Seed for random number generator; use 0 to base on time.
+random_seed = 1281833217;       // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
 Value pop_size = 200;           // Local value variable.
@@ -15,13 +15,13 @@ FileOutput output {             // Output collected data into a specified file.
 EvalNKVar eval_nkvar {          // Evaluate bitstrings on a Mixed NK fitness lanscape with Rank Epistasis.
   target = "main_pop";          // Which population(s) should we evaluate?
   N = 100;                      // Number of bits required in output
-  K_a = 2;                      // Number of bits used in each gene for landscape a
-  K_b = 4;                      // Number of bits used in each gene for landscape b
-  nk_type = "mixed";             // Type of mixed landscape [half, merged]
+  K_a = 0;                      // Number of bits used in each gene for landscape a
+  K_b = 2;                      // Number of bits used in each gene for landscape b
+  nk_type = "half";             // Type of mixed landscape [half, merged]
   bits_trait = "bits";          // Which trait stores the bit sequence to evaluate?
   fitness_trait = "fitness";    // Which trait should we store NK fitness in?
   mutant_file = "mutants.csv";  // Where should we save the information about mutants?
-  nk_file = "nk.csv";           // Where should we save the actual NK landscape?
+  nk_prefix = "nk";             // Where should we save NK landscapes (will be suffixed with _[a|b].csv)?
   genome_file = "ref_genome.csv";// Where should we save the maximally performing (i.e. reference) genome (in case we happen to need it later)?
 }
 SelectElite select_elite {      // Choose the top fitness organisms for replication.
@@ -35,7 +35,7 @@ SelectTournament select_tourny { // Select the top fitness organisms from random
   select_pop = "main_pop";      // Population from which to select parents
   birth_pop = "next_pop";       // Population into which offspring should be placed
   tournament_size = 7;          // Number of orgs in each tournament
-  num_tournaments = pop_size - select_elite.copy_count;          // Number of tournaments to run
+  num_tournaments = 199;          // Number of tournaments to run
   fitness_fun = "fitness";      // Trait equation that produces fitness value to use
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.

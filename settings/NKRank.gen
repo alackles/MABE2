@@ -13,6 +13,6 @@ MovePopulation sync_gen;
 
 BitsOrg bits_org;
 
-@start() print("random_seed = ", random_seed, "\n");
-@start() inject("bits_org", "main_pop", pop_size);
-@update(500) exit();
+@start() PRINT("random_seed = ", random_seed, "\n");
+@start() INJECT("bits_org", "main_pop", pop_size);
+@update(500) EXIT();
