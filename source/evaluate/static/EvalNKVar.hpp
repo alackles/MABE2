@@ -31,7 +31,7 @@ namespace mabe {
     std::string bits_trait;
     std::string fitness_trait;
     std::string mutant_file;
-    std::string nk_file;
+    std::string nk_prefix;
     std::string genome_file;
 
   public:
@@ -41,7 +41,7 @@ namespace mabe {
            size_t _N=100, size_t _Ka=3, size_t _Kb=3,
            const std::string & _nktype="half",
            const std::string & _btrait="bits", const std::string & _ftrait="fitness", 
-           const std::string & _mfile="mutants.csv", const std::string & _nkfile="nk.csv", const std::string & _gfile="ref_genome.csv")
+           const std::string & _mfile="mutants.csv", const std::string & _nkprefix="nk", const std::string & _gfile="ref_genome.csv")
       : Module(control, name, desc)
       , N(_N), K_a(_Ka), K_b(_Kb)
       , target_collect(control.GetPopulation(0))
@@ -49,7 +49,7 @@ namespace mabe {
       , bits_trait(_btrait)
       , fitness_trait(_ftrait)
       , mutant_file(_mfile)
-      , nk_file(_nkfile)
+      , nk_prefix(_nkprefix)
       , genome_file(_gfile)
     {
       SetEvaluateMod(true);
@@ -65,7 +65,7 @@ namespace mabe {
       LinkVar(bits_trait, "bits_trait", "Which trait stores the bit sequence to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store NK fitness in?");
       LinkVar(mutant_file, "mutant_file", "Where should we save the information about mutants?");
-      LinkVar(nk_file, "nk_file", "Where should we save the actual NK landscape?");
+      LinkVar(nk_prefix, "nk_prefix", "Where should we save NK landscapes (will be suffixed with _[a|b].csv)?");
       LinkVar(genome_file, "genome_file", "Where should we save the maximally performing (i.e. reference) genome (in case we happen to need it later)?");
     }
 
@@ -84,8 +84,10 @@ namespace mabe {
       // Create the half-landscape
     
       // Output the fitness landscape.
-      //PrintLandscape(landscape_a);
-      //PrintLandscape(landscape_b);
+      std::string fname_a = nk_prefix + "_a.csv";
+      std::string fname_b = nk_prefix + "_b.csv";
+      PrintLandscape(landscape_a, fname_a);
+      PrintLandscape(landscape_b, fname_b);
     
     }
 
