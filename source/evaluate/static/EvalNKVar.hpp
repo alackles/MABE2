@@ -69,7 +69,6 @@ namespace mabe {
       LinkVar(genome_file, "genome_file", "Where should we save the maximally performing (i.e. reference) genome (in case we happen to need it later)?");
     }
 
-    const size_t midpt = N/2; 
     emp::BitVector max_bits;
     
     void SetupModule() override {
@@ -112,8 +111,8 @@ namespace mabe {
     double NKFitness(const emp::BitVector & bitstring) {
       double fitness = 0;
       if (nk_type == "half") {
-        const auto & bits_a = bitstring.Export(midpt, 0); // export first N/2 bits 
-        const auto & bits_b = bitstring.Export(midpt, midpt); // export last N/2 bits
+        const auto & bits_a = bitstring.Export(N/2, 0); // export first N/2 bits 
+        const auto & bits_b = bitstring.Export(N/2, N/2); // export last N/2 bits
         double fitness_a = landscape_a.GetFitness(bits_a);
         double fitness_b = landscape_b.GetFitness(bits_b);
         fitness = fitness_a + fitness_b;
