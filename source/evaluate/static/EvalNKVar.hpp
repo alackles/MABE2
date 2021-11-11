@@ -168,59 +168,18 @@ namespace mabe {
       mutFile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
       int org_id = 0;
       const auto & bits = max_bits;
-<<<<<<< Updated upstream
-=======
-      double fitness_ref = 0;
-      double fitness_mut = 0;
->>>>>>> Stashed changes
       for (size_t i = 0; i < N ; ++i) {
         int pos_ref = i;
         auto genome = bits;
         genome.Toggle(i); 
         // get fitness of org with single mutation (i)
-<<<<<<< Updated upstream
         double fitness_ref = NKFitness(genome);
-=======
-        if (nk_type == "half") {
-          auto ref_a = genome.Export(midpt, 0);
-          auto ref_b = genome.Export(midpt, midpt);
-          double ref_fitness_a = landscape_a.GetFitness(ref_a);
-          double ref_fitness_b = landscape_b.GetFitness(ref_b);
-          fitness_ref = ref_fitness_a + ref_fitness_b;
-        } else if (nk_type == "mixed") {
-          if (i % 2 == 0) {
-            auto ref_a = genome.Export(K_a, i/2); // export length K bitstring starting at the index of interest
-            fitness_ref += landscape_a.GetFitness(ref_a); // map evens to landscape A
-          } else {
-            auto ref_b = genome.Export(K_b, (i-1)/2); // export length K_b bitstring starting at index of interest
-            fitness_ref += landscape_b.GetFitness(ref_b); // map odds to landscape B
-          }
-        }
->>>>>>> Stashed changes
         for (size_t j = 0 ; j < N ; ++j) {
           if (j != i) {
             int pos_mut = j;
             genome.Toggle(j);
             // get fitness of org with dual mutations (i and j)
-<<<<<<< Updated upstream
             double fitness_mut = NKFitness(genome);
-=======
-            if (nk_type == "half") {
-              auto mut_a = genome.Export(midpt, 0);
-              auto mut_b = genome.Export(midpt, midpt);
-              double mut_fitness_a = landscape_a.GetFitness(mut_a);
-              double mut_fitness_b = landscape_b.GetFitness(mut_b);
-              fitness_mut = mut_fitness_a + mut_fitness_b;
-            } else if (nk_type == "mixed") {
-              if (j % 2 == 0) {
-                auto mut_a = genome.Export(K_a, j/2); // export length K bitstring starting at the index of interest
-                fitness_mut += landscape_a.GetFitness(mut_a); // map evens to landscape A
-              } else {
-                auto mut_b = genome.Export(K_b, (j-1)/2); // export length K_b bitstring starting at index of interest
-                fitness_mut += landscape_b.GetFitness(mut_b); // map odds to landscape B
-              }
-            }
->>>>>>> Stashed changes
             genome.Toggle(j);
             mutFile << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
           }
