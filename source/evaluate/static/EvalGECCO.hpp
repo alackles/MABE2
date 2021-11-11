@@ -28,6 +28,7 @@ namespace mabe {
     std::string vals_trait;
     std::string fitness_trait;
     std::string genome_file;
+    std::string dat_path;
 
   public:
     EvalGECCO(mabe::MABE & control,
@@ -36,7 +37,8 @@ namespace mabe {
            const size_t & _dims=3,
            const std::string & _fname="Shubert",
            const std::string & _vtrait="vals", const std::string & _ftrait="fitness",
-           const std::string & _gfile="genome.csv")
+           const std::string & _gfile="genome.csv",
+           const std::string & _dpath="./../source/tools/DataGECCO/")
       : Module(control, name, desc)
       , dims(_dims)
       , target_collect(control.GetPopulation(0))
@@ -44,6 +46,7 @@ namespace mabe {
       , vals_trait(_vtrait)
       , fitness_trait(_ftrait)
       , genome_file(_gfile)
+      , dat_path(_dpath)
     {
       SetEvaluateMod(true);
     }
@@ -55,6 +58,7 @@ namespace mabe {
       LinkVar(vals_trait, "vals_trait", "Which trait stores the 3-tuple to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store fitness in?");
       LinkVar(genome_file, "genome_file", "Where should we output the genome?");
+      LinkVar(dat_path, "dat_path", "Where do we pull the .dat files for the composite functions?");
     }
 
     void SetupModule() override {
@@ -64,9 +68,11 @@ namespace mabe {
       
       // set up composite functions
       if (fcn_name == "CF3") {
+        comp3.SetDataPath(dat_path);
         comp3.Config(dims, control.GetRandom());
       }
       if (fcn_name == "CF4") {
+        comp3.SetDataPath(dat_path);
         comp4.Config(dims, control.GetRandom());
       }
       

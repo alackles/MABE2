@@ -1,4 +1,4 @@
-random_seed = 1703459620;       // Seed for random number generator; use 0 to base on time.
+random_seed = 0;      // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
 Value pop_size = 200;           // Local value variable.
@@ -17,10 +17,11 @@ AnalyzeSystematics sys {        // Module to track the population's phylogeny.
 }
 EvalGECCO eval_gecco {          // Evaluate bitstrings on a 3D GECCO niching lanscape.
   target = "main_pop";          // Which population(s) should we evaluate?
-  fcn_name = "Shubert";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
+  fcn_name = "CF3";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
   vals_trait = "vals";          // Which trait stores the 3-tuple to evaluate?
   fitness_trait = "fitness";    // Which trait should we store fitness in?
   genome_file = "genome.csv";   // Where should we output the genome?
+  dat_path = "./../source/tools/DataGECCO/";// Where do we pull the .dat files for the composite functions?
 }
 FileOutput output {             // Output collected data into a specified file.
   filename = "output.csv";      // Name of file for output data.
@@ -51,7 +52,7 @@ MovePopulation sync_gen {       // Move organisms from one populaiton to another
   reset_to = 1;                 // Should we erase organisms at the destination?
 }
 ValsOrg vals_org {              // Organism consisting of a series of N floating-point values.
-  N = 3;                      // Number of values in organism
+  N = 3;                      // Number of valu-1664184487es in organism
   mut_prob = 0.001;              // Probability of each value mutating on reproduction.
   mut_size = 1;                 // Standard deviation on size of mutations.
   min_value = 0;                // Lower limit for value fields.

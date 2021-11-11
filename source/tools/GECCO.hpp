@@ -45,6 +45,8 @@ namespace mabe {
   	
   	size_t numfunc;
     double C;
+
+    std::string dat_path;
   	
   	emp::vector<double> lambda;
   	emp::vector<double> sigma;
@@ -191,6 +193,7 @@ namespace mabe {
   	CFunction() 
     : dim(0), rng(0)
     , numfunc(0), C(2000.0)
+    , dat_path("./../tools/DataGECCO/")
     , lambda(8), sigma(8), bias(8)
     , O(8), M(8)
     , weight(8), lbound(8), ubound(8)
@@ -220,7 +223,11 @@ namespace mabe {
       }
     }
     
-    void Config(const size_t _dim, emp::Random & _rng) {
+    void SetDataPath(const std::string & _dpath) {
+      dat_path = _dpath;
+    }
+
+    void Config(const size_t & _dim, emp::Random & _rng) {
       dim = _dim;
       rng = _rng;
       lbound.assign(dim, -5.0);
@@ -256,7 +263,7 @@ namespace mabe {
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20 ) {
         std::string fname;
-        fname = "./../tools/DataGECCO/CF1_M_D" + std::to_string(dim) + "_opt.dat";
+        fname = dat_path + "CF1_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
         init_optima_rand(rng);
@@ -283,7 +290,7 @@ namespace mabe {
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20 ) {
         std::string fname;
-        fname = "./../source/tools/DataGECCO/CF2_M_D" + std::to_string(dim) + "_opt.dat";
+        fname = dat_path + "CF2_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
       } else { 
         init_optima_rand(rng);
@@ -313,9 +320,9 @@ namespace mabe {
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20 ) {
         std::string fname;
-        fname = "./../source/tools/DataGECCO/CF3_M_D" + std::to_string(dim) + "_opt.dat";
+        fname = dat_path + "CF3_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
-        fname = "./../source/tools/DataGECCO/CF3_M_D" + std::to_string(dim) + ".dat";
+        fname = dat_path + "CF3_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else { 
         init_optima_rand(rng);
@@ -345,9 +352,9 @@ namespace mabe {
       if (dim == 2 || dim == 3 || dim == 5 
           || dim == 10 || dim == 20) {
         std::string fname;
-        fname = "./../source/tools/DataGECCO/CF4_M_D" + std::to_string(dim) + "_opt.dat";
+        fname = dat_path + "CF4_M_D" + std::to_string(dim) + "_opt.dat";
         load_optima(fname);
-        fname = "./../source/tools/DataGECCO/CF4_M_D" + std::to_string(dim) + ".dat";
+        fname = dat_path + "CF4_M_D" + std::to_string(dim) + ".dat";
         load_rotmat(fname);
       } else {
         init_optima_rand(rng);
