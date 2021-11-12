@@ -193,7 +193,7 @@ namespace mabe {
   	CFunction() 
     : dim(0), rng(0)
     , numfunc(0), C(2000.0)
-    , dat_path("./../tools/DataGECCO/")
+    , dat_path("./third-party/MABE2/source/tools/DataGECCO/")
     , lambda(8), sigma(8), bias(8)
     , O(8), M(8)
     , weight(8), lbound(8), ubound(8)
