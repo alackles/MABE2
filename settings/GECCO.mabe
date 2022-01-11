@@ -1,7 +1,7 @@
 random_seed = 0;      // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
-Value pop_size = 200;           // Local value variable.
+Value pop_size = 7;           // Local value variable.
 CommandLine cl {                // Handle basic I/O on the command line.
   format = "fitness:max,fitness:mean";// Column format to use in the file.
   target = "main_pop";          // Which population(s) should we print from?
