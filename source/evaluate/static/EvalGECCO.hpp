@@ -77,18 +77,7 @@ namespace mabe {
       }
       
     }
-
   
-    void PrintGenome(const emp::vector<double> & genome, const double & fitness) {
-      std::ofstream genomeFile;
-      genomeFile.open(genome_file, std::ios_base::app);
-      for (size_t i = 0; i < dims; i++) {
-        genomeFile << genome[i] << ",";
-      }
-      genomeFile << fitness << "\n";
-      genomeFile.close();
-    }
-    
     void OnUpdate(size_t /* update */) override {
       emp_assert(control.GetNumPopulations() >= 1);
 
@@ -123,7 +112,6 @@ namespace mabe {
           max_val = val;
         }
       }
-      PrintGenome(max_val, max_fitness);
       std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
     }
   };
