@@ -40,9 +40,9 @@ namespace mabe {
            const std::string & _gfile="genome.csv",
            const std::string & _dpath="./../source/tools/DataGECCO/")
       : Module(control, name, desc)
-      , dims(_dims)
       , target_collect(control.GetPopulation(0))
       , fcn_name(_fname)
+      , dims(_dims)
       , vals_trait(_vtrait)
       , fitness_trait(_ftrait)
       , genome_file(_gfile)
@@ -55,6 +55,7 @@ namespace mabe {
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
       LinkVar(fcn_name, "fcn_name", "Which function should we use? [Shubert, Vincent, CF3, CF4]");
+      LinkVar(dims, "dims", "How many dimensions should the fitness function have? [2, 3]");
       LinkVar(vals_trait, "vals_trait", "Which trait stores the 3-tuple to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store fitness in?");
       LinkVar(genome_file, "genome_file", "Where should we output the genome?");
@@ -84,7 +85,6 @@ namespace mabe {
       // Loop through the population and evaluate each organism.
       double max_fitness = 0.0;
       emp::vector<double> max_val = {0, 0, 0};
-      int dims = 3;
       emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
