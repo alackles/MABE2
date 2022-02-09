@@ -1,7 +1,7 @@
-random_seed = 0;      // Seed for random number generator; use 0 to base on time.
+random_seed = 0;       // Seed for random number generator; use 0 to base on time.
 Population main_pop;            // Collection of organisms
 Population next_pop;            // Collection of organisms
-Value pop_size = 100;           // Local value variable.
+Value pop_size = 200;           // Local value variable.
 CommandLine cl {                // Handle basic I/O on the command line.
   format = "fitness:max,fitness:mean";// Column format to use in the file.
   target = "main_pop";          // Which population(s) should we print from?
@@ -13,11 +13,12 @@ AnalyzeSystematics sys {        // Module to track the population's phylogeny.
   data_file_name = "phylogenetic_data.csv";// Filename for systematics data file.
   snapshot_file_root_name = "phylogeny";// Filename for snapshot files (will have update number and .csv appended to end)
   snapshot_updates = "0:1000";    // Which updates should we output a snapshot of the phylogeny?
-  data_updates = "0:1000";       // Which updates should we output a data from the phylogeny?
+  data_updates = "-1:-1";       // Which updates should we output a data from the phylogeny?
 }
 EvalGECCO eval_gecco {          // Evaluate bitstrings on a 3D GECCO niching lanscape.
   target = "main_pop";          // Which population(s) should we evaluate?
-  fcn_name = "CF3";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
+  fcn_name = "Shubert";         // Which function should we use? [Shubert, Vincent, CF3, CF4]
+  dims = 3;                     // How many dimensions should the fitness function have? [2, 3]
   vals_trait = "vals";          // Which trait stores the 3-tuple to evaluate?
   fitness_trait = "fitness";    // Which trait should we store fitness in?
   genome_file = "genome.csv";   // Where should we output the genome?
@@ -39,8 +40,8 @@ SelectElite select_elite {      // Choose the top fitness organisms for replicat
 SelectTournament select_tourny { // Select the top fitness organisms from random subgroups for replication.
   select_pop = "main_pop";      // Population from which to select parents
   birth_pop = "next_pop";       // Population into which offspring should be placed
-  tournament_size = 2;          // Number of orgs in each tournament
-  num_tournaments = pop_size - select_elite.copy_count;          // Number of tournaments to run
+  tournament_size =  7;         // Number of orgs in each tournament
+  num_tournaments = pop_size - select_elite.copy_count;         // Number of tournaments to run
   fitness_fun = "fitness";      // Trait equation that produces fitness value to use
 }
 GrowthPlacement place_next {    // Always appened births to the end of a population.
@@ -52,9 +53,9 @@ MovePopulation sync_gen {       // Move organisms from one populaiton to another
   reset_to = 1;                 // Should we erase organisms at the destination?
 }
 ValsOrg vals_org {              // Organism consisting of a series of N floating-point values.
-  N = 3;                      // Number of valu-1664184487es in organism
-  mut_prob = 1;              // Probability of each value mutating on reproduction.
-  mut_size = 0.1;                 // Standard deviation on size of mutations.
+  N = eval_gecco.dims;                      // Number of values in organism
+  mut_prob = 0.01;              // Probability of each value mutating on reproduction.
+  mut_size = 1;                 // Standard deviation on size of mutations.
   min_value = 0;                // Lower limit for value fields.
   max_value = 100;              // Upper limit for value fields.
   lower_bound = "rebound";      // How should the lower limit be enforced?
