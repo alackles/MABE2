@@ -84,7 +84,7 @@ namespace mabe {
 
       // Loop through the population and evaluate each organism.
       double max_fitness = 0.0;
-      emp::vector<double> max_val = {0, 0, 0};
+      emp::vector<double> max_val(dims);
       emp::Ptr<Organism> max_org = nullptr;
       mabe::Collection alive_collect( target_collect.GetAlive() );
       for (Organism & org : alive_collect) {
