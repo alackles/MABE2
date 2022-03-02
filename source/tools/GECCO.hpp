@@ -260,7 +260,7 @@ namespace mabe {
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 8.0, 8.0, 1.0/5.0, 1.0/5.0};
       /* load optima */
-      if (dim == 2 || dim == 3 || dim == 5 
+      if (dim == 2 || dim == 3 || dim == 4 || dim == 5 
           || dim == 10 || dim == 20 ) {
         std::string fname;
         fname = dat_path + "CF1_M_D" + std::to_string(dim) + "_opt.dat";
@@ -287,7 +287,7 @@ namespace mabe {
       sigma.assign(numfunc, 1.0);
       lambda = {1.0, 1.0, 10.0, 10.0, 1.0/10.0, 1.0/10.0, 1.0/7.0, 1.0/7.0};
       /* load optima */
-      if (dim == 2 || dim == 3 || dim == 5 
+      if (dim == 2 || dim == 3 || dim == 4 || dim == 5 
           || dim == 10 || dim == 20 ) {
         std::string fname;
         fname = dat_path + "CF2_M_D" + std::to_string(dim) + "_opt.dat";
