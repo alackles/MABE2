@@ -21,6 +21,8 @@ namespace mabe {
   class EvalGECCO : public Module {
   private:
     size_t dims;
+    CF1 comp1;
+    CF2 comp2;
     CF3 comp3;
     CF4 comp4;
     mabe::Collection target_collect;
@@ -54,7 +56,7 @@ namespace mabe {
 
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
-      LinkVar(fcn_name, "fcn_name", "Which function should we use? [Shubert, Vincent, CF3, CF4]");
+      LinkVar(fcn_name, "fcn_name", "Which function should we use? [Shubert, Vincent, CF1, CF2, CF3, CF4]");
       LinkVar(dims, "dims", "How many dimensions should the fitness function have? [2, 3]");
       LinkVar(vals_trait, "vals_trait", "Which trait stores the 3-tuple to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store fitness in?");
@@ -68,12 +70,20 @@ namespace mabe {
       AddOwnedTrait<double>(fitness_trait, "Landscape fitness value", 0.0);
       
       // set up composite functions
+      if (fcn_name == "CF1") {
+        comp1.SetDataPath(dat_path);
+        comp1.Config(dims, control.GetRandom());
+      }
+      if (fcn_name == "CF2") {
+        comp2.SetDataPath(dat_path);
+        comp2.Config(dims, control.GetRandom());
+      }
       if (fcn_name == "CF3") {
         comp3.SetDataPath(dat_path);
         comp3.Config(dims, control.GetRandom());
       }
       if (fcn_name == "CF4") {
-        comp3.SetDataPath(dat_path);
+        comp4.SetDataPath(dat_path);
         comp4.Config(dims, control.GetRandom());
       }
       
@@ -95,6 +105,10 @@ namespace mabe {
           fitness = gecco::shubert(val, dims);
         } else if (fcn_name == "Vincent") {
           fitness = gecco::vincent(val, dims);
+        } else if (fcn_name == "CF1") {
+          fitness = comp1.GetFitness(val);
+        } else if (fcn_name == "CF2") {
+          fitness = comp2.GetFitness(val);
         } else if (fcn_name == "CF3") {
           fitness = comp3.GetFitness(val);
         } else if (fcn_name == "CF4") {
