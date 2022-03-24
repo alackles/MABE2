@@ -37,7 +37,7 @@ namespace mabe {
            const std::string & name="EvalGECCO",
            const std::string & desc="Module to evaluate bitstrings on one of the GECCO Niching Competition 3D landscapes.",
            const size_t & _dims=3,
-           const std::string & _fname="Shubert",
+           const std::string & _fname="shubert",
            const std::string & _vtrait="vals", const std::string & _ftrait="fitness",
            const std::string & _gfile="genome.csv",
            const std::string & _dpath="./../source/tools/DataGECCO/")
@@ -101,9 +101,9 @@ namespace mabe {
         org.GenerateOutput();
         const auto & val = org.GetTrait<emp::vector<double>>(vals_trait);
         double fitness = 0.0;
-        if (fcn_name == "Shubert") {
+        if (fcn_name == "shubert") {
           fitness = gecco::shubert(val, dims);
-        } else if (fcn_name == "Vincent") {
+        } else if (fcn_name == "vincent") {
           fitness = gecco::vincent(val, dims);
         } else if (fcn_name == "CF1") {
           fitness = comp1.GetFitness(val);
