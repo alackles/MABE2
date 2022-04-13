@@ -51,8 +51,17 @@ namespace mabe {
     }
     ~EvalNKRank() { }
 
+    // Setup member functions associated with this class.
+    static void InitType(emplode::TypeInfo & info) {
+      info.AddMemberFunction("EVAL",
+                             [](EvalNKRank & mod, Collection list) { return mod.Evaluate(list); },
+                             "Use NK landscape to evaluate all orgs in an OrgList.");
+      info.AddMemberFunction("RESET",
+                             [](EvalNKRank & mod) { mod.landscape.Config(mod.N, mod.K, mod.control.GetRandom()); return 0; },
+                             "Regenerate the NK landscape with current N and K.");
+    }
+    
     void SetupConfig() override {
-      LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
       LinkVar(N, "N", "Number of bits required in output");
       LinkVar(K, "K", "Number of bits used in each gene");
       LinkVar(bits_trait, "bits_trait", "Which trait stores the bit sequence to evaluate?");
@@ -87,26 +96,25 @@ namespace mabe {
       nkFile.close();
     }
 
-    emp::BitVector max_bits;
-
     void PrintGenome(emp::BitVector genome) {
       std::ofstream genomeFile(genome_file);
       genomeFile << genome.ToString();
       genomeFile.close();
     }
     
-    void OnUpdate(size_t /* update */) override {
-      emp_assert(control.GetNumPopulations() >= 1);
+    emp::BitVector max_bits;
+    
+    double Evaluate(const Collection & orgs ) {
 
       // Loop through the population and evaluate each organism.
-      mabe::Collection alive_collect( target_collect.GetAlive() );
       double max_fitness = 0.0;
       emp::Ptr<Organism> max_org = nullptr;
-      for (Organism & org : alive_collect) {
+      mabe::Collection alive_orgs( orgs.GetAlive() );
+      for (Organism & org : alive_orgs) {
         org.GenerateOutput();
         const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
         if (bits.size() != N) {
-          AddError("Org returns ", bits.size(), " bits, but ",
+          emp::notify::Error("Org returns ", bits.size(), " bits, but ",
                    N, " bits needed for NK landscape.",
                    "\nOrg: ", org.ToString());
         }
@@ -119,11 +127,18 @@ namespace mabe {
           max_bits = bits;
         }
       }
-      std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
+    
+      return max_fitness;
+
     }
+
+    double Evaluate(Population & pop) {return Evaluate( Collection(pop));}
+
+    double Evaluate(const std::string & in) { return Evaluate( control.ToCollection(in) ); }
 
     // Rank epistasis analysis on the final population
     // 
+    
     void BeforeExit() override {
       PrintGenome(max_bits);
       // use the existing landscape to evaluate and output the mutants

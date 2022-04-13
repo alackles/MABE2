@@ -7,8 +7,8 @@
  *  @brief MABE Evaluation module for NK Landscapes which hardcodes metrics from rank epistasis and also allows 2 different landscapes. Hopefully soon depreciable. 
  */
 
-#ifndef MABE_EVAL_NK_MIXED_H
-#define MABE_EVAL_NK_MIXED_H
+#ifndef MABE_EVAL_NK_VAR_H
+#define MABE_EVAL_NK_VAR_H
 
 #include "../../core/MABE.hpp"
 #include "../../core/Module.hpp"
@@ -56,6 +56,16 @@ namespace mabe {
     }
     ~EvalNKVar() { }
 
+    // Setup member functions associated with this class.
+    static void InitType(emplode::TypeInfo & info) {
+      info.AddMemberFunction("EVAL",
+                             [](EvalNKVar & mod, Collection list) { return mod.Evaluate(list); },
+                             "Use NK landscape to evaluate all orgs in an OrgList.");
+      info.AddMemberFunction("RESET",
+                             [](EvalNKVar & mod) { mod.landscape_a.Config(mod.N, mod.K_a, mod.control.GetRandom()); mod.landscape_b.Config(mod.N, mod.K_b, mod.control.GetRandom());  return 0; },
+                             "Regenerate the NK landscape with current N and K.");
+    }
+    
     void SetupConfig() override {
       LinkCollection(target_collect, "target", "Which population(s) should we evaluate?");
       LinkVar(N, "N", "Number of bits required in output");
@@ -69,8 +79,6 @@ namespace mabe {
       LinkVar(genome_file, "genome_file", "Where should we save the maximally performing (i.e. reference) genome (in case we happen to need it later)?");
     }
 
-    emp::BitVector max_bits;
-    
     void SetupModule() override {
       // Setup the traits.
       AddRequiredTrait<emp::BitVector>(bits_trait);
@@ -90,6 +98,7 @@ namespace mabe {
     
     }
 
+    
     void PrintLandscape(NKLandscape nk_landscape, const std::string & nk_fname) {
       std::ofstream nkFile(nk_fname);
       size_t rows = nk_landscape.GetStateCount();
@@ -132,18 +141,19 @@ namespace mabe {
       return fitness;
     }
     
-    void OnUpdate(size_t /* update */) override {
-      emp_assert(control.GetNumPopulations() >= 1);
+    emp::BitVector max_bits;
+    
+    double Evaluate(const Collection & orgs ) {
 
       // Loop through the population and evaluate each organism.
-      mabe::Collection alive_collect( target_collect.GetAlive() );
       double max_fitness = 0.0;
       emp::Ptr<Organism> max_org = nullptr;
-      for (Organism & org : alive_collect) {
+      mabe::Collection alive_orgs( orgs.GetAlive() );
+      for (Organism & org : alive_orgs) {
         org.GenerateOutput();
         const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
         if (bits.size() != N) {
-          AddError("Org returns ", bits.size(), " bits, but ",
+          emp::notify::Error("Org returns ", bits.size(), " bits, but ",
                    N, " bits needed for NK landscape.",
                    "\nOrg: ", org.ToString());
         }
@@ -156,11 +166,17 @@ namespace mabe {
           max_bits = bits;
         }
       }
-      std::cout << "Max " << fitness_trait << " = " << max_fitness << std::endl;
+      return max_fitness;
     }
+
+
+    double Evaluate(Population & pop) {return Evaluate( Collection(pop));}
+
+    double Evaluate(const std::string & in) { return Evaluate( control.ToCollection(in) ); }
 
     // Rank epistasis analysis on the final population
     // 
+    
     void BeforeExit() override {
       PrintGenome(max_bits);
       // use the existing landscape to evaluate and output the mutants
