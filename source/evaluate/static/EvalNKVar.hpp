@@ -117,7 +117,7 @@ namespace mabe {
       genomeFile.close();
     }
 
-    double NKFitness(const emp::BitVector & bitstring) {
+    double NKFitness(emp::BitVector & bitstring) {
       double fitness = 0;
       // Create double-length bitstring to solve wraparound problems
       bitstring.Resize(N*2);
@@ -154,7 +154,7 @@ namespace mabe {
       mabe::Collection alive_orgs( orgs.GetAlive() );
       for (Organism & org : alive_orgs) {
         org.GenerateOutput();
-        const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
+        auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
         if (bits.size() != N) {
           emp::notify::Error("Org returns ", bits.size(), " bits, but ",
                    N, " bits needed for NK landscape.",
