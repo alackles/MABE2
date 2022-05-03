@@ -117,25 +117,26 @@ namespace mabe {
       genomeFile.close();
     }
 
-    double NKFitness(emp::BitVector & bitstring) {
+    double NKFitness(const emp::BitVector & bitstring) {
       double fitness = 0;
       // Create double-length bitstring to solve wraparound problems
-      bitstring.Resize(N*2);
-      bitstring |= (bitstring << N);
+      auto double_genome = bitstring;
+      double_genome.Resize(N*2);
+      double_genome |= (double_genome << N);
       if (nk_type == "half") {
-        const auto & bits_a = bitstring.Export(N/2, 0); // export first N/2 bits 
-        const auto & bits_b = bitstring.Export(N/2, N/2); // export second N/2 bits
-        double fitness_a = landscape_a.GetFitness(bits_a); // the chopped up bitstring will be duplicated again but that should be fine
+        const auto & bits_a = double_genome.Export(N/2, 0); // export first N/2 bits 
+        const auto & bits_b = double_genome.Export(N/2, N/2); // export second N/2 bits
+        double fitness_a = landscape_a.GetFitness(bits_a); // the chopped up double_genome will be duplicated again but that should be fine
         double fitness_b = landscape_b.GetFitness(bits_b);
         fitness = fitness_a + fitness_b;
       } else if (nk_type == "mixed") {
           for (size_t i = 0; i < N; i++) {
             if (i % 2 == 0) {
-              const auto & bits_a = bitstring.Export(K_a+1, i); // export length K+1 bitstring starting at the index of interest
+              const auto & bits_a = double_genome.Export(K_a+1, i); // export length K+1 bitstring starting at the index of interest
               size_t dec_a = bits_a.GetUInt(0);  // Convert bits representation to decimal representation for table lookup
               fitness += landscape_a.GetFitness(i/2, dec_a); // map evens to landscape A
             } else {
-              const auto & bits_b = bitstring.Export(K_b+1, i); // export length K_b+1 bitstring starting at index of interest
+              const auto & bits_b = double_genome.Export(K_b+1, i); // export length K_b+1 bitstring starting at index of interest
               size_t dec_b = bits_b.GetUInt(0); // Convert bits representation to decimal representation for table lookup
               fitness += landscape_b.GetFitness((i-1)/2, dec_b); // map odds to landscape B
             }
@@ -154,7 +155,7 @@ namespace mabe {
       mabe::Collection alive_orgs( orgs.GetAlive() );
       for (Organism & org : alive_orgs) {
         org.GenerateOutput();
-        auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
+        const auto & bits = org.GetTrait<emp::BitVector>(bits_trait);
         if (bits.size() != N) {
           emp::notify::Error("Org returns ", bits.size(), " bits, but ",
                    N, " bits needed for NK landscape.",
