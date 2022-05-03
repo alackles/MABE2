@@ -129,7 +129,7 @@ namespace mabe {
         double fitness_a = landscape_a.GetFitness(bits_a); // the chopped up double_genome will be duplicated again but that should be fine
         double fitness_b = landscape_b.GetFitness(bits_b);
         fitness = fitness_a + fitness_b;
-      } else if (nk_type == "mixed") {
+      } else if (nk_type == "merged") {
           for (size_t i = 0; i < N; i++) {
             if (i % 2 == 0) {
               const auto & bits_a = double_genome.Export(K_a+1, i); // export length K+1 bitstring starting at the index of interest
