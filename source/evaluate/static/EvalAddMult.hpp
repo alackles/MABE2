@@ -20,19 +20,24 @@ namespace mabe {
   class EvalAddMult : public Module {
   private:
     size_t N;
+    size_t n_add;
 
     std::string vals_trait;
     std::string fitness_trait;
+    std::string mutant_file;
 
   public:
     EvalAddMult(mabe::MABE & control,
            const std::string & name="EvalAddMult",
            const std::string & desc="Module to evaluate bitstrings on an NK Fitness Lanscape",
-           size_t _N=100, const std::string & _vtrait="vals", const std::string & _ftrait="fitness")
+           size_t _N=100, size_t _nadd=50, const std::string & _vtrait="vals", const std::string & _ftrait="fitness",
+           const std::string & _mfile="mutants.csv")
       : Module(control, name, desc)
       , N(_N)
+      , n_add(_nadd)
       , vals_trait(_vtrait)
       , fitness_trait(_ftrait)
+      , mutant_file(_mfile)
     {
       SetEvaluateMod(true);
     }
@@ -47,8 +52,10 @@ namespace mabe {
 
     void SetupConfig() override {
       LinkVar(N, "N", "Number of values required in output");
+      LinkVar(n_add, "n_add", "Number of values in output to add (vs. multiply)");
       LinkVar(vals_trait, "vals_trait", "Which trait stores the integer sequence to evaluate?");
       LinkVar(fitness_trait, "fitness_trait", "Which trait should we store NK fitness in?");
+      LinkVar(mutant_file, "mutant_file", "Where should we store the mutants file?");
     }
 
     void SetupModule() override {
@@ -57,10 +64,12 @@ namespace mabe {
       AddOwnedTrait<int>(fitness_trait, "Landscape fitness value", 0);
     }
 
-    int CalcFitness(const emp::vector<int> & vals, const int & n_add, const int & n_mult) {
+    int CalcFitness(const emp::vector<int> & vals, const int & num_add) {
       int result = 1;
       return result;
     }
+
+    emp::vector<int> max_vals;
 
     double Evaluate(const Collection & orgs) {
       // Loop through the population and evaluate each organism.
@@ -75,14 +84,14 @@ namespace mabe {
                              N, " bits needed for NK landscape.",
                              "\nOrg: ", org.ToString());
         }
-        int add = vals.size()/2; // How many values to add together
-        int mult = vals.size() - add; // How many values to multiply by each other 
-        double fitness = CalcFitness(vals, add, mult); // add up the first N/2 values and multiply in the next N/2 values 
+        int mult = vals.size() - n_add; // How many values to multiply by each other 
+        double fitness = CalcFitness(vals, n_add); // add up the first N/2 values and multiply in the next N/2 values 
         org.SetTrait<double>(fitness_trait, fitness);
 
         if (fitness > max_fitness || !max_org) {
           max_fitness = fitness;
           max_org = &org;
+          max_vals = vals;
         }
       }
 
@@ -94,6 +103,37 @@ namespace mabe {
 
     // If a string is provided to Evaluate, convert it to a Collection.
     double Evaluate(const std::string & in) { return Evaluate( control.ToCollection(in) ); }
+    
+    void BeforeExit() override {
+      // use the existing landscape to evaluate and output the mutants
+      std::ofstream mutFile(mutant_file);
+      mutFile << "org_ID,pos_REF,pos_MUT,score_REF,score_MUT,\n";
+      int org_id = 0;
+      const auto & vals = max_vals;
+      for (size_t i = 0; i < N ; ++i) {
+        int pos_ref = i;
+        auto genome = vals;
+        // mutate genome to single mutant
+        // TOGGLE HERE
+        // get fitness of org with single mutation (i)
+        int fitness_ref = CalcFitness(genome, n_add);
+        for (size_t j = 0 ; j < N ; ++j) {
+          if (j != i) {
+            int pos_mut = j;
+            //mutate genome to double mutant
+            // - toggle here
+            // get fitness of org with dual mutations (i and j)
+            int fitness_mut = CalcFitness(genome, n_add);
+            //mutate genome back to original single mutant
+            // - toggle here
+            mutFile << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
+          }
+        }
+        // mutate genome back to original 
+        // toggle here 
+      }
+      mutFile.close();
+    }
   };
 
   MABE_REGISTER_MODULE(EvalAddMult, "Evaluate vectors of integers on a simple additive & multiplicative landscape.");
