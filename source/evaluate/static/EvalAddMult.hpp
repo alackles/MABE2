@@ -65,7 +65,9 @@ namespace mabe {
     }
 
     int CalcFitness(const emp::vector<int> & vals, const int & num_add) {
-      int result = 1;
+      int sum = std::accumulate(vals.begin(), vals.begin() + num_add, 0);
+      int prod = std::accumulate(vals.begin() + num_add, vals.end(), sum, std::multiplies<int>());
+      int result = sum + prod;
       return result;
     }
 
@@ -113,26 +115,28 @@ namespace mabe {
       for (size_t i = 0; i < N ; ++i) {
         int pos_ref = i;
         auto genome = vals;
-        // mutate genome to single mutant
-        // TOGGLE HERE
-        // get fitness of org with single mutation (i)
-        int fitness_ref = CalcFitness(genome, n_add);
-        for (size_t j = 0 ; j < N ; ++j) {
-          if (j != i) {
-            int pos_mut = j;
-            //mutate genome to double mutant
-            // - toggle here
-            // get fitness of org with dual mutations (i and j)
-            int fitness_mut = CalcFitness(genome, n_add);
-            //mutate genome back to original single mutant
-            // - toggle here
-            mutFile << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
+        for (int i = 1; i < 10; ++i) {
+          // mutate genome to single mutant
+          // TOGGLE HERE
+          // get fitness of org with single mutation (i)
+          int fitness_ref = CalcFitness(genome, n_add);
+          for (size_t j = 0 ; j < N ; ++j) {
+            if (j != i) {
+              int pos_mut = j;
+              //mutate genome to double mutant
+              // - toggle here
+              // get fitness of org with dual mutations (i and j)
+              int fitness_mut = CalcFitness(genome, n_add);
+              //mutate genome back to original single mutant
+              // - toggle here
+              mutFile << org_id << "," << pos_ref << "," << pos_mut << "," << fitness_ref << "," << fitness_mut << "," << "\n";
+            }
           }
-        }
-        // mutate genome back to original 
-        // toggle here 
+          // mutate genome back to original 
+          // toggle here 
       }
       mutFile.close();
+    }
     }
   };
 
