@@ -111,7 +111,7 @@ namespace mabe {
     }
   };
 
-  MABE_REGISTER_ORG_TYPE(BitsOrg, "Organism consisting of a series of N bits.");
+  MABE_REGISTER_ORG_TYPE(BitsOrg, "Organism consisting of a series of N bits :).");
 }
 
 #endif
